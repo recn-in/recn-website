@@ -98,7 +98,7 @@ a { color: var(--text-primary); text-decoration: none; }
 a:hover { color: var(--accent); }
 
 /* ---- Layout ---- */
-.container { max-width: var(--max-content); margin: 0 auto; padding: 0 var(--sp-md); }
+.container { max-width: var(--max-content); margin: 0 auto; padding: 0 var(--sp-lg); }
 .section { padding: var(--sp-xl) 0; position: relative; z-index: 1; }
 
 /* ---- Background Canvas ---- */
