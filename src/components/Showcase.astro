@@ -1,0 +1,177 @@
+---
+// Abstract waveform suggestion
+const wave = Array.from({ length: 24 }, (_, i) => {
+  const t = i * 0.4;
+  return Math.max(10, Math.round(100 * Math.abs(Math.sin(t) * Math.cos(t * 0.6))));
+});
+---
+
+<div class="sketch">
+  <!-- Phone 1: list suggestion -->
+  <div class="sk-phone sk-back">
+    <div class="sk-head"><div class="sk-bar" style="width:30%"></div></div>
+    <div class="sk-sep"></div>
+    <div class="sk-line" style="width:25%"></div>
+    <div class="sk-line" style="width:65%"></div>
+    <div class="sk-gap"></div>
+    <div class="sk-line" style="width:25%"></div>
+    <div class="sk-line" style="width:50%"></div>
+    <div class="sk-gap"></div>
+    <div class="sk-line" style="width:25%"></div>
+    <div class="sk-line" style="width:55%"></div>
+    <div class="sk-gap"></div>
+    <div class="sk-line" style="width:25%"></div>
+    <div class="sk-line" style="width:45%"></div>
+  </div>
+
+  <!-- Phone 2: waveform + transport (primary) -->
+  <div class="sk-phone sk-front">
+    <div class="sk-head"><div class="sk-bar" style="width:40%"></div></div>
+    <div class="sk-gap"></div>
+    <div class="sk-line sk-center" style="width:35%"></div>
+    <div class="sk-gap"></div>
+    <div class="sk-wave">
+      {wave.map(h => <i style={`height:${h}%`} />)}
+      <div class="sk-cursor"></div>
+    </div>
+    <div class="sk-gap"></div>
+    <div class="sk-line sk-center" style="width:22%"></div>
+    <div class="sk-gap"></div>
+    <div class="sk-dots">
+      <span></span><span class="sk-dot-play"></span><span></span>
+    </div>
+  </div>
+
+  <!-- Phone 3: faders suggestion -->
+  <div class="sk-phone sk-rear">
+    <div class="sk-head"><div class="sk-bar" style="width:20%"></div></div>
+    <div class="sk-sep"></div>
+    <div class="sk-fader"><div style="width:85%"></div></div>
+    <div class="sk-fader"><div style="width:70%"></div></div>
+    <div class="sk-fader"><div style="width:55%"></div></div>
+    <div class="sk-fader"><div style="width:45%"></div></div>
+    <div class="sk-fader"><div style="width:35%"></div></div>
+  </div>
+</div>
+<p class="sk-caption">Designing</p>
+
+<style>
+  .sketch {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: relative;
+    height: 220px;
+    margin: 0 auto;
+    max-width: 280px;
+    overflow: hidden;
+  }
+
+  .sk-phone {
+    width: 80px;
+    aspect-ratio: 9 / 18;
+    border: 1px solid var(--divider);
+    padding: 6px 5px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+  }
+
+  .sk-back  { left: 5%; transform: rotate(-3deg); opacity: 0.3; }
+  .sk-front { left: 50%; transform: translateX(-50%); opacity: 0.7; z-index: 2; }
+  .sk-rear  { right: 5%; transform: rotate(3deg); opacity: 0.25; }
+
+  .sk-head { padding-bottom: 4px; }
+  .sk-bar  { height: 1px; background: var(--text-tertiary); }
+  .sk-sep  { height: 1px; background: var(--divider); margin: 2px 0; }
+  .sk-line { height: 1px; background: var(--text-tertiary); opacity: 0.5; margin: 2px 0; }
+  .sk-gap  { height: 5px; }
+
+  .sk-center { margin-left: auto; margin-right: auto; }
+
+  /* Abstract waveform */
+  .sk-wave {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sk-wave i {
+    flex: 1;
+    min-width: 1px;
+    background: var(--text-tertiary);
+    opacity: 0.4;
+    display: block;
+  }
+
+  .sk-cursor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--accent);
+    opacity: 0.6;
+    animation: drift 12s linear infinite;
+  }
+
+  /* Transport dots */
+  .sk-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 2px 0;
+  }
+  .sk-dots span {
+    width: 4px;
+    height: 4px;
+    border: 1px solid var(--text-tertiary);
+    opacity: 0.4;
+  }
+  .sk-dot-play {
+    width: 0 !important;
+    height: 0 !important;
+    border: 3px solid transparent !important;
+    border-left: 5px solid var(--text-tertiary) !important;
+    opacity: 0.4 !important;
+  }
+
+  /* Abstract faders */
+  .sk-fader {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+  }
+  .sk-fader div {
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.3;
+  }
+
+  .sk-caption {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-top: var(--sp-sm);
+    opacity: 0.6;
+  }
+
+  @keyframes drift {
+    0%   { left: 10%; }
+    100% { left: 88%; }
+  }
+
+  @media (min-width: 600px) {
+    .sketch { height: 300px; max-width: 400px; }
+    .sk-phone { width: 110px; padding: 8px 6px; }
+  }
+
+  @media (min-width: 900px) {
+    .sketch { height: 360px; max-width: 480px; }
+    .sk-phone { width: 130px; }
+  }
+</style>

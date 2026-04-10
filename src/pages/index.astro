@@ -3,7 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Showcase from '../components/Showcase.astro';
 
+const base = import.meta.env.BASE_URL;
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
@@ -15,73 +17,80 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
   <main>
     <!-- Hero -->
     <section class="hero container">
-      <div class="gradient-bar" style="width: 48px; margin: 0 auto var(--sp-lg);"></div>
+      <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
       <h1 class="hero-wordmark">RECN</h1>
+      <p class="hero-version">Building tools for audio capture</p>
       <p class="hero-tagline">
-        Record studio-quality audio on your phone. Manage, transcribe, and transfer to your DAW — no cloud, no compromise.
+        We're solving hard problems in on-device audio recording, ML-powered transcription, and multi-track capture — all running locally on your phone.
       </p>
-      <form class="signup-form" action="#" method="post">
+      <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
-        <button type="submit">Early Access</button>
+        <button type="submit">Follow Along</button>
       </form>
     </section>
 
-    <!-- Features -->
-    <section class="section container">
-      <h2 class="gradient-text" style="margin-bottom: var(--sp-lg);">What You Get</h2>
+    <!-- Showcase -->
+    <section class="section container reveal">
+      <h2 style="margin-bottom: var(--sp-lg);">Interface</h2>
+      <Showcase />
+    </section>
+
+    <!-- What we're working on -->
+    <section class="section container reveal">
+      <h2 style="margin-bottom: var(--sp-lg);">What We're Solving</h2>
       <div class="features-grid">
         <div class="feature-card">
-          <span class="feature-tag">Capture</span>
-          <h3>Studio-Quality Recording</h3>
-          <p>Five profiles from RAW to Voice Memo. Live waveform, dB monitoring, pause and resume.</p>
+          <span class="feature-tag">On-Device ML</span>
+          <h3>Local Transcription Pipeline</h3>
+          <p>Running speech-to-text models entirely on-device. No server round-trips, no data leaving your phone. Multilingual, offline, private by architecture.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Transcribe</span>
-          <h3>On-Device AI</h3>
-          <p>Whisper runs entirely on your device. Multilingual, private, no internet required.</p>
+          <span class="feature-tag">Multi-Track</span>
+          <h3>Mobile Overdub Engine</h3>
+          <p>Building a multi-track recording and overdub system that works on mobile hardware. Layer tracks, mix with per-track faders, maintain sample-accurate sync.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Organize</span>
-          <h3>DAW-Ready Workflow</h3>
-          <p>Projects, notes, annotations. Export WAV or compressed M4A directly to your production tools.</p>
+          <span class="feature-tag">Audio</span>
+          <h3>Capture-Grade Recording</h3>
+          <p>Five recording profiles from lossless RAW to compressed voice memo. Live waveform rendering, dB monitoring, zero-drop frame rates during capture.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Playback</span>
-          <h3>Precision Playback</h3>
-          <p>DAW-style scrollable waveform with 1x to 80x zoom. Scrub, seek, and review with studio precision.</p>
+          <span class="feature-tag">Analysis</span>
+          <h3>On-Device Classification</h3>
+          <p>Speech vs music detection, key estimation, spectral analysis — all running locally through an extensible background processing pipeline.</p>
         </div>
       </div>
     </section>
 
-    <!-- Products -->
-    <section class="section container">
-      <h2 style="margin-bottom: var(--sp-lg);">What We're Building</h2>
+    <!-- Where we are -->
+    <section class="section container reveal">
+      <h2 style="margin-bottom: var(--sp-lg);">Where We Are</h2>
       <div class="products-grid">
         <div class="product-card">
           <h3>RECN Rec Mobile</h3>
-          <span class="product-status active">In Development</span>
-          <p>Professional audio capture on iOS and Android. Record ideas with studio quality, anywhere.</p>
+          <span class="product-status">Active</span>
+          <p>The core recording app. On-device ML pipeline, multi-track editor, and DAW-ready export. iOS and Android.</p>
         </div>
         <div class="product-card">
           <h3>RECN Rec Desktop</h3>
-          <span class="product-status soon">Coming Soon</span>
-          <p>Desktop companion for macOS and Windows. Manage recordings and WiFi transfer from phone to DAW.</p>
+          <span class="product-status">Pending</span>
+          <p>Desktop companion. WiFi transfer from phone to workstation, library management, bridge to DAW.</p>
         </div>
         <div class="product-card">
           <h3>RecnCast</h3>
-          <span class="product-status soon">Coming Soon</span>
-          <p>Stream audio from your DAW to listeners via peer-to-peer. VST plugin, zero-latency architecture.</p>
+          <span class="product-status">Pending</span>
+          <p>P2P audio streaming from DAW to browser. VST plugin captures the mix, WebRTC delivers it. No audio server.</p>
         </div>
       </div>
     </section>
 
-    <!-- Recent Posts -->
+    <!-- Log -->
     {posts.length > 0 && (
-      <section class="section container">
-        <h2 style="margin-bottom: var(--sp-lg);">Latest</h2>
+      <section class="section container reveal">
+        <h2 style="margin-bottom: var(--sp-lg);">Log</h2>
         <div class="blog-grid">
           {posts.map(post => (
-            <a href={`/blog/${post.slug}/`} class="blog-card">
+            <a href={`${base}blog/${post.slug}/`} class="blog-card">
               <div class="blog-card-meta">
                 <span class="blog-card-date">{fmt(post.data.date)}</span>
                 <span class="blog-card-category">{post.data.category}</span>
@@ -95,15 +104,15 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
     )}
 
     <!-- Bottom CTA -->
-    <section class="signup container" style="padding-bottom: 80px;">
-      <div class="gradient-bar" style="width: 48px; margin: 0 auto var(--sp-lg);"></div>
-      <h2>Recordings Are Sacred</h2>
-      <p style="max-width: 480px; margin: var(--sp-sm) auto 0;">
-        Zero data loss. Reliable on-device processing. No cloud dependency. Get notified when we launch.
+    <section class="signup container reveal" style="padding-bottom: 64px;">
+      <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
+      <h2 style="margin-bottom: var(--sp-sm);">Recordings Are Sacred</h2>
+      <p style="max-width: 420px; margin: 0 auto; text-wrap: balance; font-size: 0.8125rem;">
+        Zero data loss. On-device processing. No cloud dependency.
       </p>
-      <form class="signup-form" action="#" method="post">
+      <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
-        <button type="submit">Early Access</button>
+        <button type="submit">Follow Along</button>
       </form>
     </section>
   </main>

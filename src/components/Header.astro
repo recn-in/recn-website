@@ -1,10 +1,11 @@
 ---
 import '../styles/global.css';
+const base = import.meta.env.BASE_URL;
 ---
 <header class="header">
-  <a href="/" class="header-logo">RECN</a>
+  <a href={base} class="header-logo">RECN</a>
   <nav class="header-nav">
-    <a href="/blog/">Blog</a>
-    <button class="theme-toggle" type="button">Light</button>
+    <a href={`${base}blog/`}>Log</a>
+    <button class="theme-toggle" type="button">DARK</button>
   </nav>
 </header>
