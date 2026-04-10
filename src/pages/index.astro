@@ -12,16 +12,16 @@ const posts = (await getCollection('blog'))
 
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 ---
-<Base title="RECN — Professional Audio Capture">
+<Base title="RECN — Audio capture for musicians">
   <Header />
   <main>
     <!-- Hero -->
     <section class="hero container">
       <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
       <h1 class="hero-wordmark">RECN</h1>
-      <p class="hero-version">Building tools for audio capture</p>
+      <p class="hero-version">Audio capture for musicians</p>
       <p class="hero-tagline">
-        We're solving hard problems in on-device audio recording, ML-powered transcription, and multi-track capture — all running locally on your phone.
+        A simple way to record, organise, and transcribe your audio — entirely on your phone, entirely local.
       </p>
       <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
@@ -35,51 +35,51 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
       <Showcase />
     </section>
 
-    <!-- What we're working on -->
+    <!-- What it does -->
     <section class="section container reveal">
-      <h2 style="margin-bottom: var(--sp-lg);">What We're Solving</h2>
+      <h2 style="margin-bottom: var(--sp-lg);">How It Helps</h2>
       <div class="features-grid">
         <div class="feature-card">
-          <span class="feature-tag">On-Device ML</span>
-          <h3>Local Transcription Pipeline</h3>
-          <p>Running speech-to-text models entirely on-device. No server round-trips, no data leaving your phone. Multilingual, offline, private by architecture.</p>
+          <span class="feature-tag">Record</span>
+          <h3>Capture Ideas Anywhere</h3>
+          <p>Five recording profiles for different situations. Whether it's a rough melody or a full rehearsal, pick the quality that fits and hit record.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Multi-Track</span>
-          <h3>Mobile Overdub Engine</h3>
-          <p>Building a multi-track recording and overdub system that works on mobile hardware. Layer tracks, mix with per-track faders, maintain sample-accurate sync.</p>
+          <span class="feature-tag">Transcribe</span>
+          <h3>Search Your Recordings</h3>
+          <p>On-device transcription turns your recordings into searchable text. Find that one take from last week without scrubbing through hours of audio.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Audio</span>
-          <h3>Capture-Grade Recording</h3>
-          <p>Five recording profiles from lossless RAW to compressed voice memo. Live waveform rendering, dB monitoring, zero-drop frame rates during capture.</p>
+          <span class="feature-tag">Layer</span>
+          <h3>Build Up Ideas</h3>
+          <p>Record a chord progression, then layer a melody on top. Multi-track overdub lets you sketch arrangements right from your phone.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-tag">Analysis</span>
-          <h3>On-Device Classification</h3>
-          <p>Speech vs music detection, key estimation, spectral analysis — all running locally through an extensible background processing pipeline.</p>
+          <span class="feature-tag">Organise</span>
+          <h3>Keep Everything Together</h3>
+          <p>Group recordings into projects, add notes, tag with context. Everything stays on your device — nothing leaves unless you choose to share it.</p>
         </div>
       </div>
     </section>
 
     <!-- Where we are -->
     <section class="section container reveal">
-      <h2 style="margin-bottom: var(--sp-lg);">Where We Are</h2>
+      <h2 style="margin-bottom: var(--sp-lg);">What We're Building</h2>
       <div class="products-grid">
         <div class="product-card">
           <h3>RECN Rec Mobile</h3>
           <span class="product-status">Active</span>
-          <p>The core recording app. On-device ML pipeline, multi-track editor, and DAW-ready export. iOS and Android.</p>
+          <p>The recording app. Capture, transcribe, organise, and layer — all on your phone, all local.</p>
         </div>
         <div class="product-card">
           <h3>RECN Rec Desktop</h3>
           <span class="product-status">Pending</span>
-          <p>Desktop companion. WiFi transfer from phone to workstation, library management, bridge to DAW.</p>
+          <p>Move recordings from your phone to your workstation over WiFi. Bridge the gap between capture and production.</p>
         </div>
         <div class="product-card">
           <h3>RecnCast</h3>
           <span class="product-status">Pending</span>
-          <p>P2P audio streaming from DAW to browser. VST plugin captures the mix, WebRTC delivers it. No audio server.</p>
+          <p>Stream what you're working on from your DAW directly to a browser. Peer-to-peer, no middleman.</p>
         </div>
       </div>
     </section>
@@ -103,12 +103,12 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
       </section>
     )}
 
-    <!-- Bottom CTA -->
+    <!-- Bottom -->
     <section class="signup container reveal" style="padding-bottom: 64px;">
       <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
-      <h2 style="margin-bottom: var(--sp-sm);">Recordings Are Sacred</h2>
+      <h2 style="margin-bottom: var(--sp-sm);">Your recordings, your device</h2>
       <p style="max-width: 420px; margin: 0 auto; text-wrap: balance; font-size: 0.8125rem;">
-        Zero data loss. On-device processing. No cloud dependency.
+        Nothing leaves your phone. No accounts, no cloud, no subscriptions.
       </p>
       <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
