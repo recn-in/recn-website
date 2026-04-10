@@ -13,13 +13,13 @@ const base = import.meta.env.BASE_URL;
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content={description} />
-  <meta name="theme-color" content="#141414" />
+  <meta name="theme-color" content="#000000" />
   <title>{title}</title>
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <script is:inline>
     (function() {
       var t = localStorage.getItem('theme');
-      if (t === 'light' || t === 'amoled') document.documentElement.dataset.theme = t;
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
     })();
   </script>
 </head>
@@ -28,20 +28,20 @@ const base = import.meta.env.BASE_URL;
   <slot />
 
   <script is:inline>
-    /* ---- Theme toggle: dark → light → amoled ---- */
+    /* ---- Theme toggle: amoled → light → dark → amoled ---- */
     (function() {
-      var themes = ['dark', 'light', 'amoled'];
-      var colors = { dark: '#141414', light: '#F5F5F3', amoled: '#000000' };
+      var themes = ['amoled', 'light', 'dark'];
+      var colors = { amoled: '#000000', light: '#F5F5F3', dark: '#141414' };
       var btn = document.querySelector('.theme-toggle');
       if (!btn) return;
 
-      function current() { return document.documentElement.dataset.theme || 'dark'; }
+      function current() { return document.documentElement.dataset.theme || 'amoled'; }
       btn.textContent = current().toUpperCase();
 
       btn.addEventListener('click', function() {
         var idx = themes.indexOf(current());
         var next = themes[(idx + 1) % 3];
-        if (next === 'dark') {
+        if (next === 'amoled') {
           delete document.documentElement.dataset.theme;
         } else {
           document.documentElement.dataset.theme = next;
@@ -83,8 +83,8 @@ const base = import.meta.env.BASE_URL;
       function dimColor() {
         var t = document.documentElement.dataset.theme;
         if (t === 'light') return 'rgba(0,0,0,0.035)';
-        if (t === 'amoled') return 'rgba(255,255,255,0.015)';
-        return 'rgba(255,255,255,0.022)';
+        if (t === 'dark') return 'rgba(255,255,255,0.022)';
+        return 'rgba(255,255,255,0.015)';
       }
 
       function resize() {
