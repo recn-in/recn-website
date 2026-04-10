@@ -89,7 +89,7 @@ h1, h2, h3, h4 {
   line-height: 1.2;
 }
 h1 { font-size: 1.75rem; letter-spacing: 2px; }
-h2 { font-size: 0.8125rem; letter-spacing: 2px; font-family: var(--font-mono); color: var(--text-secondary); }
+h2 { font-size: 0.8125rem; letter-spacing: 2px; font-family: var(--font-mono); color: var(--text-secondary); padding-left: var(--sp-md); }
 h3 { font-size: 0.9375rem; }
 
 p { color: var(--text-secondary); line-height: 1.7; }
@@ -531,6 +531,7 @@ a:hover { color: var(--accent); }
   .section { padding: var(--sp-xxl) 0; }
 
   h1 { font-size: 2.25rem; letter-spacing: 3px; }
+  h2 { padding-left: 0; }
 
   .header { padding: 0 var(--sp-lg); }
   .header-nav { gap: var(--sp-lg); }
