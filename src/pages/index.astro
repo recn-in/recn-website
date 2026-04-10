@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+<Base title="RECN — Professional Audio Capture">
+  <Header />
+  <main>
+    <!-- Hero -->
+    <section class="hero container">
+      <div class="gradient-bar" style="width: 48px; margin: 0 auto var(--sp-lg);"></div>
+      <h1 class="hero-wordmark">RECN</h1>
+      <p class="hero-tagline">
+        Record studio-quality audio on your phone. Manage, transcribe, and transfer to your DAW — no cloud, no compromise.
+      </p>
+      <form class="signup-form" action="#" method="post">
+        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
+        <button type="submit">Early Access</button>
+      </form>
+    </section>
+
+    <!-- Features -->
+    <section class="section container">
+      <h2 class="gradient-text" style="margin-bottom: var(--sp-lg);">What You Get</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-tag">Capture</span>
+          <h3>Studio-Quality Recording</h3>
+          <p>Five profiles from RAW to Voice Memo. Live waveform, dB monitoring, pause and resume.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-tag">Transcribe</span>
+          <h3>On-Device AI</h3>
+          <p>Whisper runs entirely on your device. Multilingual, private, no internet required.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-tag">Organize</span>
+          <h3>DAW-Ready Workflow</h3>
+          <p>Projects, notes, annotations. Export WAV or compressed M4A directly to your production tools.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-tag">Playback</span>
+          <h3>Precision Playback</h3>
+          <p>DAW-style scrollable waveform with 1x to 80x zoom. Scrub, seek, and review with studio precision.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section class="section container">
+      <h2 style="margin-bottom: var(--sp-lg);">What We're Building</h2>
+      <div class="products-grid">
+        <div class="product-card">
+          <h3>RECN Rec Mobile</h3>
+          <span class="product-status active">In Development</span>
+          <p>Professional audio capture on iOS and Android. Record ideas with studio quality, anywhere.</p>
+        </div>
+        <div class="product-card">
+          <h3>RECN Rec Desktop</h3>
+          <span class="product-status soon">Coming Soon</span>
+          <p>Desktop companion for macOS and Windows. Manage recordings and WiFi transfer from phone to DAW.</p>
+        </div>
+        <div class="product-card">
+          <h3>RecnCast</h3>
+          <span class="product-status soon">Coming Soon</span>
+          <p>Stream audio from your DAW to listeners via peer-to-peer. VST plugin, zero-latency architecture.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts -->
+    {posts.length > 0 && (
+      <section class="section container">
+        <h2 style="margin-bottom: var(--sp-lg);">Latest</h2>
+        <div class="blog-grid">
+          {posts.map(post => (
+            <a href={`/blog/${post.slug}/`} class="blog-card">
+              <div class="blog-card-meta">
+                <span class="blog-card-date">{fmt(post.data.date)}</span>
+                <span class="blog-card-category">{post.data.category}</span>
+              </div>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Bottom CTA -->
+    <section class="signup container" style="padding-bottom: 80px;">
+      <div class="gradient-bar" style="width: 48px; margin: 0 auto var(--sp-lg);"></div>
+      <h2>Recordings Are Sacred</h2>
+      <p style="max-width: 480px; margin: var(--sp-sm) auto 0;">
+        Zero data loss. Reliable on-device processing. No cloud dependency. Get notified when we launch.
+      </p>
+      <form class="signup-form" action="#" method="post">
+        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
+        <button type="submit">Early Access</button>
+      </form>
+    </section>
+  </main>
+  <Footer />
+</Base>

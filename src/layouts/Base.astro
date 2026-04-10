@@ -1,0 +1,38 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Professional audio capture for musicians and producers. No cloud, no compromise.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#141414" />
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script is:inline>
+    if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light';
+  </script>
+</head>
+<body>
+  <slot />
+  <script is:inline>
+    document.querySelector('.theme-toggle')?.addEventListener('click', function() {
+      var isLight = document.documentElement.dataset.theme === 'light';
+      if (isLight) {
+        delete document.documentElement.dataset.theme;
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.dataset.theme = 'light';
+        localStorage.setItem('theme', 'light');
+      }
+      this.textContent = isLight ? 'Light' : 'Dark';
+    });
+  </script>
+</body>
+</html>

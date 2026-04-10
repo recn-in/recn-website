@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+<Base title="Blog — RECN" description="Research and feature updates from the RECN team.">
+  <Header />
+  <main class="container section">
+    <h1 style="font-size: 1.5rem; margin-bottom: var(--sp-lg);">Blog</h1>
+    <div class="blog-grid">
+      {posts.map(post => (
+        <a href={`/blog/${post.slug}/`} class="blog-card">
+          <div class="blog-card-meta">
+            <span class="blog-card-date">{fmt(post.data.date)}</span>
+            <span class="blog-card-category">{post.data.category}</span>
+          </div>
+          <h3>{post.data.title}</h3>
+          <p>{post.data.excerpt}</p>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer />
+</Base>
