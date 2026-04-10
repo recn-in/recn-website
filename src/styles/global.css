@@ -430,7 +430,7 @@ a:hover { color: var(--accent); }
 .blog-card p { font-size: 0.8125rem; }
 
 /* ---- Blog Post (Prose) ---- */
-.prose { max-width: 640px; margin: 0 auto; }
+.prose { max-width: 640px; margin: 0 auto; padding: 0 var(--sp-md); }
 
 .prose h1 {
   font-size: 1.5rem;
