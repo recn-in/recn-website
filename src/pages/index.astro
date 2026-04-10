@@ -23,8 +23,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
       <p class="hero-tagline">
         A simple way to record, organise, and transcribe your audio — entirely on your phone, entirely local.
       </p>
-      <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
-        <input type="hidden" name="_next" value="https://recn-in.github.io/recn-website/thanks/" />
+      <form class="signup-form" data-signup>
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
         <button type="submit">Follow Along</button>
       </form>
@@ -111,8 +110,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
       <p style="max-width: 420px; margin: 0 auto; text-wrap: balance; font-size: 0.8125rem;">
         Nothing leaves your phone. No accounts, no cloud, no subscriptions.
       </p>
-      <form class="signup-form" action="https://formspree.io/f/xpqogbwd" method="post">
-        <input type="hidden" name="_next" value="https://recn-in.github.io/recn-website/thanks/" />
+      <form class="signup-form" data-signup>
         <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
         <button type="submit">Follow Along</button>
       </form>
