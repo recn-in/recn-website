@@ -598,3 +598,33 @@ a:hover { color: var(--accent); }
 
   .prose h1 { font-size: 2rem; }
 }
+
+/* ---- Download ---- */
+.download-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px var(--sp-lg);
+  background: var(--accent);
+  color: var(--on-accent);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  min-height: 48px;
+  transition: background 0.18s ease;
+}
+.btn-download:hover { background: var(--accent-dark); }
+
+.download-note {
+  margin-top: var(--sp-md);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
