@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { team } from '../data/team';
+---
+
+<Base title="Team — RECN" description="The people building RECN.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header team-heading">
+      <p class="label">TEAM</p>
+      <h1>People building RECN</h1>
+      <p>Currently a one-person project. The roster can grow with the work.</p>
+    </header>
+
+    <section class="team-roster" aria-label="RECN team">
+      {team.map((person) => (
+        <article class="person">
+          <div class="person__initials" aria-hidden="true">
+            {person.name.split(' ').map((part) => part[0]).join('')}
+          </div>
+          <div class="person__main">
+            <h2>{person.name}</h2>
+            <p class="person__role">{person.role} · {person.location}</p>
+            <p class="person__summary">{person.summary}</p>
+            <ul aria-label={`${person.name} areas of work`}>
+              {person.focus.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+          <nav class="person__links" aria-label={`${person.name} links`}>
+            {person.links.map((link) => (
+              <a href={link.href} target="_blank" rel="me noreferrer">{link.label} ↗</a>
+            ))}
+          </nav>
+        </article>
+      ))}
+    </section>
+  </main>
+  <Footer />
+</Base>

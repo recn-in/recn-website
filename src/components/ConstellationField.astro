@@ -1,0 +1,271 @@
+<figure class="constellation" data-constellation>
+  <div class="constellation__bar">
+    <span>LIBRARY</span>
+    <span>STRUCTURE</span>
+  </div>
+  <canvas
+    data-field
+    role="img"
+    aria-label="Recordings connected to notes, projects, and sessions. Move the pointer through the field to gently shift them."
+  ></canvas>
+  <figcaption>
+    <span><i class="constellation__circle"></i> Recording</span>
+    <span><i class="constellation__square"></i> Project · note · session</span>
+  </figcaption>
+</figure>
+
+<script>
+  const fields = document.querySelectorAll('[data-constellation]');
+
+  fields.forEach((root) => {
+    if (!(root instanceof HTMLElement) || root.dataset.ready) return;
+    root.dataset.ready = 'true';
+
+    const canvas = root.querySelector('[data-field]');
+    if (!(canvas instanceof HTMLCanvasElement)) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nodes = [
+      { id: 'project', kind: 'square', home: [0.28, 0.33], radius: 6 },
+      { id: 'note', kind: 'square', home: [0.66, 0.28], radius: 5 },
+      { id: 'session', kind: 'square', home: [0.58, 0.68], radius: 7 },
+      { id: 'r1', kind: 'circle', status: 'safe', home: [0.20, 0.22], radius: 8 },
+      { id: 'r2', kind: 'circle', status: 'safe', home: [0.35, 0.24], radius: 5 },
+      { id: 'r3', kind: 'circle', status: 'single', home: [0.24, 0.46], radius: 11 },
+      { id: 'r4', kind: 'circle', status: 'safe', home: [0.41, 0.39], radius: 7 },
+      { id: 'r5', kind: 'circle', status: 'safe', home: [0.73, 0.18], radius: 6 },
+      { id: 'r6', kind: 'circle', status: 'single', home: [0.76, 0.36], radius: 9 },
+      { id: 'r7', kind: 'circle', status: 'safe', home: [0.50, 0.60], radius: 7 },
+      { id: 'r8', kind: 'circle', status: 'safe', home: [0.67, 0.58], radius: 10 },
+      { id: 'r9', kind: 'circle', status: 'safe', home: [0.48, 0.76], radius: 5 },
+      { id: 'r10', kind: 'circle', status: 'single', home: [0.72, 0.76], radius: 6, syncing: true },
+    ].map((node, index) => ({
+      ...node,
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      phase: index * 0.71,
+    }));
+
+    const edges = [
+      ['project', 'r1'], ['project', 'r2'], ['project', 'r3'], ['project', 'r4'],
+      ['note', 'r5'], ['note', 'r6'], ['note', 'r4'],
+      ['session', 'r7'], ['session', 'r8'], ['session', 'r9'], ['session', 'r10'],
+      ['project', 'session'],
+    ];
+
+    const byId = new Map(nodes.map((node) => [node.id, node]));
+    const pointer = { x: 0, y: 0, active: false };
+    let grabbed = null;
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let visible = true;
+    let last = performance.now();
+
+    const palette = {
+      background: '',
+      ink: '',
+      secondary: '',
+      divider: '',
+      safe: '',
+      single: '',
+    };
+
+    function syncPalette() {
+      const styles = getComputedStyle(root);
+      palette.background = styles.getPropertyValue('--background').trim();
+      palette.ink = styles.getPropertyValue('--ink').trim();
+      palette.secondary = styles.getPropertyValue('--secondary').trim();
+      palette.divider = styles.getPropertyValue('--divider').trim();
+      palette.safe = styles.getPropertyValue('--safe').trim();
+      palette.single = styles.getPropertyValue('--single').trim();
+    }
+
+    function resize() {
+      syncPalette();
+      const bounds = canvas.getBoundingClientRect();
+      const scale = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.max(1, bounds.width);
+      height = Math.max(1, bounds.height);
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+      nodes.forEach((node) => {
+        node.x = node.home[0] * width;
+        node.y = node.home[1] * height;
+        node.vx = 0;
+        node.vy = 0;
+      });
+      draw(performance.now() / 1000);
+    }
+
+    function point(event) {
+      const bounds = canvas.getBoundingClientRect();
+      return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+    }
+
+    function hitTest(position) {
+      let nearest = null;
+      let distance = Infinity;
+      nodes.forEach((node) => {
+        const d = Math.hypot(node.x - position.x, node.y - position.y);
+        if (d <= node.radius + 10 && d < distance) {
+          nearest = node;
+          distance = d;
+        }
+      });
+      return nearest;
+    }
+
+    canvas.addEventListener('pointermove', (event) => {
+      const position = point(event);
+      pointer.x = position.x;
+      pointer.y = position.y;
+      pointer.active = true;
+      if (grabbed) {
+        grabbed.x = position.x;
+        grabbed.y = position.y;
+        grabbed.vx = 0;
+        grabbed.vy = 0;
+      }
+    });
+
+    canvas.addEventListener('pointerleave', () => {
+      pointer.active = false;
+      grabbed = null;
+    });
+
+    canvas.addEventListener('pointerdown', (event) => {
+      const position = point(event);
+      grabbed = hitTest(position);
+      if (grabbed) canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener('pointerup', (event) => {
+      grabbed = null;
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    });
+
+    function step(dt, elapsed) {
+      if (reduceMotion) return;
+      nodes.forEach((node) => {
+        if (node === grabbed) return;
+        const driftX = Math.cos(elapsed * 0.6 + node.phase) * 3;
+        const driftY = Math.sin(elapsed * 0.6 + node.phase) * 3;
+        const homeX = node.home[0] * width + driftX;
+        const homeY = node.home[1] * height + driftY;
+        node.vx += (homeX - node.x) * 120 * dt;
+        node.vy += (homeY - node.y) * 120 * dt;
+
+        if (pointer.active) {
+          const dx = node.x - pointer.x;
+          const dy = node.y - pointer.y;
+          const distance = Math.max(1, Math.hypot(dx, dy));
+          if (distance < 72) {
+            const force = (1 - distance / 72) * 6000 * dt;
+            node.vx += (dx / distance) * force;
+            node.vy += (dy / distance) * force;
+          }
+        }
+      });
+
+      for (let i = 0; i < nodes.length; i += 1) {
+        for (let j = i + 1; j < nodes.length; j += 1) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distance = Math.max(1, Math.hypot(dx, dy));
+          const minimum = a.radius + b.radius + 4;
+          if (distance >= minimum) continue;
+          const force = ((minimum - distance) / minimum) * 2600 * dt;
+          a.vx += (dx / distance) * force;
+          a.vy += (dy / distance) * force;
+          b.vx -= (dx / distance) * force;
+          b.vy -= (dy / distance) * force;
+        }
+      }
+
+      const damping = Math.exp(-14 * dt);
+      nodes.forEach((node) => {
+        if (node === grabbed) return;
+        node.vx *= damping;
+        node.vy *= damping;
+        node.x += node.vx * dt;
+        node.y += node.vy * dt;
+      });
+    }
+
+    function draw(elapsed) {
+      context.clearRect(0, 0, width, height);
+      context.lineWidth = 1;
+      context.strokeStyle = palette.divider;
+      edges.forEach(([from, to]) => {
+        const a = byId.get(from);
+        const b = byId.get(to);
+        if (!a || !b) return;
+        context.beginPath();
+        context.moveTo(a.x, a.y);
+        context.lineTo(b.x, b.y);
+        context.stroke();
+      });
+
+      nodes.forEach((node) => {
+        context.fillStyle = palette.background;
+        if (node.kind === 'circle') {
+          context.beginPath();
+          context.arc(node.x, node.y, node.radius + 1.5, 0, Math.PI * 2);
+          context.fill();
+          context.fillStyle = node.status === 'single' ? palette.single : palette.safe;
+          context.beginPath();
+          context.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          context.fill();
+          if (node.syncing) {
+            const progress = reduceMotion ? 0 : (elapsed * 0.75) % 1;
+            context.strokeStyle = `rgba(136, 139, 141, ${0.4 * (1 - progress)})`;
+            context.beginPath();
+            context.arc(node.x, node.y, node.radius + 4 + progress * 7, 0, Math.PI * 2);
+            context.stroke();
+          }
+        } else {
+          context.fillRect(node.x - node.radius - 1.5, node.y - node.radius - 1.5, node.radius * 2 + 3, node.radius * 2 + 3);
+          context.fillStyle = palette.secondary;
+          context.fillRect(node.x - node.radius, node.y - node.radius, node.radius * 2, node.radius * 2);
+        }
+      });
+    }
+
+    function animate(now) {
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      last = now;
+      if (visible) {
+        step(dt, now / 1000);
+        draw(now / 1000);
+      }
+      frame = requestAnimationFrame(animate);
+    }
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(canvas);
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry?.isIntersecting ?? true;
+    });
+    visibilityObserver.observe(root);
+    window.addEventListener('recn-theme-change', () => {
+      syncPalette();
+      draw(performance.now() / 1000);
+    });
+    resize();
+    if (!reduceMotion) frame = requestAnimationFrame(animate);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+    }, { once: true });
+  });
+</script>

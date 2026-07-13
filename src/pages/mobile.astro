@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base
+  title="RECN Rec for mobile"
+  description="RECN Rec is in development for iOS and Android."
+>
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">MOBILE</p>
+      <h1>Coming to iOS and Android</h1>
+      <p>Capture audio, add notes, create layered sessions, and continue on desktop.</p>
+    </header>
+
+    <div class="status-list" aria-label="Mobile development status">
+      <div>
+        <strong>iOS</strong>
+        <span>In device testing</span>
+        <p>Capture, transcription, notes, and sessions are working in internal builds.</p>
+      </div>
+      <div>
+        <strong>Android</strong>
+        <span>In development</span>
+        <p>The shared app is in place. Audio and transcription still need full device verification.</p>
+      </div>
+    </div>
+
+    <section class="signup-block" id="mobile-follow">
+      <h2>Mobile updates</h2>
+      <form class="signup-form" data-signup>
+        <label class="sr-only" for="mobile-email">Email address</label>
+        <input id="mobile-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        <button type="submit">Notify me</button>
+        <p class="form-status" data-form-status aria-live="polite"></p>
+      </form>
+      <p class="form-note">Signup is handled by Formspree.</p>
+    </section>
+  </main>
+  <Footer />
+</Base>

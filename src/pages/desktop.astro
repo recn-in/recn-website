@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base title="Download RECN Rec" description="Download the early RECN Rec desktop build for macOS or Windows.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">DESKTOP</p>
+      <h1>Download RECN Rec</h1>
+      <p>Browse, search, take notes, play recordings, and work with sessions on macOS or Windows.</p>
+    </header>
+
+    <div class="download-grid">
+      <a href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">
+        <span>macOS</span>
+        <strong>Download .dmg</strong>
+      </a>
+      <a href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">
+        <span>Windows</span>
+        <strong>Download .exe</strong>
+      </a>
+    </div>
+
+    <p class="build-caveat">This is early software. Rough edges and glitches are expected. macOS is signed and notarized; Windows installs per-user.</p>
+
+    <section class="plain-list" aria-labelledby="desktop-includes">
+      <h2 id="desktop-includes">Included now</h2>
+      <ul>
+        <li>Recordings, notes, projects, and sessions in one library</li>
+        <li>Search across the local library</li>
+        <li>Playback, transcripts, annotations, and layered sessions</li>
+        <li>Direct sync with paired devices on the same network</li>
+      </ul>
+    </section>
+
+    <a class="inline-link" href="https://github.com/recn-in/recn-releases/releases" target="_blank" rel="noreferrer">Release notes and older versions ↗</a>
+  </main>
+  <Footer />
+</Base>

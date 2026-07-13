@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://recn-in.github.io/recn-website/sitemap.xml

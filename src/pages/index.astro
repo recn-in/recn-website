@@ -1,133 +1,62 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Showcase from '../components/Showcase.astro';
+import ConstellationField from '../components/ConstellationField.astro';
 
 const base = import.meta.env.BASE_URL;
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
-
-const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 ---
-<Base title="RECN — Audio capture for musicians">
+
+<Base
+  title="RECN — Recordings, with context"
+  description="Record audio, add notes, and find it later. RECN Rec is available for macOS and Windows; mobile is in development."
+>
   <Header />
-  <main>
-    <!-- Hero -->
-    <section class="hero container">
-      <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
-      <h1 class="hero-wordmark">RECN</h1>
-      <p class="hero-version">Audio capture for musicians</p>
-      <p class="hero-tagline">
-        A simple way to record, organise, and transcribe your audio — entirely on your phone, entirely local.
-      </p>
-      <form class="signup-form" data-signup>
-        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
-        <button type="submit">Follow Along</button>
-      </form>
+
+  <main id="main-content">
+    <section class="home-hero shell">
+      <div class="home-hero__copy">
+        <p class="label">RECN REC</p>
+        <h1>Record. Add a note.<br />Find it later.</h1>
+        <p class="home-hero__intro">RECN keeps recordings, notes, and sessions together. Desktop is available now. Mobile is in development.</p>
+        <div class="download-actions">
+          <a class="button button--primary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">Download for macOS</a>
+          <a class="button button--secondary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">Download for Windows</a>
+        </div>
+        <p class="build-caveat">Early builds. Glitches are expected.</p>
+      </div>
+      <ConstellationField />
     </section>
 
-    <!-- Showcase -->
-    <section class="section container reveal">
-      <h2 style="margin-bottom: var(--sp-lg);">Interface</h2>
-      <Showcase />
+    <section class="capability-list shell" aria-label="What RECN does">
+      <article>
+        <h2>Record</h2>
+        <p>Capture audio and keep a note beside it.</p>
+      </article>
+      <article>
+        <h2>Find</h2>
+        <p>Search recordings, notes, and on-device transcripts.</p>
+      </article>
+      <article>
+        <h2>Continue</h2>
+        <p>Move work directly between nearby phone and desktop builds.</p>
+      </article>
     </section>
 
-    <!-- What it does -->
-    <section class="section container reveal">
-      <h2 style="margin-bottom: var(--sp-lg);">How It Helps</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <span class="feature-tag">Record</span>
-          <h3>Capture Ideas Anywhere</h3>
-          <p>Five recording profiles for different situations. Whether it's a rough melody or a full rehearsal, pick the quality that fits and hit record.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-tag">Find</span>
-          <h3>Never Lose an Idea</h3>
-          <p>On-device ML transcribes and classifies your recordings automatically. When you need that idea from last week, search for it instead of scrubbing through hours of audio. All processing happens on your phone — nothing uploaded, nothing shared.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-tag">Layer</span>
-          <h3>Build Up Ideas</h3>
-          <p>Record a chord progression, then layer a melody on top. Multi-track overdub lets you sketch arrangements right from your phone.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-tag">Sync</span>
-          <h3>Phone to Desktop</h3>
-          <p>When you're ready to produce, transfer recordings from your phone to your workstation over WiFi. No cables, no cloud uploads — straight into your workflow.</p>
-        </div>
+    <section class="home-details shell">
+      <div>
+        <h2>Syncs nearby.</h2>
+        <p>When RECN is open on the same reachable network, paired devices exchange library changes and media directly. There is no cloud relay in the current build.</p>
+        <a class="inline-link" href={`${base}blog/inside-lattice/`}>How LAN sync works →</a>
+      </div>
+      <div>
+        <h2>Mobile is next.</h2>
+        <p>iOS is in device testing. Android is still being verified.</p>
+        <a class="inline-link" href={`${base}mobile/`}>Mobile status →</a>
       </div>
     </section>
 
-    <!-- Where we are -->
-    <section class="section container reveal">
-      <h2 style="margin-bottom: var(--sp-lg);">What We're Building</h2>
-      <div class="products-grid">
-        <div class="product-card">
-          <h3>RECN Rec Mobile</h3>
-          <span class="product-status">Active</span>
-          <p>The recording app. Capture, transcribe, organise, and layer — all on your phone, all local.</p>
-        </div>
-        <div class="product-card">
-          <h3>RECN Rec Desktop</h3>
-          <span class="product-status">Available</span>
-          <p>Move recordings from your phone to your workstation over WiFi. Bridge the gap between capture and production. <a href="#download">Download →</a></p>
-        </div>
-        <div class="product-card">
-          <h3>RecnCast</h3>
-          <span class="product-status">Pending</span>
-          <p>Stream what you're working on from your DAW directly to a browser. Peer-to-peer, no middleman.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Download -->
-    <section class="section container reveal" id="download">
-      <h2 style="margin-bottom: var(--sp-lg);">Download RECN Rec Desktop</h2>
-      <div class="download-buttons">
-        <a class="btn-download" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">macOS — .dmg</a>
-        <a class="btn-download" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">Windows — .exe</a>
-      </div>
-      <p class="download-note">
-        Always the latest release. macOS is signed &amp; notarized; Windows installs per-user, no admin required.
-        <a href="https://github.com/recn-in/recn-releases/releases">All versions &amp; release notes</a>.
-      </p>
-    </section>
-
-    <!-- Log -->
-    {posts.length > 0 && (
-      <section class="section container reveal">
-        <h2 style="margin-bottom: var(--sp-lg);">Log</h2>
-        <div class="blog-grid">
-          {posts.map(post => (
-            <a href={`${base}blog/${post.slug}/`} class="blog-card">
-              <div class="blog-card-meta">
-                <span class="blog-card-date">{fmt(post.data.date)}</span>
-                <span class="blog-card-category">{post.data.category}</span>
-              </div>
-              <h3>{post.data.title}</h3>
-              <p>{post.data.excerpt}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <!-- Bottom -->
-    <section class="signup container reveal" style="padding-bottom: 64px;">
-      <div class="accent-bar" style="width: 32px; margin: 0 auto var(--sp-md);"></div>
-      <h2 style="margin-bottom: var(--sp-sm);">Your recordings, your device</h2>
-      <p style="max-width: 420px; margin: 0 auto; text-wrap: balance; font-size: 0.8125rem;">
-        Nothing leaves your phone. No accounts, no cloud, no subscriptions.
-      </p>
-      <form class="signup-form" data-signup>
-        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
-        <button type="submit">Follow Along</button>
-      </form>
-    </section>
   </main>
+
   <Footer />
 </Base>
