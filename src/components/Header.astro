@@ -1,12 +1,21 @@
 ---
-import '../styles/global.css';
+import RecnMark from './RecnMark.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<header class="header">
-  <a href={base} class="header-logo">RECN</a>
-  <nav class="header-nav">
-    <a href={`${base}#download`}>Download</a>
-    <a href={`${base}blog/`}>Log</a>
-    <button class="theme-toggle" type="button">DARK</button>
-  </nav>
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<header class="site-header" data-header>
+  <div class="site-header__inner shell">
+    <a class="site-header__brand" href={base} aria-label="RECN home">
+      <RecnMark treatment="paper" />
+      <span>RECN</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Primary navigation">
+      <a href={`${base}mobile/`}>Mobile</a>
+      <a href={`${base}blog/`}>Notes</a>
+      <a class="site-header__download" href={`${base}desktop/`}>Download</a>
+    </nav>
+  </div>
 </header>

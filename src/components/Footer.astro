@@ -1,7 +1,19 @@
 ---
 const year = new Date().getFullYear();
+const base = import.meta.env.BASE_URL;
 ---
-<footer class="footer">
-  <div class="accent-bar" style="width: 24px; margin: 0 auto var(--sp-md);"></div>
-  <p>&copy; {year} RECN</p>
+
+<footer class="site-footer">
+  <div class="shell site-footer__inner">
+    <p>© {year} RECN</p>
+    <div class="theme-control" role="group" aria-label="Theme">
+      <button type="button" data-theme-choice="light">Light</button>
+      <button type="button" data-theme-choice="dark">Dark</button>
+      <button type="button" data-theme-choice="amoled">AMOLED</button>
+    </div>
+    <nav aria-label="Footer">
+      <a href={`${base}blog/`}>Notes</a>
+      <a href={`${base}team/`}>About</a>
+    </nav>
+  </div>
 </footer>

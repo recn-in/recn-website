@@ -1,0 +1,44 @@
+---
+interface Props {
+  treatment?: 'paper' | 'studio';
+  label?: string;
+  class?: string;
+}
+
+const {
+  treatment = 'paper',
+  label = 'RECN',
+  class: className = '',
+} = Astro.props;
+---
+
+<svg
+  class:list={['recn-mark', `recn-mark--${treatment}`, className]}
+  viewBox="0 0 1024 1024"
+  role="img"
+  aria-label={label}
+>
+  <rect class="recn-mark__field" width="1024" height="1024" />
+  <rect class="recn-mark__bar recn-mark__bar--outer" x="119.5" y="382.8" width="102.4" height="258.3" />
+  <rect class="recn-mark__bar recn-mark__bar--inner" x="290.1" y="272.1" width="102.4" height="479.7" />
+  <rect class="recn-mark__bar recn-mark__bar--signal" x="460.8" y="170.7" width="102.4" height="682.7" />
+  <rect class="recn-mark__bar recn-mark__bar--inner" x="631.5" y="309" width="102.4" height="405.9" />
+  <rect class="recn-mark__bar recn-mark__bar--outer" x="802.1" y="401.3" width="102.4" height="221.4" />
+</svg>
+
+<style>
+  .recn-mark {
+    display: block;
+    shape-rendering: geometricPrecision;
+  }
+
+  .recn-mark--paper .recn-mark__field { fill: var(--background, #fff); }
+  .recn-mark--paper .recn-mark__bar--outer { fill: var(--tertiary, #c8c9c7); }
+  .recn-mark--paper .recn-mark__bar--inner { fill: var(--waveform, #3a3835); }
+  .recn-mark--paper .recn-mark__bar--signal { fill: var(--accent, #b71c1c); }
+
+  .recn-mark--studio .recn-mark__field { fill: #141414; }
+  .recn-mark--studio .recn-mark__bar--outer { fill: #3a3835; }
+  .recn-mark--studio .recn-mark__bar--inner { fill: #f5f4f2; }
+  .recn-mark--studio .recn-mark__bar--signal { fill: #d32f2f; }
+</style>
