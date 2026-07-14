@@ -329,7 +329,104 @@ button { border: 0; border-radius: 0; }
 .download-grid a:hover { background: var(--surface); }
 .download-grid span { color: var(--secondary); font: 600 0.64rem/1 var(--mono); }
 .download-grid strong { font-size: 0.9rem; }
+.download-grid small { color: var(--secondary); font: 500 0.6rem/1.45 var(--mono); }
 .simple-page > .build-caveat { max-width: 640px; }
+
+.release-browser {
+  max-width: 820px;
+  margin-top: 42px;
+}
+
+.release-browser__toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.release-browser__help {
+  max-width: 340px;
+  padding-bottom: 2px;
+  color: var(--secondary);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.release-channels {
+  display: flex;
+  width: fit-content;
+  margin-top: 12px;
+  border: 1px solid var(--divider);
+}
+
+.release-channels button {
+  display: flex;
+  min-width: 142px;
+  min-height: 52px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 14px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+.release-channels button + button { border-left: 1px solid var(--divider); }
+.release-channels button:hover { background: var(--surface); }
+.release-channels button:disabled { cursor: wait; opacity: 0.72; }
+.release-channels button[aria-pressed='true'] { background: var(--ink); color: var(--background); }
+.release-channels button span { margin-top: 2px; color: var(--secondary); font: 500 0.57rem/1.2 var(--mono); }
+.release-channels button[aria-pressed='true'] span { color: color-mix(in srgb, var(--background) 65%, transparent); }
+
+.release-status {
+  margin-top: 18px;
+  color: var(--secondary);
+  font-size: 0.72rem;
+}
+
+.release-card {
+  margin-top: 22px;
+  border: 1px solid var(--divider);
+}
+
+.release-card__header {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  gap: 22px;
+}
+
+.release-card__header h2 { margin-top: 5px; font-size: 1.1rem; font-weight: 650; }
+.release-card__header time { color: var(--secondary); font: 500 0.62rem/1 var(--mono); }
+.release-card__eyebrow { color: var(--accent); font: 600 0.6rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
+
+.release-downloads {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  margin-top: 0;
+  border-top: 1px solid var(--divider);
+}
+
+.release-downloads a { min-height: 116px; border: 0; }
+.release-downloads a + a { border-left: 1px solid var(--divider); }
+.release-downloads a.is-disabled { cursor: not-allowed; opacity: 0.55; }
+.release-downloads a.is-disabled:hover { background: transparent; }
+
+.release-notes {
+  padding: 20px;
+  border-top: 1px solid var(--divider);
+}
+
+.release-notes header { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+.release-notes h3 { font-size: 0.83rem; font-weight: 650; }
+.release-notes header a { border-bottom: 1px solid var(--divider); color: var(--secondary); font-size: 0.68rem; font-weight: 600; }
+.release-notes header a:hover { border-color: var(--accent); color: var(--ink); }
+.release-notes ul { margin: 16px 0 0; padding: 0; list-style: none; }
+.release-notes li { position: relative; padding: 8px 0 8px 18px; border-top: 1px solid var(--divider); color: var(--secondary); font-size: 0.76rem; line-height: 1.55; }
+.release-notes li::before { position: absolute; top: 15px; left: 2px; width: 5px; height: 5px; background: var(--tertiary); content: ''; }
 
 .plain-list {
   display: grid;
@@ -507,6 +604,10 @@ button { border: 0; border-radius: 0; }
   .simple-page { padding-top: 60px; padding-bottom: 80px; }
   .download-grid { grid-template-columns: 1fr; }
   .download-grid a + a { border-top: 0; border-left: 1px solid var(--divider); }
+  .release-browser__toolbar { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .release-browser__help { max-width: 520px; text-align: left; }
+  .release-downloads { grid-template-columns: 1fr; }
+  .release-downloads a + a { border-top: 1px solid var(--divider); border-left: 0; }
   .plain-list { grid-template-columns: 1fr; gap: 12px; }
   .status-list > div { grid-template-columns: 90px 1fr; gap: 12px; }
   .status-list p { grid-column: 1 / -1; }
@@ -526,6 +627,10 @@ button { border: 0; border-radius: 0; }
 @media (max-width: 480px) {
   .download-actions { display: grid; }
   .button { width: 100%; }
+  .release-channels { width: 100%; }
+  .release-channels button { min-width: 0; flex: 1; }
+  .release-card__header { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .release-notes header { align-items: flex-start; flex-direction: column; gap: 8px; }
   .constellation figcaption { align-items: flex-start; flex-direction: column; padding-top: 12px; padding-bottom: 12px; gap: 8px; }
   .signup-form { grid-template-columns: 1fr; width: 100%; }
   .signup-form input { border-right: 1px solid var(--divider); border-bottom: 0; }
