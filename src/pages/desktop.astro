@@ -13,16 +13,80 @@ import Footer from '../components/Footer.astro';
       <p>Browse, search, take notes, play recordings, and work with sessions on macOS or Windows.</p>
     </header>
 
-    <div class="download-grid">
-      <a href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">
-        <span>macOS</span>
-        <strong>Download .dmg</strong>
-      </a>
-      <a href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">
-        <span>Windows</span>
-        <strong>Download .exe</strong>
-      </a>
-    </div>
+    <section class="release-browser" aria-labelledby="release-heading" data-release-browser>
+      <div class="release-browser__toolbar">
+        <div>
+          <p class="label" id="release-heading">RELEASE CHANNEL</p>
+          <div class="release-channels" aria-label="Choose a desktop release channel">
+            <button type="button" data-release-channel="stable" aria-pressed="true" disabled>
+              Stable
+              <span>Recommended</span>
+            </button>
+            <button type="button" data-release-channel="nightly" aria-pressed="false" disabled>
+              Nightly
+              <span>Latest changes</span>
+            </button>
+          </div>
+        </div>
+        <p class="release-browser__help" data-release-help>
+          Stable builds are the best choice for everyday use.
+        </p>
+      </div>
+
+      <p class="release-status" role="status" data-release-status>
+        Loading current release details…
+      </p>
+
+      <article class="release-card" data-release-card>
+        <header class="release-card__header">
+          <div>
+            <p class="release-card__eyebrow" data-release-eyebrow>Stable channel · recommended</p>
+            <h2 data-release-name>Latest stable release</h2>
+          </div>
+          <time data-release-date></time>
+        </header>
+
+        <div class="download-grid release-downloads">
+          <a
+            href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg"
+            data-release-platform="macos"
+          >
+            <span>macOS</span>
+            <strong>Download .dmg</strong>
+            <small data-asset-meta>Signed and notarized</small>
+          </a>
+          <a
+            href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe"
+            data-release-platform="windows"
+          >
+            <span>Windows</span>
+            <strong>Download .exe</strong>
+            <small data-asset-meta>Per-user installer</small>
+          </a>
+        </div>
+
+        <section class="release-notes" aria-labelledby="release-notes-heading">
+          <header>
+            <h3 id="release-notes-heading">What changed</h3>
+            <a
+              href="https://github.com/recn-in/recn-releases/releases"
+              target="_blank"
+              rel="noreferrer"
+              data-release-link
+            >Full release notes ↗</a>
+          </header>
+          <ul data-release-notes>
+            <li>Release notes are loading from GitHub.</li>
+          </ul>
+        </section>
+      </article>
+
+      <noscript>
+        <p class="release-status">
+          Enable JavaScript to compare channels and read the changelog. The stable download links above still work.
+        </p>
+      </noscript>
+    </section>
 
     <p class="build-caveat">This is early software. Rough edges and glitches are expected. macOS is signed and notarized; Windows installs per-user.</p>
 
@@ -40,3 +104,193 @@ import Footer from '../components/Footer.astro';
   </main>
   <Footer />
 </Base>
+
+<script>
+  type Channel = 'stable' | 'nightly';
+
+  interface ReleaseAsset {
+    name: string;
+    browser_download_url: string;
+    size: number;
+  }
+
+  interface GitHubRelease {
+    tag_name: string;
+    name: string | null;
+    body: string | null;
+    html_url: string;
+    published_at: string | null;
+    prerelease: boolean;
+    draft: boolean;
+    assets: ReleaseAsset[];
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-release-browser]');
+
+  if (root) {
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-release-channel]'));
+    const status = root.querySelector<HTMLElement>('[data-release-status]');
+    const help = root.querySelector<HTMLElement>('[data-release-help]');
+    const eyebrow = root.querySelector<HTMLElement>('[data-release-eyebrow]');
+    const releaseName = root.querySelector<HTMLElement>('[data-release-name]');
+    const releaseDate = root.querySelector<HTMLTimeElement>('[data-release-date]');
+    const releaseLink = root.querySelector<HTMLAnchorElement>('[data-release-link]');
+    const notesList = root.querySelector<HTMLUListElement>('[data-release-notes]');
+    const macosLink = root.querySelector<HTMLAnchorElement>('[data-release-platform="macos"]');
+    const windowsLink = root.querySelector<HTMLAnchorElement>('[data-release-platform="windows"]');
+    const releases: Partial<Record<Channel, GitHubRelease>> = {};
+
+    let currentChannel: Channel = 'stable';
+
+    const formatDate = (value: string | null) => {
+      if (!value) return '';
+      return new Intl.DateTimeFormat(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(value));
+    };
+
+    const formatSize = (bytes: number) => `${(bytes / 1_000_000).toFixed(1)} MB`;
+
+    const cleanMarkdown = (value: string) => value
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1');
+
+    const extractChanges = (body: string | null) => {
+      if (!body) return [];
+      const lines = body.split('\n');
+      const heading = lines.findIndex((line) => /^##\s+What changed\s*$/i.test(line.trim()));
+      const section = heading >= 0 ? lines.slice(heading + 1) : lines;
+      const nextHeading = section.findIndex((line) => /^##\s+/.test(line.trim()));
+      const relevant = nextHeading >= 0 ? section.slice(0, nextHeading) : section;
+      return relevant
+        .filter((line) => /^\s*-\s+/.test(line))
+        .map((line) => cleanMarkdown(line.replace(/^\s*-\s+/, '').trim()))
+        .slice(0, 8);
+    };
+
+    const findAsset = (release: GitHubRelease, extension: '.dmg' | '.exe') => {
+      const matches = release.assets.filter((asset) => asset.name.toLowerCase().endsWith(extension));
+      const stableAlias = extension === '.dmg' ? 'RECN-Rec-macOS.dmg' : 'RECN-Rec-Windows-Setup.exe';
+      return matches.find((asset) => asset.name !== stableAlias) ?? matches[0];
+    };
+
+    const updateDownload = (
+      link: HTMLAnchorElement | null,
+      asset: ReleaseAsset | undefined,
+      extension: '.dmg' | '.exe',
+    ) => {
+      if (!link) return;
+      const title = link.querySelector<HTMLElement>('strong');
+      const meta = link.querySelector<HTMLElement>('[data-asset-meta]');
+
+      if (!asset) {
+        link.removeAttribute('href');
+        link.setAttribute('aria-disabled', 'true');
+        link.classList.add('is-disabled');
+        if (title) title.textContent = `${extension} unavailable`;
+        if (meta) meta.textContent = 'Not included in this release';
+        return;
+      }
+
+      link.href = asset.browser_download_url;
+      link.removeAttribute('aria-disabled');
+      link.classList.remove('is-disabled');
+      if (title) title.textContent = `Download ${extension}`;
+      if (meta) meta.textContent = `${asset.name} · ${formatSize(asset.size)}`;
+    };
+
+    const renderNotes = (release: GitHubRelease | undefined) => {
+      if (!notesList) return;
+      notesList.replaceChildren();
+      const changes = extractChanges(release?.body ?? null);
+
+      if (changes.length === 0) {
+        const item = document.createElement('li');
+        item.textContent = release
+          ? 'No changelog was published with this release.'
+          : 'No release is available in this channel yet.';
+        notesList.append(item);
+        return;
+      }
+
+      changes.forEach((change) => {
+        const item = document.createElement('li');
+        item.textContent = change;
+        notesList.append(item);
+      });
+    };
+
+    const renderChannel = (channel: Channel) => {
+      currentChannel = channel;
+      const release = releases[channel];
+      const isStable = channel === 'stable';
+
+      buttons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.releaseChannel === channel));
+      });
+
+      if (help) {
+        help.textContent = isStable
+          ? 'Stable builds are the best choice for everyday use.'
+          : 'Nightly builds contain the newest merged desktop changes and may be less stable.';
+      }
+      if (eyebrow) eyebrow.textContent = isStable ? 'Stable channel · recommended' : 'Nightly channel · preview';
+      if (releaseName) {
+        releaseName.textContent = release?.name || release?.tag_name || (isStable ? 'Stable release unavailable' : 'No nightly available yet');
+      }
+      if (releaseDate) {
+        releaseDate.textContent = formatDate(release?.published_at ?? null);
+        if (release?.published_at) releaseDate.dateTime = release.published_at;
+        else releaseDate.removeAttribute('datetime');
+      }
+      if (releaseLink) {
+        releaseLink.href = release?.html_url ?? 'https://github.com/recn-in/recn-releases/releases';
+        releaseLink.textContent = release ? 'Full release notes ↗' : 'View all releases ↗';
+      }
+
+      updateDownload(macosLink, release ? findAsset(release, '.dmg') : undefined, '.dmg');
+      updateDownload(windowsLink, release ? findAsset(release, '.exe') : undefined, '.exe');
+      renderNotes(release);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const channel = button.dataset.releaseChannel;
+        if (channel === 'stable' || channel === 'nightly') renderChannel(channel);
+      });
+    });
+
+    const request = (path: string) => fetch(`https://api.github.com/repos/recn-in/recn-releases/${path}`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    }).then((response) => {
+      if (!response.ok) throw new Error(`GitHub releases request failed with ${response.status}`);
+      return response.json();
+    });
+
+    Promise.all([
+      request('releases/latest') as Promise<GitHubRelease>,
+      request('releases?per_page=20') as Promise<GitHubRelease[]>,
+    ])
+      .then(([stable, all]) => {
+        releases.stable = stable;
+        releases.nightly = all.find((release) => release.prerelease && !release.draft);
+        buttons.forEach((button) => { button.disabled = false; });
+        if (status) status.hidden = true;
+        renderChannel(currentChannel);
+      })
+      .catch(() => {
+        if (status) {
+          status.textContent = 'Live release details are temporarily unavailable. Stable downloads still work.';
+        }
+        if (notesList) {
+          notesList.replaceChildren();
+          const item = document.createElement('li');
+          item.textContent = 'Open the full release notes on GitHub to see what changed.';
+          notesList.append(item);
+        }
+      });
+  }
+</script>
