@@ -1,198 +1,281 @@
-<figure class="constellation" data-constellation>
-  <div class="constellation__bar">
-    <span>LIBRARY</span>
-    <span>STRUCTURE</span>
+<figure class="sync-story" data-sync-story aria-labelledby="sync-story-title">
+  <div class="sync-story__aura" aria-hidden="true"></div>
+  <canvas class="sync-story__network" data-network aria-hidden="true"></canvas>
+
+  <div class="sync-story__desktop" data-desktop>
+    <div class="sync-story__desktop-topbar">
+      <span class="sync-story__traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>RECN</span>
+      <span class="sync-story__desktop-state"><i></i> NEARBY</span>
+    </div>
+
+    <div class="sync-story__app">
+      <aside class="sync-story__sidebar" aria-hidden="true">
+        <b>RECN</b>
+        <span class="is-active"><i></i>Sync</span>
+        <span><i></i>Recordings</span>
+        <span><i></i>Projects</span>
+        <span><i></i>Notes</span>
+        <small>THIS MAC</small>
+      </aside>
+
+      <section class="sync-story__workspace">
+        <header class="sync-story__workspace-header">
+          <div>
+            <small>SYNC UNIVERSE</small>
+            <h2 id="sync-story-title">Every recording, in its place.</h2>
+          </div>
+          <div class="sync-story__lens" aria-label="Safety view selected">
+            <span class="is-active">SAFETY</span><span>STRUCTURE</span>
+          </div>
+        </header>
+
+        <div class="sync-story__field" data-field-wrap>
+          <canvas
+            data-field
+            role="img"
+            aria-label="A living map of recordings moving from an iPhone to a Mac over the local network. Green recordings have copies on both devices; amber recordings have one copy."
+          ></canvas>
+          <div class="sync-story__hub sync-story__hub--mac" data-mac-hub>
+            <span class="sync-story__hub-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><rect x="5" y="6.5" width="22" height="15" rx="1.5"></rect><path d="M2.8 25.5h26.4M12 21.5l-1 4h10l-1-4"></path></svg>
+            </span>
+            <span>This Mac</span>
+          </div>
+          <div class="sync-story__hub sync-story__hub--phone" data-phone-hub>
+            <span class="sync-story__hub-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><rect x="9" y="3" width="14" height="26" rx="2.5"></rect><path d="M13 6h6M15 26h2"></path></svg>
+            </span>
+            <span>iPhone</span>
+          </div>
+          <div class="sync-story__legend" aria-hidden="true">
+            <span><i class="is-safe"></i>BACKED UP</span>
+            <span><i class="is-single"></i>ONE COPY</span>
+            <span><i class="is-ring"></i>SYNCING</span>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
-  <canvas
-    data-field
-    role="img"
-    aria-label="Recordings connected to notes, projects, and sessions. Move the pointer through the field to gently shift them."
-  ></canvas>
-  <figcaption>
-    <span><i class="constellation__circle"></i> Recording</span>
-    <span><i class="constellation__square"></i> Project · note · session</span>
+
+  <div class="sync-story__phone" data-phone>
+    <div class="sync-story__phone-metal">
+      <div class="sync-story__phone-screen">
+        <div class="sync-story__island" aria-hidden="true"></div>
+        <header class="sync-story__mobile-header">
+          <span>9:41</span><span>⌁</span>
+        </header>
+        <div class="sync-story__mobile-title">
+          <small>SYNC</small>
+          <strong data-mobile-heading>Mac found nearby</strong>
+        </div>
+        <div class="sync-story__mobile-status" data-mobile-status>
+          <span class="sync-story__mobile-orbit"><i></i></span>
+          <div><b>REHEARSAL 04</b><small data-mobile-detail>Ready to move · 48.2 MB</small></div>
+        </div>
+        <div class="sync-story__wave" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="sync-story__mobile-list" aria-hidden="true">
+          <span><i></i><b>Voice note 12</b><em>02:18</em></span>
+          <span><i></i><b>Interview</b><em>18:42</em></span>
+          <span><i></i><b>Room tone</b><em>00:31</em></span>
+        </div>
+        <div class="sync-story__home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <figcaption class="sync-story__caption">
+    <div class="sync-story__caption-index" aria-hidden="true">01 — 03</div>
+    <div class="sync-story__caption-copy">
+      <span class="sync-story__caption-kicker" data-caption-kicker>NEARBY DEVICE FOUND</span>
+      <strong data-caption-title>See it.</strong>
+      <p data-caption-copy>RECN discovers your paired devices on the same local network.</p>
+    </div>
+    <div class="sync-story__meter" aria-hidden="true"><i data-meter></i></div>
+    <div class="sync-story__privacy">NO CLOUD RELAY <span></span> DIRECT ON LAN</div>
   </figcaption>
 </figure>
 
 <script>
-  const fields = document.querySelectorAll('[data-constellation]');
+  type StoryNode = {
+    id: string;
+    home: [number, number];
+    radius: number;
+    status: 'safe' | 'single';
+    syncing?: boolean;
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    phase: number;
+  };
 
-  fields.forEach((root) => {
-    if (!(root instanceof HTMLElement) || root.dataset.ready) return;
-    root.dataset.ready = 'true';
+  document.querySelectorAll('[data-sync-story]').forEach((element) => {
+    if (!(element instanceof HTMLElement) || element.dataset.ready) return;
+    element.dataset.ready = 'true';
 
-    const canvas = root.querySelector('[data-field]');
-    if (!(canvas instanceof HTMLCanvasElement)) return;
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    const fieldCanvas = element.querySelector('[data-field]');
+    const networkCanvas = element.querySelector('[data-network]');
+    if (!(fieldCanvas instanceof HTMLCanvasElement) || !(networkCanvas instanceof HTMLCanvasElement)) return;
+    const field = fieldCanvas.getContext('2d');
+    const network = networkCanvas.getContext('2d');
+    if (!field || !network) return;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const nodes = [
-      { id: 'project', kind: 'square', home: [0.28, 0.33], radius: 6 },
-      { id: 'note', kind: 'square', home: [0.66, 0.28], radius: 5 },
-      { id: 'session', kind: 'square', home: [0.58, 0.68], radius: 7 },
-      { id: 'r1', kind: 'circle', status: 'safe', home: [0.20, 0.22], radius: 8 },
-      { id: 'r2', kind: 'circle', status: 'safe', home: [0.35, 0.24], radius: 5 },
-      { id: 'r3', kind: 'circle', status: 'single', home: [0.24, 0.46], radius: 11 },
-      { id: 'r4', kind: 'circle', status: 'safe', home: [0.41, 0.39], radius: 7 },
-      { id: 'r5', kind: 'circle', status: 'safe', home: [0.73, 0.18], radius: 6 },
-      { id: 'r6', kind: 'circle', status: 'single', home: [0.76, 0.36], radius: 9 },
-      { id: 'r7', kind: 'circle', status: 'safe', home: [0.50, 0.60], radius: 7 },
-      { id: 'r8', kind: 'circle', status: 'safe', home: [0.67, 0.58], radius: 10 },
-      { id: 'r9', kind: 'circle', status: 'safe', home: [0.48, 0.76], radius: 5 },
-      { id: 'r10', kind: 'circle', status: 'single', home: [0.72, 0.76], radius: 6, syncing: true },
-    ].map((node, index) => ({
-      ...node,
+    const captionKicker = element.querySelector('[data-caption-kicker]');
+    const captionIndex = element.querySelector('.sync-story__caption-index');
+    const captionTitle = element.querySelector('[data-caption-title]');
+    const captionCopy = element.querySelector('[data-caption-copy]');
+    const mobileHeading = element.querySelector('[data-mobile-heading]');
+    const mobileDetail = element.querySelector('[data-mobile-detail]');
+    const meter = element.querySelector('[data-meter]');
+    const fieldWrap = element.querySelector('[data-field-wrap]');
+    const phone = element.querySelector('[data-phone]');
+
+    const scenes = [
+      {
+        key: 'found',
+        kicker: 'NEARBY DEVICE FOUND',
+        title: 'See it.',
+        copy: 'RECN discovers your paired devices on the same local network.',
+        mobile: 'Mac found nearby',
+        detail: 'Ready to move · 48.2 MB',
+      },
+      {
+        key: 'moving',
+        kicker: 'MOVING DIRECTLY · 34 MB/S',
+        title: 'Move it.',
+        copy: 'Audio travels in resumable chunks, straight across your LAN.',
+        mobile: 'Moving to this Mac',
+        detail: '28.6 MB of 48.2 MB',
+      },
+      {
+        key: 'safe',
+        kicker: 'LENGTH + SHA-256 VERIFIED',
+        title: 'Know it arrived.',
+        copy: 'The copy turns green only after every byte has been verified.',
+        mobile: 'On both devices',
+        detail: 'Verified · 2 local copies',
+      },
+    ];
+
+    const nodes: StoryNode[] = [
+      ['r1', [0.25, 0.28], 7, 'safe'],
+      ['r2', [0.36, 0.35], 5, 'safe'],
+      ['r3', [0.30, 0.51], 9, 'single'],
+      ['r4', [0.43, 0.61], 6, 'safe'],
+      ['r5', [0.55, 0.39], 8, 'safe'],
+      ['r6', [0.66, 0.51], 5, 'safe'],
+      ['r7', [0.72, 0.30], 7, 'single'],
+      ['r8', [0.59, 0.70], 10, 'safe'],
+      ['r9', [0.76, 0.66], 6, 'single'],
+      ['transfer', [0.80, 0.48], 9, 'single'],
+    ].map(([id, home, radius, status], index) => ({
+      id: id as string,
+      home: home as [number, number],
+      radius: radius as number,
+      status: status as 'safe' | 'single',
       x: 0,
       y: 0,
       vx: 0,
       vy: 0,
-      phase: index * 0.71,
+      phase: index * 0.79,
     }));
 
-    const edges = [
-      ['project', 'r1'], ['project', 'r2'], ['project', 'r3'], ['project', 'r4'],
-      ['note', 'r5'], ['note', 'r6'], ['note', 'r4'],
-      ['session', 'r7'], ['session', 'r8'], ['session', 'r9'], ['session', 'r10'],
-      ['project', 'session'],
-    ];
-
-    const byId = new Map(nodes.map((node) => [node.id, node]));
-    const pointer = { x: 0, y: 0, active: false };
-    let grabbed = null;
-    let width = 0;
-    let height = 0;
-    let frame = 0;
+    let fieldWidth = 1;
+    let fieldHeight = 1;
+    let storyWidth = 1;
+    let storyHeight = 1;
+    let dpr = 1;
+    let start = performance.now();
+    let last = start;
     let visible = true;
-    let last = performance.now();
-
-    const palette = {
-      background: '',
-      ink: '',
-      secondary: '',
-      divider: '',
-      safe: '',
-      single: '',
-    };
+    let frame = 0;
+    let pointer = { x: 0, y: 0, active: false };
+    let palette = { background: '#fff', divider: '#ddd', safe: '#5b9b6a', single: '#d4a017', ink: '#222', secondary: '#888' };
 
     function syncPalette() {
-      const styles = getComputedStyle(root);
-      palette.background = styles.getPropertyValue('--background').trim();
-      palette.ink = styles.getPropertyValue('--ink').trim();
-      palette.secondary = styles.getPropertyValue('--secondary').trim();
-      palette.divider = styles.getPropertyValue('--divider').trim();
-      palette.safe = styles.getPropertyValue('--safe').trim();
-      palette.single = styles.getPropertyValue('--single').trim();
+      const styles = getComputedStyle(element);
+      palette = {
+        background: styles.getPropertyValue('--background').trim(),
+        divider: styles.getPropertyValue('--divider').trim(),
+        safe: styles.getPropertyValue('--safe').trim(),
+        single: styles.getPropertyValue('--single').trim(),
+        ink: styles.getPropertyValue('--ink').trim(),
+        secondary: styles.getPropertyValue('--secondary').trim(),
+      };
+    }
+
+    function fit(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, width: number, height: number) {
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function resize() {
-      syncPalette();
-      const bounds = canvas.getBoundingClientRect();
-      const scale = Math.min(window.devicePixelRatio || 1, 2);
-      width = Math.max(1, bounds.width);
-      height = Math.max(1, bounds.height);
-      canvas.width = Math.round(width * scale);
-      canvas.height = Math.round(height * scale);
-      context.setTransform(scale, 0, 0, scale, 0, 0);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const fieldBounds = fieldCanvas.getBoundingClientRect();
+      const storyBounds = element.getBoundingClientRect();
+      fieldWidth = Math.max(1, fieldBounds.width);
+      fieldHeight = Math.max(1, fieldBounds.height);
+      storyWidth = Math.max(1, storyBounds.width);
+      storyHeight = Math.max(1, storyBounds.height);
+      fit(fieldCanvas, field, fieldWidth, fieldHeight);
+      fit(networkCanvas, network, storyWidth, storyHeight);
       nodes.forEach((node) => {
-        node.x = node.home[0] * width;
-        node.y = node.home[1] * height;
+        node.x = node.home[0] * fieldWidth;
+        node.y = node.home[1] * fieldHeight;
         node.vx = 0;
         node.vy = 0;
       });
-      draw(performance.now() / 1000);
+      syncPalette();
+      render(performance.now());
     }
 
-    function point(event) {
-      const bounds = canvas.getBoundingClientRect();
-      return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+    function setScene(index: number) {
+      const scene = scenes[index];
+      element.dataset.scene = scene.key;
+      if (captionKicker) captionKicker.textContent = scene.kicker;
+      if (captionIndex) captionIndex.textContent = `0${index + 1} — 03`;
+      if (captionTitle) captionTitle.textContent = scene.title;
+      if (captionCopy) captionCopy.textContent = scene.copy;
+      if (mobileHeading) mobileHeading.textContent = scene.mobile;
+      if (mobileDetail) mobileDetail.textContent = scene.detail;
+      const transferNode = nodes[nodes.length - 1];
+      transferNode.status = scene.key === 'safe' ? 'safe' : 'single';
+      transferNode.syncing = scene.key === 'moving';
     }
 
-    function hitTest(position) {
-      let nearest = null;
-      let distance = Infinity;
-      nodes.forEach((node) => {
-        const d = Math.hypot(node.x - position.x, node.y - position.y);
-        if (d <= node.radius + 10 && d < distance) {
-          nearest = node;
-          distance = d;
-        }
-      });
-      return nearest;
+    function storyClock(now: number) {
+      if (reduceMotion) return { index: 2, local: 1, total: 1 };
+      const total = ((now - start) / 1000) % 10.8;
+      if (total < 2.8) return { index: 0, local: total / 2.8, total: total / 10.8 };
+      if (total < 8) return { index: 1, local: (total - 2.8) / 5.2, total: total / 10.8 };
+      return { index: 2, local: (total - 8) / 2.8, total: total / 10.8 };
     }
 
-    canvas.addEventListener('pointermove', (event) => {
-      const position = point(event);
-      pointer.x = position.x;
-      pointer.y = position.y;
-      pointer.active = true;
-      if (grabbed) {
-        grabbed.x = position.x;
-        grabbed.y = position.y;
-        grabbed.vx = 0;
-        grabbed.vy = 0;
-      }
-    });
-
-    canvas.addEventListener('pointerleave', () => {
-      pointer.active = false;
-      grabbed = null;
-    });
-
-    canvas.addEventListener('pointerdown', (event) => {
-      const position = point(event);
-      grabbed = hitTest(position);
-      if (grabbed) canvas.setPointerCapture(event.pointerId);
-    });
-
-    canvas.addEventListener('pointerup', (event) => {
-      grabbed = null;
-      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-    });
-
-    function step(dt, elapsed) {
+    function step(dt: number, elapsed: number) {
       if (reduceMotion) return;
       nodes.forEach((node) => {
-        if (node === grabbed) return;
-        const driftX = Math.cos(elapsed * 0.6 + node.phase) * 3;
-        const driftY = Math.sin(elapsed * 0.6 + node.phase) * 3;
-        const homeX = node.home[0] * width + driftX;
-        const homeY = node.home[1] * height + driftY;
-        node.vx += (homeX - node.x) * 120 * dt;
-        node.vy += (homeY - node.y) * 120 * dt;
-
+        const homeX = node.home[0] * fieldWidth + Math.sin(elapsed * 0.55 + node.phase) * 2.6;
+        const homeY = node.home[1] * fieldHeight + Math.cos(elapsed * 0.5 + node.phase * 1.2) * 2.6;
+        node.vx += (homeX - node.x) * 105 * dt;
+        node.vy += (homeY - node.y) * 105 * dt;
         if (pointer.active) {
           const dx = node.x - pointer.x;
           const dy = node.y - pointer.y;
           const distance = Math.max(1, Math.hypot(dx, dy));
-          if (distance < 72) {
-            const force = (1 - distance / 72) * 6000 * dt;
+          if (distance < 70) {
+            const force = (1 - distance / 70) * 4600 * dt;
             node.vx += (dx / distance) * force;
             node.vy += (dy / distance) * force;
           }
         }
       });
-
-      for (let i = 0; i < nodes.length; i += 1) {
-        for (let j = i + 1; j < nodes.length; j += 1) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const distance = Math.max(1, Math.hypot(dx, dy));
-          const minimum = a.radius + b.radius + 4;
-          if (distance >= minimum) continue;
-          const force = ((minimum - distance) / minimum) * 2600 * dt;
-          a.vx += (dx / distance) * force;
-          a.vy += (dy / distance) * force;
-          b.vx -= (dx / distance) * force;
-          b.vy -= (dy / distance) * force;
-        }
-      }
-
-      const damping = Math.exp(-14 * dt);
+      const damping = Math.exp(-13 * dt);
       nodes.forEach((node) => {
-        if (node === grabbed) return;
         node.vx *= damping;
         node.vy *= damping;
         node.x += node.vx * dt;
@@ -200,67 +283,135 @@
       });
     }
 
-    function draw(elapsed) {
-      context.clearRect(0, 0, width, height);
-      context.lineWidth = 1;
-      context.strokeStyle = palette.divider;
-      edges.forEach(([from, to]) => {
-        const a = byId.get(from);
-        const b = byId.get(to);
-        if (!a || !b) return;
-        context.beginPath();
-        context.moveTo(a.x, a.y);
-        context.lineTo(b.x, b.y);
-        context.stroke();
-      });
+    function drawField(elapsed: number, sceneIndex: number) {
+      field.clearRect(0, 0, fieldWidth, fieldHeight);
+      const transferNode = nodes[nodes.length - 1];
+      const mac = { x: fieldWidth * 0.16, y: fieldHeight * 0.50 };
+      const phoneHub = { x: fieldWidth * 0.84, y: fieldHeight * 0.50 };
 
+      field.lineWidth = 1;
       nodes.forEach((node) => {
-        context.fillStyle = palette.background;
-        if (node.kind === 'circle') {
-          context.beginPath();
-          context.arc(node.x, node.y, node.radius + 1.5, 0, Math.PI * 2);
-          context.fill();
-          context.fillStyle = node.status === 'single' ? palette.single : palette.safe;
-          context.beginPath();
-          context.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-          context.fill();
-          if (node.syncing) {
-            const progress = reduceMotion ? 0 : (elapsed * 0.75) % 1;
-            context.strokeStyle = `rgba(136, 139, 141, ${0.4 * (1 - progress)})`;
-            context.beginPath();
-            context.arc(node.x, node.y, node.radius + 4 + progress * 7, 0, Math.PI * 2);
-            context.stroke();
-          }
-        } else {
-          context.fillRect(node.x - node.radius - 1.5, node.y - node.radius - 1.5, node.radius * 2 + 3, node.radius * 2 + 3);
-          context.fillStyle = palette.secondary;
-          context.fillRect(node.x - node.radius, node.y - node.radius, node.radius * 2, node.radius * 2);
+        const isTransfer = node.id === 'transfer';
+        const toMac = node.status === 'safe' || (!isTransfer && node.home[0] < 0.62);
+        const toPhone = node.status === 'single' || node.status === 'safe';
+        field.strokeStyle = palette.divider;
+        field.globalAlpha = isTransfer ? 0.7 : 0.2;
+        if (toMac) {
+          field.beginPath(); field.moveTo(node.x, node.y); field.lineTo(mac.x, mac.y); field.stroke();
+        }
+        if (toPhone) {
+          field.beginPath(); field.moveTo(node.x, node.y); field.lineTo(phoneHub.x, phoneHub.y); field.stroke();
         }
       });
+      field.globalAlpha = 1;
+
+      nodes.forEach((node) => {
+        if (node.syncing) {
+          const pulse = (elapsed * 0.82) % 1;
+          field.strokeStyle = palette.secondary;
+          field.globalAlpha = (1 - pulse) * 0.55;
+          field.lineWidth = 1.4;
+          field.beginPath();
+          field.arc(node.x, node.y, node.radius + 4 + pulse * 9, 0, Math.PI * 2);
+          field.stroke();
+        }
+        field.globalAlpha = 1;
+        field.fillStyle = palette.background;
+        field.beginPath(); field.arc(node.x, node.y, node.radius + 2, 0, Math.PI * 2); field.fill();
+        field.fillStyle = node.status === 'safe' ? palette.safe : palette.single;
+        field.beginPath(); field.arc(node.x, node.y, node.radius, 0, Math.PI * 2); field.fill();
+      });
+
+      if (sceneIndex === 2) {
+        field.strokeStyle = palette.ink;
+        field.globalAlpha = 0.45;
+        field.lineWidth = 1;
+        field.beginPath(); field.arc(transferNode.x, transferNode.y, transferNode.radius + 5, 0, Math.PI * 2); field.stroke();
+        field.globalAlpha = 1;
+      }
     }
 
-    function animate(now) {
+    function cubic(t: number, p0: {x:number;y:number}, p1: {x:number;y:number}, p2: {x:number;y:number}, p3: {x:number;y:number}) {
+      const u = 1 - t;
+      return {
+        x: u ** 3 * p0.x + 3 * u ** 2 * t * p1.x + 3 * u * t ** 2 * p2.x + t ** 3 * p3.x,
+        y: u ** 3 * p0.y + 3 * u ** 2 * t * p1.y + 3 * u * t ** 2 * p2.y + t ** 3 * p3.y,
+      };
+    }
+
+    function drawNetwork(elapsed: number, sceneIndex: number, local: number) {
+      network.clearRect(0, 0, storyWidth, storyHeight);
+      if (!(phone instanceof HTMLElement) || !(fieldWrap instanceof HTMLElement)) return;
+      const rootBounds = element.getBoundingClientRect();
+      const phoneBounds = phone.getBoundingClientRect();
+      const fieldBounds = fieldWrap.getBoundingClientRect();
+      const p0 = { x: phoneBounds.left - rootBounds.left + phoneBounds.width * 0.18, y: phoneBounds.top - rootBounds.top + phoneBounds.height * 0.32 };
+      const p3 = { x: fieldBounds.left - rootBounds.left + fieldBounds.width * 0.79, y: fieldBounds.top - rootBounds.top + fieldBounds.height * 0.48 };
+      const p1 = { x: p0.x - storyWidth * 0.18, y: p0.y - storyHeight * 0.18 };
+      const p2 = { x: p3.x + storyWidth * 0.13, y: p3.y + storyHeight * 0.05 };
+
+      network.lineWidth = 1;
+      network.strokeStyle = palette.secondary;
+      network.globalAlpha = sceneIndex === 1 ? 0.26 : 0.09;
+      network.beginPath();
+      network.moveTo(p0.x, p0.y);
+      network.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+      network.stroke();
+
+      if (sceneIndex === 1) {
+        for (let i = 0; i < 8; i += 1) {
+          const progress = (local * 1.5 + i / 8) % 1;
+          const point = cubic(progress, p0, p1, p2, p3);
+          const fade = Math.sin(progress * Math.PI);
+          network.globalAlpha = 0.28 + fade * 0.65;
+          network.fillStyle = i % 3 === 0 ? palette.single : palette.ink;
+          network.beginPath();
+          network.arc(point.x, point.y, i % 3 === 0 ? 3.2 : 1.7, 0, Math.PI * 2);
+          network.fill();
+        }
+      }
+      network.globalAlpha = 1;
+    }
+
+    function render(now: number) {
+      const clock = storyClock(now);
+      if (element.dataset.scene !== scenes[clock.index].key) setScene(clock.index);
+      if (clock.index === 1 && mobileDetail) {
+        const moved = (48.2 * Math.min(.98, Math.max(.04, clock.local))).toFixed(1);
+        mobileDetail.textContent = `${moved} MB of 48.2 MB`;
+      }
+      if (meter instanceof HTMLElement) meter.style.transform = `scaleX(${clock.total})`;
       const dt = Math.min((now - last) / 1000, 1 / 30);
       last = now;
-      if (visible) {
-        step(dt, now / 1000);
-        draw(now / 1000);
-      }
+      step(dt, now / 1000);
+      drawField(now / 1000, clock.index);
+      drawNetwork(now / 1000, clock.index, clock.local);
+    }
+
+    function animate(now: number) {
+      if (visible) render(now);
       frame = requestAnimationFrame(animate);
     }
 
+    fieldCanvas.addEventListener('pointermove', (event) => {
+      const bounds = fieldCanvas.getBoundingClientRect();
+      pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top, active: true };
+    });
+    fieldCanvas.addEventListener('pointerleave', () => { pointer.active = false; });
+
     const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    resizeObserver.observe(element);
     const visibilityObserver = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
-    });
-    visibilityObserver.observe(root);
-    window.addEventListener('recn-theme-change', () => {
-      syncPalette();
-      draw(performance.now() / 1000);
-    });
+      if (visible) last = performance.now();
+    }, { rootMargin: '120px' });
+    visibilityObserver.observe(element);
+    window.addEventListener('recn-theme-change', () => { syncPalette(); render(performance.now()); });
+
+    setScene(reduceMotion ? 2 : 0);
     resize();
     if (!reduceMotion) frame = requestAnimationFrame(animate);
+    else render(performance.now());
 
     window.addEventListener('pagehide', () => {
       cancelAnimationFrame(frame);
@@ -269,3 +420,180 @@
     }, { once: true });
   });
 </script>
+
+<style>
+  .sync-story {
+    position: relative;
+    width: min(100%, 920px);
+    min-width: 0;
+    aspect-ratio: 1.19 / 1;
+    isolation: isolate;
+    overflow: visible;
+    color: var(--ink);
+    --story-shadow: 0 48px 110px color-mix(in srgb, #111 16%, transparent);
+  }
+
+  .sync-story__aura {
+    position: absolute;
+    z-index: -2;
+    inset: 5% -8% 8%;
+    background:
+      radial-gradient(circle at 74% 58%, color-mix(in srgb, var(--single) 16%, transparent), transparent 24%),
+      radial-gradient(circle at 43% 45%, color-mix(in srgb, var(--safe) 13%, transparent), transparent 36%);
+    filter: blur(50px);
+    opacity: .7;
+    pointer-events: none;
+  }
+
+  .sync-story__network { position: absolute; z-index: 8; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  .sync-story__desktop {
+    position: absolute;
+    z-index: 1;
+    top: 4%;
+    right: 0;
+    width: 88%;
+    height: 72%;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    border-radius: 14px;
+    background: var(--background);
+    box-shadow: var(--story-shadow);
+  }
+
+  .sync-story__desktop-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    height: 34px;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--divider);
+    background: color-mix(in srgb, var(--surface) 78%, var(--background));
+    color: var(--secondary);
+    font: 600 .48rem/1 var(--mono);
+    letter-spacing: .08em;
+  }
+
+  .sync-story__traffic { display: flex; gap: 5px; }
+  .sync-story__traffic i { width: 6px; height: 6px; border: 1px solid var(--tertiary); border-radius: 50%; }
+  .sync-story__desktop-state { display: flex; align-items: center; justify-self: end; gap: 5px; }
+  .sync-story__desktop-state i { width: 5px; height: 5px; border-radius: 50%; background: var(--safe); box-shadow: 0 0 0 4px color-mix(in srgb, var(--safe) 12%, transparent); }
+
+  .sync-story__app { display: grid; grid-template-columns: 118px 1fr; height: calc(100% - 34px); }
+  .sync-story__sidebar { display: flex; flex-direction: column; padding: 19px 12px; border-right: 1px solid var(--divider); background: color-mix(in srgb, var(--surface) 55%, var(--background)); }
+  .sync-story__sidebar b { margin: 0 7px 21px; font-size: .57rem; letter-spacing: .15em; }
+  .sync-story__sidebar span { display: flex; align-items: center; min-height: 29px; padding: 0 8px; color: var(--secondary); font-size: .52rem; gap: 7px; }
+  .sync-story__sidebar span i { width: 8px; height: 8px; border: 1px solid currentColor; }
+  .sync-story__sidebar span.is-active { background: var(--ink); color: var(--background); }
+  .sync-story__sidebar small { margin: auto 7px 0; color: var(--tertiary); font: 600 .42rem/1 var(--mono); letter-spacing: .08em; }
+
+  .sync-story__workspace { min-width: 0; }
+  .sync-story__workspace-header { display: flex; height: 74px; align-items: center; justify-content: space-between; padding: 0 18px; border-bottom: 1px solid var(--divider); }
+  .sync-story__workspace-header small { color: var(--secondary); font: 600 .43rem/1 var(--mono); letter-spacing: .11em; }
+  .sync-story__workspace-header h2 { margin-top: 7px; font-size: clamp(.68rem, 1.2vw, .9rem); font-weight: 600; letter-spacing: -.02em; }
+  .sync-story__lens { display: flex; border: 1px solid var(--divider); font: 600 .39rem/1 var(--mono); letter-spacing: .06em; }
+  .sync-story__lens span { padding: 7px 8px; color: var(--secondary); }
+  .sync-story__lens .is-active { background: var(--ink); color: var(--background); }
+
+  .sync-story__field { position: relative; height: calc(100% - 74px); overflow: hidden; }
+  .sync-story__field canvas { display: block; width: 100%; height: 100%; cursor: default; touch-action: none; }
+  .sync-story__hub { position: absolute; top: 50%; display: flex; width: 55px; transform: translate(-50%, -50%); flex-direction: column; align-items: center; color: var(--secondary); font: 600 .4rem/1 var(--mono); gap: 5px; text-align: center; }
+  .sync-story__hub--mac { left: 16%; }
+  .sync-story__hub--phone { left: 84%; }
+  .sync-story__hub-icon { display: grid; width: 34px; height: 34px; border: 1px solid var(--divider); background: color-mix(in srgb, var(--background) 88%, transparent); place-items: center; }
+  .sync-story__hub svg { width: 18px; fill: none; stroke: var(--ink); stroke-width: 1.2; }
+  .sync-story__legend { position: absolute; right: 11px; bottom: 9px; display: flex; color: var(--secondary); font: 600 .37rem/1 var(--mono); letter-spacing: .04em; gap: 9px; }
+  .sync-story__legend span { display: flex; align-items: center; gap: 4px; }
+  .sync-story__legend i { width: 5px; height: 5px; border-radius: 50%; }
+  .sync-story__legend .is-safe { background: var(--safe); }
+  .sync-story__legend .is-single { background: var(--single); }
+  .sync-story__legend .is-ring { border: 1px solid var(--secondary); }
+
+  .sync-story__phone {
+    position: absolute;
+    z-index: 10;
+    right: -1%;
+    bottom: 9%;
+    width: 27%;
+    aspect-ratio: .49 / 1;
+    transform: rotate(2deg);
+    filter: drop-shadow(0 34px 38px color-mix(in srgb, #111 24%, transparent));
+    transition: transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .sync-story[data-scene='moving'] .sync-story__phone { transform: rotate(1deg) translate3d(-4px, -3px, 0); }
+  .sync-story__phone-metal { width: 100%; height: 100%; padding: 3px; border: 1px solid color-mix(in srgb, var(--ink) 42%, transparent); border-radius: 15% / 7%; background: linear-gradient(130deg, var(--tertiary), var(--background) 23%, var(--secondary) 50%, var(--background) 77%, var(--tertiary)); }
+  .sync-story__phone-screen { position: relative; height: 100%; overflow: hidden; border: 3px solid #0a0a0a; border-radius: 13% / 6.4%; background: var(--background); }
+  .sync-story__island { position: absolute; z-index: 2; top: 2.2%; left: 50%; width: 32%; height: 2.6%; transform: translateX(-50%); border-radius: 999px; background: #090909; }
+  .sync-story__mobile-header { display: flex; height: 8%; align-items: center; justify-content: space-between; padding: 0 10%; font-size: clamp(.3rem, .62vw, .48rem); font-weight: 650; }
+  .sync-story__mobile-title { padding: 8% 9% 0; }
+  .sync-story__mobile-title small { display: block; color: var(--secondary); font: 600 clamp(.25rem, .45vw, .38rem)/1 var(--mono); letter-spacing: .1em; }
+  .sync-story__mobile-title strong { display: block; min-height: 2.5em; margin-top: 7%; font-size: clamp(.45rem, .9vw, .72rem); line-height: 1.25; }
+  .sync-story__mobile-status { display: flex; align-items: center; margin: 12% 8% 0; padding: 9% 7%; border: 1px solid var(--divider); gap: 8%; }
+  .sync-story__mobile-status div { min-width: 0; }
+  .sync-story__mobile-status b, .sync-story__mobile-status small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sync-story__mobile-status b { font: 600 clamp(.24rem, .45vw, .38rem)/1 var(--mono); letter-spacing: .04em; }
+  .sync-story__mobile-status small { margin-top: 7%; color: var(--secondary); font-size: clamp(.23rem, .4vw, .34rem); }
+  .sync-story__mobile-orbit { display: grid; width: clamp(17px, 2.2vw, 27px); aspect-ratio: 1; flex: 0 0 auto; border: 1px solid var(--divider); border-radius: 50%; place-items: center; }
+  .sync-story__mobile-orbit i { width: 28%; aspect-ratio: 1; border-radius: 50%; background: var(--single); transition: background .5s ease; }
+  .sync-story[data-scene='moving'] .sync-story__mobile-orbit { animation: mobile-pulse 1.15s ease-out infinite; }
+  .sync-story[data-scene='safe'] .sync-story__mobile-orbit i { background: var(--safe); }
+  .sync-story__wave { display: flex; height: 11%; align-items: center; justify-content: center; margin: 8% 9% 0; border-bottom: 1px solid var(--divider); gap: 2px; }
+  .sync-story__wave i { width: 1px; height: 34%; background: var(--ink); transform: scaleY(var(--wave, .5)); transform-origin: center; }
+  .sync-story__wave i:nth-child(3n) { --wave: 1.8; }
+  .sync-story__wave i:nth-child(4n) { --wave: 1.25; }
+  .sync-story__wave i:nth-child(5n) { --wave: 2.2; }
+  .sync-story[data-scene='moving'] .sync-story__wave i { animation: wave 1s ease-in-out infinite alternate; animation-delay: calc(var(--wave, .5) * -.3s); }
+  .sync-story__mobile-list { margin: 4% 9% 0; }
+  .sync-story__mobile-list span { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 7% 0; border-bottom: 1px solid var(--divider); gap: 6%; }
+  .sync-story__mobile-list i { width: 5px; height: 5px; border-radius: 50%; background: var(--safe); }
+  .sync-story__mobile-list b, .sync-story__mobile-list em { font-size: clamp(.22rem, .38vw, .32rem); font-style: normal; }
+  .sync-story__mobile-list em { color: var(--secondary); }
+  .sync-story__home-indicator { position: absolute; bottom: 1.8%; left: 50%; width: 34%; height: 2px; transform: translateX(-50%); border-radius: 999px; background: var(--ink); }
+
+  .sync-story__caption { position: absolute; z-index: 12; bottom: 1%; left: 3%; display: grid; width: 62%; grid-template-columns: 44px 1fr; align-items: start; padding-top: 15px; border-top: 1px solid var(--divider); }
+  .sync-story__caption-index { color: var(--tertiary); font: 500 .45rem/1 var(--mono); }
+  .sync-story__caption-copy { min-height: 76px; }
+  .sync-story__caption-kicker { display: block; color: var(--safe); font: 600 .43rem/1 var(--mono); letter-spacing: .08em; transition: color .4s ease; }
+  .sync-story[data-scene='moving'] .sync-story__caption-kicker { color: var(--single); }
+  .sync-story__caption-copy strong { display: block; margin-top: 8px; font-size: clamp(.95rem, 1.8vw, 1.35rem); font-weight: 580; letter-spacing: -.035em; }
+  .sync-story__caption-copy p { max-width: 340px; margin-top: 3px; color: var(--secondary); font-size: clamp(.48rem, .77vw, .64rem); line-height: 1.55; }
+  .sync-story__meter { grid-column: 2; height: 1px; margin-top: 8px; overflow: hidden; background: var(--divider); }
+  .sync-story__meter i { display: block; width: 100%; height: 100%; transform: scaleX(0); transform-origin: left; background: var(--ink); }
+  .sync-story__privacy { grid-column: 2; margin-top: 9px; color: var(--secondary); font: 600 .38rem/1 var(--mono); letter-spacing: .06em; }
+  .sync-story__privacy span { display: inline-block; width: 15px; height: 1px; margin: 0 7px 3px; background: var(--divider); }
+
+  @keyframes mobile-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--single) 40%, transparent); } to { box-shadow: 0 0 0 10px transparent; } }
+  @keyframes wave { to { transform: scaleY(calc(var(--wave, .5) * 1.55)); } }
+
+  @media (max-width: 760px) {
+    .sync-story { width: 100%; aspect-ratio: .76 / 1; }
+    .sync-story__desktop { top: 1%; width: 100%; height: 64%; border-radius: 10px; }
+    .sync-story__app { grid-template-columns: 77px 1fr; }
+    .sync-story__sidebar { padding-inline: 7px; }
+    .sync-story__sidebar span { padding-inline: 5px; font-size: .42rem; }
+    .sync-story__workspace-header { height: 62px; padding-inline: 11px; }
+    .sync-story__workspace-header h2 { font-size: .7rem; }
+    .sync-story__field { height: calc(100% - 62px); }
+    .sync-story__phone { right: 2%; bottom: 4%; width: 35%; }
+    .sync-story__caption { bottom: 3%; left: 0; width: 61%; grid-template-columns: 34px 1fr; }
+    .sync-story__caption-copy p { font-size: .55rem; }
+    .sync-story__legend { display: none; }
+  }
+
+  @media (max-width: 460px) {
+    .sync-story__sidebar { display: none; }
+    .sync-story__app { grid-template-columns: 1fr; }
+    .sync-story__desktop { height: 60%; }
+    .sync-story__phone { width: 39%; }
+    .sync-story__caption { width: 58%; grid-template-columns: 1fr; }
+    .sync-story__caption-index { display: none; }
+    .sync-story__meter, .sync-story__privacy { grid-column: 1; }
+    .sync-story__privacy { font-size: .31rem; }
+    .sync-story__privacy span { width: 8px; margin-inline: 4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sync-story__phone, .sync-story__mobile-orbit, .sync-story__wave i { animation: none !important; transition: none !important; }
+  }
+</style>

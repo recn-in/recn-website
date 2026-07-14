@@ -8,52 +8,76 @@ const base = import.meta.env.BASE_URL;
 ---
 
 <Base
-  title="RECN — Recordings, with context"
-  description="Record audio, add notes, and find it later. RECN Rec is available for macOS and Windows; mobile is in development."
+  title="RECN — Your recordings, in motion"
+  description="Recordings, notes, and sessions that move directly between your nearby devices. RECN Rec is available for macOS and Windows; mobile is in development."
 >
   <Header />
 
   <main id="main-content">
-    <section class="home-hero shell">
+    <section class="home-hero shell" aria-labelledby="home-title">
       <div class="home-hero__copy">
-        <p class="label">RECN REC</p>
-        <h1>Record. Add a note.<br />Find it later.</h1>
-        <p class="home-hero__intro">RECN keeps recordings, notes, and sessions together. Desktop is available now. Mobile is in development.</p>
+        <p class="label">RECN · LATTICE</p>
+        <h1 id="home-title">Your recordings.<br /><span>In motion.</span></h1>
+        <p class="home-hero__intro">Capture on one device. Continue on another. RECN moves recordings and context directly across your local network—without a cloud relay.</p>
         <div class="download-actions">
-          <a class="button button--primary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">Download for macOS</a>
-          <a class="button button--secondary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">Download for Windows</a>
+          <a class="button button--primary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-macOS.dmg">Download for macOS <span>↓</span></a>
+          <a class="button button--secondary" href="https://github.com/recn-in/recn-releases/releases/latest/download/RECN-Rec-Windows-Setup.exe">Download for Windows <span>↓</span></a>
         </div>
-        <p class="build-caveat">Early builds. Glitches are expected.</p>
+        <div class="home-hero__facts" aria-label="Product facts">
+          <span><i></i>Direct on LAN</span>
+          <span>macOS · Windows</span>
+          <span>Mobile in testing</span>
+        </div>
       </div>
       <ConstellationField />
     </section>
 
-    <section class="capability-list shell" aria-label="What RECN does">
+    <section class="home-manifesto shell" aria-labelledby="manifesto-title">
+      <p class="label">THE SHORTEST DISTANCE</p>
+      <h2 id="manifesto-title">Your phone is three feet from your computer.<br />Your recording shouldn’t travel three thousand miles.</h2>
+      <p>RECN finds approved devices nearby, sends the file directly, then verifies the finished copy. The network disappears. Your work simply appears where you need it.</p>
+    </section>
+
+    <section class="capability-list shell" aria-label="How RECN nearby sync works">
       <article>
-        <h2>Record</h2>
-        <p>Capture audio and keep a note beside it.</p>
+        <span>01</span>
+        <h2>Nearby, not online.</h2>
+        <p>Paired RECN apps discover each other on the same reachable network.</p>
       </article>
       <article>
-        <h2>Find</h2>
-        <p>Search recordings, notes, and on-device transcripts.</p>
+        <span>02</span>
+        <h2>Small facts. Big sound.</h2>
+        <p>Titles and notes converge quickly. Large recordings move separately in resumable chunks.</p>
       </article>
       <article>
-        <h2>Continue</h2>
-        <p>Move work directly between nearby phone and desktop builds.</p>
+        <span>03</span>
+        <h2>Green means verified.</h2>
+        <p>A copy is complete only after its final length and SHA-256 digest match.</p>
       </article>
     </section>
 
-    <section class="home-details shell">
-      <div>
-        <h2>Syncs nearby.</h2>
-        <p>When RECN is open on the same reachable network, paired devices exchange library changes and media directly. There is no cloud relay in the current build.</p>
-        <a class="inline-link" href={`${base}blog/inside-lattice/`}>How LAN sync works →</a>
+    <section class="home-system shell" aria-labelledby="system-title">
+      <div class="home-system__copy">
+        <p class="label">A LIVING LIBRARY</p>
+        <h2 id="system-title">See where every recording lives.</h2>
+        <p>The constellation is not decoration. Its position reveals which devices hold the bytes. Size shows space. Amber means one copy. Green means the recording exists on two or more devices.</p>
+        <a class="inline-link" href={`${base}blog/inside-lattice/`}>Go inside the sync engine →</a>
       </div>
-      <div>
-        <h2>Mobile is next.</h2>
-        <p>iOS is in device testing. Android is still being verified.</p>
-        <a class="inline-link" href={`${base}mobile/`}>Mobile status →</a>
+      <div class="home-system__diagram" aria-label="Constellation visual language">
+        <div><i class="is-amber"></i><span>ONE COPY</span><strong>Close to one device</strong></div>
+        <div><i class="is-green"></i><span>BACKED UP</span><strong>Balanced between devices</strong></div>
+        <div><i class="is-ripple"></i><span>SYNCING</span><strong>Expanding transfer pulse</strong></div>
       </div>
+    </section>
+
+    <section class="home-closing shell">
+      <p class="label">RECN REC</p>
+      <h2>Record now.<br />Pick up anywhere nearby.</h2>
+      <div class="download-actions">
+        <a class="button button--primary" href={`${base}desktop/`}>Get the desktop app <span>→</span></a>
+        <a class="button button--secondary" href={`${base}mobile/`}>Mobile development status</a>
+      </div>
+      <p class="build-caveat">Early builds. Glitches are expected. Mobile is still in device testing.</p>
     </section>
 
   </main>
