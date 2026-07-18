@@ -11,7 +11,7 @@ export const team = [
     ],
   },
   {
-    name: 'Rahul Sharma',
+    name: 'Rahul Vishwakarma',
     role: 'Contributor',
     location: 'India',
     summary: 'Contributes to RECN with engineering and product support.',
