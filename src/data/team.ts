@@ -10,4 +10,12 @@ export const team = [
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/indiegoxx/' },
     ],
   },
+  {
+    name: 'Rahul Sharma',
+    role: 'Contributor',
+    location: 'India',
+    summary: 'Contributes to RECN with engineering and product support.',
+    focus: ['Product', 'Engineering'],
+    links: [{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/rahulvish1364/' }],
+  },
 ];
