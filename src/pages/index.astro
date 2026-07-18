@@ -78,7 +78,17 @@ const base = import.meta.env.BASE_URL;
         <a class="button button--secondary" href={`${base}mobile/`}>Mobile development status</a>
       </div>
       <p class="build-caveat">Early builds. Glitches are expected. Mobile is still in device testing.</p>
-      <a class="inline-link" href={`${base}mobile/#mobile-follow`}>Stay updated</a>
+      <section class="signup-block" aria-labelledby="home-contact-title">
+        <p class="label">GET IN TOUCH</p>
+        <h2 id="home-contact-title">Get release updates and private beta notes</h2>
+        <form class="signup-form" data-signup>
+          <label class="sr-only" for="home-contact-email">Email address</label>
+          <input id="home-contact-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+          <button type="submit">Notify me</button>
+          <p class="form-status" data-form-status aria-live="polite"></p>
+        </form>
+        <p class="form-note">Signups are handled by Formspree. We only send product updates and milestone notices.</p>
+      </section>
     </section>
 
   </main>
