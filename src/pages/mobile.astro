@@ -29,6 +29,45 @@ import Footer from '../components/Footer.astro';
       </div>
     </div>
 
+    <section class="release-card" aria-labelledby="mobile-download-heading" data-mobile-release-browser>
+      <div class="release-card__header">
+        <div>
+          <p class="release-card__eyebrow">ANDROID beta</p>
+          <h2 id="mobile-download-heading" data-mobile-release-name>Latest APK</h2>
+        </div>
+        <time data-mobile-release-date></time>
+      </div>
+
+      <div class="release-downloads">
+        <a href="#" data-mobile-release-link>
+          <span>Android</span>
+          <strong>APK pending</strong>
+          <small data-mobile-release-meta>Preparing build metadata…</small>
+        </a>
+      </div>
+
+      <section class="release-notes" aria-labelledby="mobile-notes-heading">
+        <header>
+          <h3 id="mobile-notes-heading">Notes</h3>
+          <a
+            href="https://github.com/recn-in/recn-releases"
+            target="_blank"
+            rel="noreferrer"
+            data-mobile-release-link-all
+          >All mobile releases ↗</a>
+        </header>
+        <ul data-mobile-release-notes>
+          <li>Loading latest mobile release details…</li>
+        </ul>
+      </section>
+    </section>
+
+    <p class="build-caveat">iOS is distributed through TestFlight for internal testers. The website below serves the Android APK for registered testers.</p>
+
+    <noscript>
+      <p class="build-caveat">JavaScript is required to discover the latest Android APK link. You can still join the mobile beta list below.</p>
+    </noscript>
+
     <section class="signup-block" id="mobile-follow">
       <h2>Mobile updates</h2>
       <form class="signup-form" data-signup>
@@ -37,8 +76,149 @@ import Footer from '../components/Footer.astro';
         <button type="submit">Notify me</button>
         <p class="form-status" data-form-status aria-live="polite"></p>
       </form>
-      <p class="form-note">Signup is handled by Formspree.</p>
+      <p class="form-note">Signup is handled by Formspree. We will send TestFlight invites and APK links.</p>
     </section>
   </main>
   <Footer />
 </Base>
+
+<script>
+  interface ReleaseAsset {
+    name: string;
+    browser_download_url: string;
+    size: number;
+  }
+
+  interface GitHubRelease {
+    tag_name: string;
+    html_url: string;
+    body: string | null;
+    published_at: string | null;
+    prerelease: boolean;
+    draft: boolean;
+    assets: ReleaseAsset[];
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-mobile-release-browser]');
+
+  if (root) {
+    const status = root.querySelector<HTMLElement>('[data-mobile-release-date]');
+    const name = root.querySelector<HTMLElement>('[data-mobile-release-name]');
+    const link = root.querySelector<HTMLAnchorElement>('[data-mobile-release-link]');
+    const linkAll = root.querySelector<HTMLAnchorElement>('[data-mobile-release-link-all]');
+    const notes = root.querySelector<HTMLUListElement>('[data-mobile-release-notes]');
+    const meta = link?.querySelector<HTMLElement>('[data-mobile-release-meta]');
+
+    const formatDate = (value: string | null) => {
+      if (!value) return '';
+      return new Intl.DateTimeFormat(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(value));
+    };
+
+    const formatSize = (bytes: number) => `${(bytes / 1_000_000).toFixed(1)} MB`;
+
+    const extractChanges = (body: string | null) => {
+      if (!body) return ['Release notes are included with the APK asset.'];
+      const lines = body
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith('- ') || line.startsWith('•'))
+        .map((line) => line.replace(/^[-•]\s+/, ''));
+      if (lines.length > 0) return lines.slice(0, 5);
+      return ['Release notes are included with the APK asset.'];
+    };
+
+    const findLatestMobileRelease = (releases: GitHubRelease[]) =>
+      releases.find((release) => release.tag_name.startsWith('mobile-') && !release.draft);
+
+    const renderRelease = (release: GitHubRelease | undefined) => {
+      if (!release) {
+        if (name) name.textContent = 'No APK release yet';
+        if (status) status.textContent = 'We are preparing the first Android build.';
+        if (link && meta) {
+          link.removeAttribute('href');
+          link.setAttribute('aria-disabled', 'true');
+          link.classList.add('is-disabled');
+          const title = link.querySelector<HTMLElement>('strong');
+          if (title) title.textContent = 'APK unavailable';
+          meta.textContent = 'No release has been published yet.';
+        }
+        if (notes) {
+          notes.replaceChildren();
+          const item = document.createElement('li');
+          item.textContent = 'No mobile release has been published yet.';
+          notes.append(item);
+        }
+        if (linkAll) {
+          linkAll.href = 'https://github.com/recn-in/recn-releases/releases';
+        }
+        return;
+      }
+
+      if (name) {
+        name.textContent = release.tag_name;
+      }
+      if (status) {
+        const dateLabel = formatDate(release.published_at);
+        status.textContent = dateLabel;
+        if (release.published_at) status.dateTime = release.published_at;
+      }
+      if (linkAll) {
+        linkAll.href = release.html_url;
+      }
+
+      const apk = release.assets.find((asset) => asset.name.endsWith('.apk'));
+      if (!apk) {
+        if (link && meta) {
+          link.removeAttribute('href');
+          link.setAttribute('aria-disabled', 'true');
+          link.classList.add('is-disabled');
+          const title = link.querySelector<HTMLElement>('strong');
+          if (title) title.textContent = 'APK unavailable';
+          meta.textContent = 'No APK asset is attached to this release.';
+        }
+      } else {
+        link.href = apk.browser_download_url;
+        link.removeAttribute('aria-disabled');
+        link.classList.remove('is-disabled');
+        const title = link.querySelector<HTMLElement>('strong');
+        if (title) title.textContent = 'Download APK';
+        if (meta) meta.textContent = `${apk.name} · ${formatSize(apk.size)}`;
+      }
+
+      if (notes) {
+        notes.replaceChildren();
+        extractChanges(release.body).forEach((change) => {
+          const item = document.createElement('li');
+          item.textContent = change;
+          notes.append(item);
+        });
+      }
+    };
+
+    fetch('https://api.github.com/repos/recn-in/recn-releases/releases?per_page=40', {
+      headers: { Accept: 'application/vnd.github+json' },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`GitHub releases request failed with ${response.status}`);
+        }
+        return response.json() as Promise<GitHubRelease[]>;
+      })
+      .then((releases) => {
+        renderRelease(findLatestMobileRelease(releases));
+      })
+      .catch(() => {
+        if (status) status.textContent = 'Live Android release details are temporarily unavailable.';
+        if (notes) {
+          notes.replaceChildren();
+          const item = document.createElement('li');
+          item.textContent = 'Check back in a moment — we are fetching the latest Android build.';
+          notes.append(item);
+        }
+      });
+  }
+</script>
