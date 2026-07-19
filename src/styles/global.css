@@ -243,6 +243,20 @@ button { border: 0; border-radius: 0; }
 
 .download-actions .button { justify-content: space-between; gap: 25px; }
 .download-actions .button span { font-size: 1rem; font-weight: 400; }
+.download-actions .button .platform-icon { font-size: 0.82rem; }
+
+.platform-icon {
+  display: inline-grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  margin-right: 8px;
+  line-height: 1;
+  color: currentColor;
+}
+
+.platform-icon--apple { font-size: 0.92rem; }
+.platform-icon--android { font-size: 0.76rem; }
 
 .build-caveat {
   margin-top: 13px;
@@ -451,6 +465,10 @@ button { border: 0; border-radius: 0; }
   grid-template-columns: repeat(2, minmax(220px, 1fr));
   margin-top: 0;
   border-top: 1px solid var(--divider);
+}
+
+.release-downloads--mobile {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .release-downloads a { min-height: 116px; border: 0; }
