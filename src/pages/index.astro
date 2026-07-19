@@ -22,11 +22,22 @@ const base = import.meta.env.BASE_URL;
         <div class="download-actions">
           <a class="button button--primary" href="https://github.com/recn-in/recn-releases/releases/download/v0.0.1-beta/RECN-Rec-Beta-macOS.dmg">Download Beta for macOS <span>↓</span></a>
           <a class="button button--secondary" href="https://github.com/recn-in/recn-releases/releases/download/v0.0.1-beta/RECN-Rec-Beta-Windows-Setup.exe">Download Beta for Windows <span>↓</span></a>
+          <a class="button button--secondary" href={`${base}mobile/`}>
+            <span class="platform-icon platform-icon--android" aria-hidden="true">🤖</span>
+            Android APK <span>→</span>
+          </a>
         </div>
         <div class="home-hero__facts" aria-label="Product facts">
           <span><i></i>Direct on LAN</span>
-          <span>macOS · Windows</span>
-          <span>Mobile in testing</span>
+          <span><i></i>macOS · Windows</span>
+          <span>
+            <span class="platform-icon platform-icon--apple" aria-hidden="true"></span>
+            iOS TestFlight signups in place
+          </span>
+          <span>
+            <span class="platform-icon platform-icon--android" aria-hidden="true">🤖</span>
+            Android APK available
+          </span>
         </div>
       </div>
       <ConstellationField />
@@ -77,7 +88,7 @@ const base = import.meta.env.BASE_URL;
         <a class="button button--primary" href={`${base}desktop/`}>Get the desktop app <span>→</span></a>
         <a class="button button--secondary" href={`${base}mobile/`}>Mobile development status</a>
       </div>
-      <p class="build-caveat">Early builds. Glitches are expected. Mobile is still in device testing.</p>
+      <p class="build-caveat">Early builds. Glitches are expected. TestFlight signups are in place for iOS, and Android APK links are published on the mobile page.</p>
       <section class="signup-block" aria-labelledby="home-contact-title">
         <p class="label">GET IN TOUCH</p>
         <h2 id="home-contact-title">Get release updates and private beta notes</h2>
