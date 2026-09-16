@@ -2,30 +2,31 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+const base = import.meta.env.BASE_URL;
 ---
 
 <Base
   title="RECN Rec for mobile"
-  description="RECN Rec is in development for iOS and Android."
+  description="Try the RECN Rec beta on iOS and Android."
 >
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
       <p class="label">MOBILE</p>
-      <h1>Coming to iOS and Android</h1>
+      <h1>Try RECN on your phone</h1>
       <p>Capture audio, add notes, create layered sessions, and continue on desktop.</p>
     </header>
 
     <div class="status-list" aria-label="Mobile development status">
       <div>
         <strong>iOS</strong>
-        <span>In device testing</span>
-        <p>Capture, transcription, notes, and sessions are working in internal builds.</p>
+        <span>Public TestFlight beta</span>
+        <p><a href="https://testflight.apple.com/join/h2Xw8MpE">Join the iOS beta ↗</a></p>
       </div>
       <div>
         <strong>Android</strong>
-        <span>In development</span>
-        <p>The shared app is in place. Audio and transcription still need full device verification.</p>
+        <span>Google Play beta being prepared</span>
+        <p>Public Play Store signup will be available after Google's review. The APK below is available to try now.</p>
       </div>
     </div>
 
@@ -62,7 +63,7 @@ import Footer from '../components/Footer.astro';
       </section>
     </section>
 
-    <p class="build-caveat">iOS is distributed through TestFlight for internal testers. The website below serves the Android APK for registered testers.</p>
+    <p class="build-caveat">The beta is for ages 13 and over. iOS updates arrive through TestFlight. Android APK installs are separate from the forthcoming Google Play testing track.</p>
 
     <noscript>
       <p class="build-caveat">JavaScript is required to discover the latest Android APK link. You can still join the mobile beta list below.</p>
@@ -76,7 +77,7 @@ import Footer from '../components/Footer.astro';
         <button type="submit">Notify me</button>
         <p class="form-status" data-form-status aria-live="polite"></p>
       </form>
-      <p class="form-note">Signup is handled by Formspree. We will send TestFlight invites and APK links.</p>
+      <p class="form-note">Signup is handled by Formspree for RECN updates. Read our <a href={`${base}privacy/`}>privacy policy</a>.</p>
     </section>
   </main>
   <Footer />
