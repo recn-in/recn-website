@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const media = `${import.meta.env.BASE_URL}media/android-review/`;
+---
+
+<Base title="Android service demos — RECN" description="RECN's background recording and playback controls, demonstrated on Android.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">ANDROID APP REVIEW</p>
+      <h1>Recording and playback in the background</h1>
+      <p>Actual screen recordings of RECN Rec 0.0.1 (138), package <code>com.recn.rec</code>, running on an Android 12L emulator. Recorded September 16, 2026.</p>
+    </header>
+    <div class="prose review-copy">
+      <p>These videos are silent. The emulator's host microphone was disabled; no personal recordings, accounts, or conversations were used. Playback uses a generated test tone imported through Android's file picker.</p>
+      <section id="recording" aria-labelledby="recording-title">
+        <h2 id="recording-title">Background audio input</h2>
+        <p id="recording-description">The user starts recording in RECN, leaves the app, and opens Android's notification shade. The recording timer continues and Android shows its microphone indicator. The user taps Stop in the notification, then returns to RECN to see the saved recording.</p>
+        <video controls playsinline preload="metadata" aria-label="RECN background recording demonstration" aria-describedby="recording-description">
+          <source src={`${media}background-recording.mp4`} type="video/mp4" />
+          <p><a href={`${media}background-recording.mp4`}>Watch the background recording video</a>.</p>
+        </video>
+        <p><a href={`${media}background-recording.mp4`}>Open recording video directly</a></p>
+      </section>
+      <section id="playback" aria-labelledby="playback-title">
+        <h2 id="playback-title">Media playback</h2>
+        <p id="playback-description">The user plays the imported test tone, leaves RECN, and opens Android's media controls. The user pauses and resumes playback from the notification, returns to RECN with the playhead advancing, and pauses in the app.</p>
+        <video controls playsinline preload="metadata" aria-label="RECN background playback demonstration" aria-describedby="playback-description">
+          <source src={`${media}background-playback.mp4`} type="video/mp4" />
+          <p><a href={`${media}background-playback.mp4`}>Watch the background playback video</a>.</p>
+        </video>
+        <p><a href={`${media}background-playback.mp4`}>Open playback video directly</a></p>
+      </section>
+      <p>Questions about the app or these demonstrations: <a href="mailto:sinhashubham472@gmail.com">sinhashubham472@gmail.com</a>.</p>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .review-copy { max-width: 70ch; color: var(--ink); }
+  section { margin-block: 3rem; scroll-margin-top: 6rem; }
+  video { display: block; width: min(100%, 22rem); height: auto; margin-block: 1.5rem; background: var(--surface); }
+  code, a { overflow-wrap: anywhere; }
+</style>
