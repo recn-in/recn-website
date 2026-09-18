@@ -1,22 +1,41 @@
-<canvas class="wave-backdrop" data-wave-backdrop aria-hidden="true"></canvas>
+<canvas
+  class="wave-backdrop"
+  data-wave-backdrop
+  role="img"
+  aria-label="A ribbon of waveform lines runs across the page. Your devices ride one red line, and recordings travel along it from one device to the next: amber while only one copy exists, green once the second copy is verified."
+></canvas>
+
+<div class="wave-stage" data-wave-stage>
+  <p class="wave-stage__legend" aria-hidden="true">
+    <span><i class="is-single"></i>One copy</span>
+    <span><i class="is-safe"></i>Verified on two</span>
+  </p>
+</div>
 
 <script>
-  // A ribbon of thin waveform lines. A swell travels along it like a signal
-  // passing from one device to the next, and the ribbon leans toward the
-  // pointer. One line is the accent: the recording itself.
+  // The hero is one drawing: a ribbon of thin waveform lines with a swell
+  // travelling through it. The accent line carries the devices, and
+  // recordings move along it between them. The ribbon leans toward the pointer.
   const LINES = 36;
   const ACCENT = 22;
   const STEP = 6;
+  const DEVICES = ['Mac', 'iPhone', 'iPad', 'Windows', 'Android'];
+  const TRAVEL = 2.8; // seconds for a recording to cross
+  const SETTLE = 1.6; // seconds the verified pulse lasts
 
   const canvas = document.querySelector<HTMLCanvasElement>('[data-wave-backdrop]');
+  const stage = document.querySelector<HTMLElement>('[data-wave-stage]');
   const ctx = canvas?.getContext('2d');
 
-  if (canvas && ctx) {
+  if (canvas && stage && ctx) {
     const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const colour = { ink: '', accent: '', single: '', safe: '', background: '', secondary: '', mono: '' };
     let width = 0;
     let height = 0;
-    let ink = '';
-    let accent = '';
+    let mid = 0;
+    let devices: { name: string; u: number }[] = [];
+    let transfers: { from: number; to: number; start: number }[] = [];
+    let nextSpawn = 0;
     let pointer = -1; // 0..1 across the canvas, -1 while away
     let lean = 0.5;
     let pull = 0;
@@ -25,17 +44,35 @@
 
     const readTheme = () => {
       const style = getComputedStyle(document.documentElement);
-      ink = style.getPropertyValue('--waveform').trim();
-      accent = style.getPropertyValue('--accent').trim();
+      const token = (name: string) => style.getPropertyValue(name).trim();
+      colour.ink = token('--waveform');
+      colour.accent = token('--accent');
+      colour.single = token('--single');
+      colour.safe = token('--safe');
+      colour.background = token('--background');
+      colour.secondary = token('--secondary');
+      colour.mono = token('--mono');
     };
 
+    // The stage is the empty part of the hero: beside the copy on a wide
+    // screen, beneath it on a narrow one. The ribbon centres on it and the
+    // devices spread across it.
     const resize = () => {
       const ratio = Math.min(devicePixelRatio, 2);
-      width = canvas.clientWidth;
-      height = canvas.clientHeight;
+      const box = canvas.getBoundingClientRect();
+      const room = stage.getBoundingClientRect();
+      width = box.width;
+      height = box.height;
       canvas.width = width * ratio;
       canvas.height = height * ratio;
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      mid = room.top - box.top + room.height / 2;
+
+      const names = room.width >= 640 ? DEVICES : [DEVICES[0], DEVICES[1], DEVICES[4]];
+      const left = (room.left - box.left + room.width * 0.08) / width;
+      const right = (room.right - box.left - room.width * 0.08) / width;
+      devices = names.map((name, index) => ({ name, u: left + ((right - left) * index) / (names.length - 1) }));
+      transfers = [];
     };
 
     const swellAt = (u: number, centre: number, spread: number) => Math.exp(-((u - centre) ** 2) / spread);
@@ -43,37 +80,91 @@
     const draw = (ms: number) => {
       const t = ms / 1000;
       const travel = ((t * 0.06) % 1.5) - 0.25;
-      // Level with the constellation in the hero's window, so the ribbon runs through it.
-      const mid = height * 0.53;
-      const amp = Math.min(height * 0.11, 90);
-      const fan = Math.min(height * 0.2, 170);
+      const amp = Math.min(height * 0.12, 100);
+      const fan = Math.min(height * 0.24, 200);
 
       lean += ((pointer < 0 ? 0.5 : pointer) - lean) * 0.04;
       pull += ((pointer < 0 ? 0 : 1) - pull) * 0.04;
 
+      const yAt = (line: number, u: number) => {
+        const p = line / (LINES - 1);
+        const swell = swellAt(u, travel, 0.05) + pull * 0.7 * swellAt(u, lean, 0.02);
+        const loud = (0.3 + 0.7 * Math.min(swell, 1.2)) * Math.sin(Math.PI * Math.min(Math.max(u, 0), 1)) ** 0.6;
+        return mid
+          + (p - 0.5) * fan * (0.3 + loud)
+          + Math.sin(u * 6.5 + t * 0.55 + p * 2.4) * amp * loud
+          + Math.sin(u * 15 - t * 0.8 + p * 5.2) * amp * 0.34 * loud
+          + Math.sin(u * 43 + t * 1.9 + p * 9) * amp * 0.1 * swell;
+      };
+
       ctx.clearRect(0, 0, width, height);
       ctx.lineWidth = 1;
-
-      for (let i = 0; i < LINES; i += 1) {
-        const p = i / (LINES - 1);
-        const centred = 1 - Math.abs(p - 0.5) * 2;
+      for (let line = 0; line < LINES; line += 1) {
+        const centred = 1 - Math.abs(line / (LINES - 1) - 0.5) * 2;
         ctx.beginPath();
         for (let x = 0; x <= width + STEP; x += STEP) {
-          const u = x / width;
-          const swell = swellAt(u, travel, 0.05) + pull * 0.7 * swellAt(u, lean, 0.02);
-          const loud = (0.18 + 0.82 * Math.min(swell, 1.2)) * Math.sin(Math.PI * Math.min(Math.max(u, 0), 1)) ** 0.6;
-          const y = mid
-            + (p - 0.5) * fan * (0.3 + loud)
-            + Math.sin(u * 6.5 + t * 0.55 + p * 2.4) * amp * loud
-            + Math.sin(u * 15 - t * 0.8 + p * 5.2) * amp * 0.34 * loud
-            + Math.sin(u * 43 + t * 1.9 + p * 9) * amp * 0.1 * swell;
+          const y = yAt(line, x / width);
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = i === ACCENT ? accent : ink;
-        ctx.globalAlpha = i === ACCENT ? 0.75 : 0.05 + 0.2 * centred;
+        ctx.strokeStyle = line === ACCENT ? colour.accent : colour.ink;
+        ctx.globalAlpha = line === ACCENT ? 0.8 : 0.05 + 0.22 * centred;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
+
+      // Recordings. Reduced motion holds one mid-way and one just verified.
+      if (still.matches) {
+        transfers = [{ from: 0, to: 1, start: t - TRAVEL * 0.5 }, { from: 1, to: 2, start: t - TRAVEL - 0.35 }];
+      } else if (t >= nextSpawn && devices.length > 1) {
+        const from = Math.floor(Math.random() * devices.length);
+        const to = (from + 1 + Math.floor(Math.random() * (devices.length - 1))) % devices.length;
+        transfers.push({ from, to, start: t });
+        nextSpawn = t + 1.2 + Math.random();
+      }
+      transfers = transfers.filter((transfer) => t - transfer.start < TRAVEL + SETTLE);
+
+      const verified = devices.map(() => 0);
+      for (const transfer of transfers) {
+        const k = (t - transfer.start) / TRAVEL;
+        if (k < 1) {
+          const eased = k * k * (3 - 2 * k);
+          const u = devices[transfer.from].u + (devices[transfer.to].u - devices[transfer.from].u) * eased;
+          ctx.fillStyle = colour.single;
+          ctx.beginPath();
+          ctx.arc(u * width, yAt(ACCENT, u), 5.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          verified[transfer.to] = Math.max(verified[transfer.to], 1 - ((k - 1) * TRAVEL) / SETTLE);
+        }
+      }
+
+      // Devices ride the accent line; one that just verified a copy pulses green.
+      ctx.font = `600 11px ${colour.mono}`;
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '1px';
+      devices.forEach((device, index) => {
+        const x = device.u * width;
+        const y = yAt(ACCENT, device.u);
+        const glow = verified[index];
+        if (glow > 0) {
+          ctx.strokeStyle = colour.safe;
+          ctx.globalAlpha = glow;
+          ctx.beginPath();
+          ctx.arc(x, y, 10 + (1 - glow) * 22, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+        ctx.fillStyle = glow > 0.05 ? colour.safe : colour.background;
+        ctx.strokeStyle = glow > 0.05 ? colour.safe : colour.ink;
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.rect(x - 6.5, y - 6.5, 13, 13);
+        ctx.fill();
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.fillStyle = colour.secondary;
+        ctx.fillText(device.name.toUpperCase(), x, y - 19);
+      });
     };
 
     const tick = (ms: number) => {
@@ -81,13 +172,13 @@
       frame = visible && !document.hidden && !still.matches ? requestAnimationFrame(tick) : 0;
     };
     const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
+    const settle = () => { resize(); if (still.matches) draw(9000); };
 
     readTheme();
-    resize();
-    // Reduced motion gets one still frame, mid-swell.
-    if (still.matches) draw(9000); else wake();
+    settle();
+    wake();
 
-    new ResizeObserver(() => { resize(); if (still.matches) draw(9000); }).observe(canvas);
+    new ResizeObserver(settle).observe(canvas);
     new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) wake(); }).observe(canvas);
     new MutationObserver(() => { readTheme(); if (still.matches) draw(9000); })
       .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -113,8 +204,36 @@
     pointer-events: none;
     /* Faded at top and bottom, and held back under the hero copy on the left. */
     mask-image:
-      linear-gradient(to bottom, transparent, #000 22%, #000 82%, transparent),
-      linear-gradient(to right, rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.3) 30%, #000 58%);
+      linear-gradient(to bottom, transparent, #000 18%, #000 84%, transparent),
+      linear-gradient(to right, rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.3) 28%, #000 46%);
     mask-composite: intersect;
+  }
+
+  .wave-stage {
+    position: relative;
+    display: flex;
+    min-height: clamp(300px, 46vh, 460px);
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .wave-stage__legend {
+    display: flex;
+    color: var(--secondary);
+    font: 550 .55rem/1 var(--mono);
+    letter-spacing: .055em;
+    gap: 18px;
+    text-transform: uppercase;
+  }
+
+  .wave-stage__legend span { display: flex; align-items: center; gap: 7px; }
+  .wave-stage__legend i { width: 7px; height: 7px; border-radius: 50%; }
+  .wave-stage__legend .is-single { background: var(--single); }
+  .wave-stage__legend .is-safe { background: var(--safe); }
+
+  /* One column: the copy sits above the stage, so nothing needs holding back. */
+  @media (max-width: 760px) {
+    .wave-backdrop { mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 84%, transparent); }
+    .wave-stage { min-height: 280px; justify-content: flex-start; }
   }
 </style>

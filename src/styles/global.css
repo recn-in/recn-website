@@ -194,7 +194,7 @@ button { border: 0; border-radius: 0; }
   position: relative;
   display: grid;
   width: min(100%, 1440px);
-  grid-template-columns: minmax(330px, 0.72fr) minmax(580px, 1.28fr);
+  grid-template-columns: minmax(330px, 0.72fr) minmax(0, 1.28fr);
   align-items: center;
   min-height: calc(100svh - 64px);
   padding-top: clamp(72px, 8vh, 112px);
