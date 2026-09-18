@@ -427,8 +427,7 @@ main { overflow-x: clip; }
 .release-notes li { position: relative; padding: 8px 0 8px 18px; border-top: 1px solid var(--divider); color: var(--secondary); font-size: 0.76rem; line-height: 1.55; }
 .release-notes li::before { position: absolute; top: 15px; left: 2px; width: 5px; height: 5px; background: var(--tertiary); content: ''; }
 
-/* A two-column log: a mono heading on the left, its entries on the right.
-   Releases and Features share it. */
+/* A two-column log: a mono heading on the left, its entries on the right. */
 .log { max-width: 820px; margin-top: 55px; border-top: 1px solid var(--divider); }
 .log section {
   display: grid;
@@ -445,26 +444,7 @@ main { overflow-x: clip; }
 .log li + li { border-top: 1px solid var(--divider); }
 .log li span { display: block; color: var(--tertiary); font: 500 0.6rem/1.8 var(--mono); text-transform: uppercase; }
 .log li strong { display: block; color: var(--ink); font-weight: 600; }
-.log--features li { padding: 0; }
-.log--features li a { display: block; padding: 12px 0; }
-.log--features li strong b { display: inline-block; color: var(--tertiary); font-weight: 400; transition: transform .3s ease, color .3s ease; }
-.log--features li strong em { margin-left: 10px; color: var(--accent); font: 600 0.56rem/1 var(--mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; vertical-align: 1px; }
-.log--features li a:hover strong b { transform: translateX(3px); color: var(--accent); }
 
-/* Line mockups of real screens: strokes only, in the theme's ink. */
-.mock { margin: 2.4em 0; }
-.mock svg { display: block; width: 100%; height: auto; border: 1px solid var(--divider); fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
-.mock svg * { vector-effect: non-scaling-stroke; }
-.mock .dim { stroke: var(--tertiary); }
-.mock .accent { stroke: var(--accent); }
-.mock .safe { stroke: var(--safe); }
-.mock .single { stroke: var(--single); }
-.mock .dash { stroke-dasharray: 4 4; }
-.mock text { fill: var(--secondary); stroke: none; font: 600 9px var(--mono); letter-spacing: .06em; }
-.mock figcaption { margin-top: 12px; color: var(--secondary); font: 500 0.62rem/1.5 var(--mono); }
-
-.post-header .label a { border-bottom: 1px solid var(--divider); }
-.post-meta .is-new { color: var(--accent); font-weight: 600; text-transform: uppercase; }
 .feature-next { display: flex; justify-content: space-between; margin-top: 3em; padding-top: 22px; border-top: 1px solid var(--divider); font-size: 0.84rem; }
 .prose .feature-next a { border-bottom-color: var(--divider); }
 

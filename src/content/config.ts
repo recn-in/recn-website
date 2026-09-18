@@ -10,8 +10,10 @@ const blog = defineCollection({
   }),
 });
 
-// One file per feature: the index line comes from the frontmatter, the page
-// from the body. `shipped` is the merge date of the change that delivered it;
+// One file per feature, one chapter of the Features story each: the frontmatter
+// says what it does, the body (one paragraph) says what happens behind the
+// scenes, and src/story/features-story.ts draws that under the same slug.
+// `shipped` is the merge date of the change that delivered it;
 // the site marks a feature New for its first 30 days.
 const features = defineCollection({
   type: 'content',
