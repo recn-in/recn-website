@@ -50,6 +50,8 @@
 
   .story__labels :global(span[data-align='center']) { translate: -50% 0; }
   .story__labels :global(span[data-align='right']) { translate: -100% 0; }
+  /* The two numbers the opening is about. */
+  .story__labels :global(span[data-size='big']) { font-size: 1.15rem; letter-spacing: .01em; }
   .story__labels :global(span[data-tone='ink']) { color: var(--ink); }
   .story__labels :global(span[data-tone='accent']) { color: var(--accent); }
   .story__labels :global(span[data-tone='single']) { color: var(--single); }
@@ -66,5 +68,6 @@
 
   @media (max-width: 899px) {
     .story__labels :global(span) { font-size: 0.44rem; letter-spacing: .04em; }
+    .story__labels :global(span[data-size='big']) { font-size: 0.8rem; }
   }
 </style>

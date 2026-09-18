@@ -13,6 +13,9 @@ export const turn = (q: number, i: number, n: number, from: number, to: number, 
   return ramp(q, from + i * each, from + i * each + each * overlap);
 };
 
+/** The clock every act is given when the viewer asks for reduced motion: every intro is over. */
+export const STILL = 1000;
+
 export type Tone = 'ink' | 'dim' | 'accent' | 'single' | 'safe';
 export type XY = [number, number, number?];
 interface Look { tone?: Tone; base?: number; dashed?: boolean; closed?: boolean }
