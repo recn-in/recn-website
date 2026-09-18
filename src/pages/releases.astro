@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { RELEASES_API, history, type GitHubRelease } from '../lib/releases';
+
+const base = import.meta.env.BASE_URL;
+const token = process.env.GITHUB_TOKEN;
+
+// Read at build time, so the page is plain HTML. A failed read fails the
+// build and the last good site stays up.
+const all: GitHubRelease[] = [];
+for (let page = 1; ; page += 1) {
+  const response = await fetch(`${RELEASES_API}?per_page=100&page=${page}`, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) throw new Error(`recn-releases: HTTP ${response.status}`);
+  const batch = await response.json() as GitHubRelease[];
+  all.push(...batch);
+  if (batch.length < 100) break;
+}
+
+const days = history(all);
+const longDate = (date: string) => new Date(`${date}T00:00:00Z`).toLocaleDateString('en-GB', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+});
+
+// Before the per-build history begins. Dates are the merge dates.
+const earlier = [
+  ['September 2026', 'Sync moved onto Iroh: encrypted, by device key, across the internet as well as the room.'],
+  ['September 2026', 'Reset RECN: unpair every device, keep the library.'],
+  ['September 2026', 'Session takes on desktop and phone: record replaces, the previous take stays one tap away.'],
+  ['July 2026', 'Desktop Browse rebuilt as one calm, searchable feed.'],
+  ['July 2026', 'First beta for macOS and Windows, with self-updating builds. iOS arrives on TestFlight.'],
+];
+---
+
+<Base title="RECN releases" description="What changed in RECN, build by build, on desktop and mobile.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">RELEASES</p>
+      <h1>What changed</h1>
+      <p>Desktop ships a build for every merged change; mobile follows through TestFlight and Google Play. Each line below is one thing that got better. <a class="inline-link" href={`${base}download/`}>Get the latest →</a></p>
+    </header>
+
+    <div class="release-log">
+      {days.map((day) => (
+        <section aria-labelledby={`day-${day.date}`}>
+          <h2 id={`day-${day.date}`}><time datetime={day.date}>{longDate(day.date)}</time></h2>
+          <div>
+            {day.entries.map((entry) => (
+              <article>
+                <p class="release-card__eyebrow">{entry.family} · {entry.label}</p>
+                <ul>{entry.lines.map((line) => <li>{line}</li>)}</ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <section aria-labelledby="earlier">
+        <h2 id="earlier">Earlier</h2>
+        <div>
+          <article>
+            <ul>{earlier.map(([when, what]) => <li><span>{when}</span>{what}</li>)}</ul>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .release-log { max-width: 820px; margin-top: 55px; border-top: 1px solid var(--divider); }
+  .release-log section {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    padding: 26px 0 30px;
+    border-bottom: 1px solid var(--divider);
+    gap: 30px;
+  }
+  .release-log h2 { color: var(--ink); font: 600 0.68rem/1.6 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .release-log article + article { margin-top: 26px; }
+  .release-log ul { margin: 10px 0 0; padding: 0; list-style: none; }
+  .release-log article:only-child > ul:first-child { margin-top: 0; }
+  .release-log li { padding: 7px 0; color: var(--secondary); font-size: 0.84rem; line-height: 1.55; }
+  .release-log li + li { border-top: 1px solid var(--divider); }
+  .release-log li span { display: block; color: var(--tertiary); font: 500 0.6rem/1.8 var(--mono); text-transform: uppercase; }
+
+  @media (max-width: 760px) {
+    .release-log section { grid-template-columns: 1fr; gap: 12px; }
+  }
+</style>

@@ -512,7 +512,7 @@ button { border: 0; border-radius: 0; }
 .post-header h1 { font-size: clamp(2rem, 4.5vw, 2.65rem); }
 .post-meta { display: flex; margin-top: 20px; color: var(--secondary); font: 500 0.64rem/1 var(--mono); gap: 14px; }
 
-.prose { color: #4a4744; font-size: 0.97rem; line-height: 1.8; }
+.prose { color: color-mix(in srgb, var(--ink) 84%, var(--background)); font-size: 0.97rem; line-height: 1.8; }
 .prose > * + * { margin-top: 1.2em; }
 .prose h2, .prose h3 { margin-top: 2.3em; color: var(--ink); font-weight: 650; line-height: 1.25; }
 .prose h2 { font-size: 1.45rem; }

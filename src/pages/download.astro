@@ -16,7 +16,7 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
     </header>
 
     <section class="release-browser" aria-label="Downloads" data-release-browser>
-      <div class="download-grid download-grid--platforms">
+      <div class="download-grid">
         <a href={releases} data-release-platform="macos">
           <span>macOS</span>
           <strong>Download .dmg</strong>
@@ -50,10 +50,10 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
         <section class="release-notes" aria-labelledby="release-notes-heading">
           <header>
             <h3 id="release-notes-heading">What changed</h3>
-            <a href={releases} target="_blank" rel="noreferrer">All builds ↗</a>
+            <a href={`${import.meta.env.BASE_URL}releases/`}>All releases →</a>
           </header>
           <ul data-release-notes>
-            <li>The latest notes are on GitHub.</li>
+            <li>The latest notes are on the releases page.</li>
           </ul>
         </section>
       </article>
@@ -65,14 +65,7 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
 </Base>
 
 <script>
-  interface ReleaseAsset { name: string; browser_download_url: string; size: number }
-  interface GitHubRelease {
-    tag_name: string;
-    body: string | null;
-    published_at: string | null;
-    draft: boolean;
-    assets: ReleaseAsset[];
-  }
+  import { RELEASES_API, NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
 
   const root = document.querySelector<HTMLElement>('[data-release-browser]');
 
@@ -92,18 +85,8 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
     if (meta) meta.textContent = `${asset.name} · ${(asset.size / 1_000_000).toFixed(0)} MB`;
   };
 
-  // Nightly bodies are raw commit subjects: drop the tooling ones, then the
-  // `scope:` prefix and trailing `(sha)` from the rest.
-  const changes = (body: string | null) => (body ?? '').split('\n')
-    .filter((line) => /^\s*-\s+/.test(line))
-    .map((line) => line.replace(/^\s*-\s+/, '').replace(/\s*\([0-9a-f]{7,}\)\s*$/, ''))
-    .filter((line) => !/^(ci|docs|chore|test|refactor|build|style|progress)(\([^)]*\))?:/i.test(line))
-    .map((line) => line.replace(/^[a-z_]+(\([^)]*\))?:\s*/i, ''))
-    .map((line) => line.charAt(0).toUpperCase() + line.slice(1))
-    .slice(0, 8);
-
   if (root) {
-    fetch('https://api.github.com/repos/recn-in/recn-releases/releases?per_page=30', {
+    fetch(`${RELEASES_API}?per_page=30`, {
       headers: { Accept: 'application/vnd.github+json' },
     })
       .then((response) => {
@@ -113,7 +96,7 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
       .then((all) => {
         // Newest nightly whose installers have finished uploading.
         const nightly = all.find((release) => !release.draft
-          && /^v\d+\.\d+\.\d+-beta-nightly\.\d+$/.test(release.tag_name)
+          && NIGHTLY_TAG.test(release.tag_name)
           && release.assets.some((asset) => asset.name.endsWith('.dmg'))
           && release.assets.some((asset) => asset.name.endsWith('.exe')));
         if (!nightly) return;
@@ -130,7 +113,7 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
           date.textContent = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
             .format(new Date(nightly.published_at));
         }
-        const lines = changes(nightly.body);
+        const lines = changes(nightly.body).slice(0, 8);
         if (notes && lines.length > 0) {
           notes.replaceChildren(...lines.map((line) => {
             const item = document.createElement('li');

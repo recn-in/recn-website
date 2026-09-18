@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base
+  title="How RECN syncs"
+  description="No server holds your library. Every device does, and they keep each other current: Lattice for the merging, Iroh for the connection."
+>
+  <Header />
+  <main id="main-content">
+    <article class="article-shell prose">
+      <header class="post-header">
+        <p class="label">HOW IT WORKS</p>
+        <h1>Every device is the library.</h1>
+      </header>
+
+      <p>RECN has no server holding your recordings. Each device you pair keeps the real thing — the full record of your recordings, notes, projects and sessions, and the audio on its own disk — and the devices keep each other current. Nothing waits on a network to open, record or edit.</p>
+      <p>The layer that does this is called <strong>Lattice</strong>. It rides on <a href="https://www.iroh.computer" target="_blank" rel="noreferrer">Iroh</a>.</p>
+
+      <h2>Small facts and big sound travel separately</h2>
+      <p>A title, a marker, a line in a note: these are small facts. Every field carries its own timestamp, so if you rename a recording on your phone while your Mac moves it to another project, both edits survive. If both devices rename it, the later one wins, and it wins the same way everywhere. Note text and drawings merge more finely still, so two devices editing one note end up with all of the words.</p>
+      <p>Audio is different. A rehearsal can be 600 MB. It moves in chunks, picks up where it stopped after a dropped connection, and counts as a copy only once its length and SHA-256 digest match the original. Until then it is partial, and RECN says so. The Sync screen shows where each recording really lives: amber is one copy, green is two or more.</p>
+
+      <h2>In the same room</h2>
+      <p>Devices on one network announce themselves over Bonjour. You approve a pairing once; after that they find each other and sync on their own, with no internet at all. That matters in a rehearsal room with no signal.</p>
+
+      <h2>Anywhere else</h2>
+      <p>Each device holds a cryptographic key, and that key is its address. To pair across networks, one device shows a QR code and the other scans it. From then on a device dials its peer by key. The connection is QUIC, encrypted between the two devices. They connect directly whenever the networks between them allow it; when they don’t, the traffic passes through a relay that forwards packets it cannot read.</p>
+      <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything above still works nearby.</p>
+
+      <h2>Standing on Iroh</h2>
+      <p>We did not build the hard networking part. Iroh, from the team at n0, does dial-by-key, hole punching and relays, and does them well. Until September 2026 Lattice spoke plain TCP and only on the local network. Moving to Iroh brought encryption, real device identity and the internet in one step, without adding a second way to sync.</p>
+      <p>The idea underneath is older and simpler than any of it: two machines in the same room should talk to each other, not to a data centre three thousand miles away.</p>
+
+      <h2>What isn’t there yet</h2>
+      <ul>
+        <li>Relays are n0’s public ones for now. RECN-run relays come before launch.</li>
+        <li>There are no accounts. Pairing is device to device, which also means no web access, and no recovery if you lose every device you own.</li>
+        <li>There is no cloud copy. The plan is an always-on anchor device that speaks the same protocol, not a separate cloud sync.</li>
+        <li>Phones sync while RECN is open. Background sync is not built.</li>
+      </ul>
+    </article>
+  </main>
+  <Footer />
+</Base>
