@@ -20,7 +20,7 @@ const features = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    group: z.enum(['Record', 'Sessions', 'Notes', 'Find', 'Sync', 'Everywhere', 'Private']),
+    group: z.enum(['Capture', 'Sessions', 'Notes', 'Find', 'Sync', 'Everywhere', 'Private']),
     order: z.number(),
     platforms: z.array(z.enum(['macOS', 'Windows', 'iPhone', 'iPad', 'Android'])).min(1),
     shipped: z.date(),

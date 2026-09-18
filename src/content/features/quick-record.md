@@ -1,7 +1,7 @@
 ---
 title: Record without opening RECN
 summary: RECN can sit in the menu bar or tray and record from a keyboard shortcut, with no window in the way.
-group: Record
+group: Capture
 order: 2
 platforms: [macOS, Windows]
 shipped: 2026-09-17
