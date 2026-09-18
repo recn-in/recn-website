@@ -2,6 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://recn-in.github.io/recn-website/</loc></url>
   <url><loc>https://recn-in.github.io/recn-website/download/</loc></url>
+  <url><loc>https://recn-in.github.io/recn-website/features/</loc></url>
+  <url><loc>https://recn-in.github.io/recn-website/releases/</loc></url>
+  <url><loc>https://recn-in.github.io/recn-website/how-it-works/</loc></url>
   <url><loc>https://recn-in.github.io/recn-website/blog/</loc></url>
   <url><loc>https://recn-in.github.io/recn-website/blog/inside-lattice/</loc></url>
   <url><loc>https://recn-in.github.io/recn-website/blog/introducing-recn/</loc></url>
