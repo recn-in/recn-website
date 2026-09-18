@@ -452,7 +452,7 @@ main { overflow-x: clip; }
 
 /* Line mockups of real screens: strokes only, in the theme's ink. */
 .mock { margin: 2.4em 0; }
-.mock svg { display: block; width: 100%; height: auto; fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.mock svg { display: block; width: 100%; height: auto; border: 1px solid var(--divider); fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
 .mock svg * { vector-effect: non-scaling-stroke; }
 .mock .dim { stroke: var(--tertiary); }
 .mock .accent { stroke: var(--accent); }
