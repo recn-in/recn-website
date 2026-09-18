@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { isNew, monthYear } from '../../lib/features';
+
+export async function getStaticPaths() {
+  const features = await getCollection('features');
+  return features.map((feature) => ({ params: { slug: feature.slug }, props: { feature } }));
+}
+
+const { feature } = Astro.props;
+const { Content } = await feature.render();
+const base = import.meta.env.BASE_URL;
+---
+
+<Base title={`${feature.data.title} — RECN`} description={feature.data.summary}>
+  <Header />
+  <main id="main-content">
+    <article class="article-shell prose">
+      <header class="post-header">
+        <p class="label"><a href={`${base}features/`}>FEATURES</a> · {feature.data.group.toUpperCase()}</p>
+        <h1>{feature.data.title}</h1>
+        <div class="post-meta">
+          {isNew(feature.data.shipped) && <span class="is-new">New</span>}
+          <span>{monthYear(feature.data.shipped)}</span>
+          <span>{feature.data.platforms.join(' · ')}</span>
+        </div>
+      </header>
+      <Content />
+      <p class="feature-next">
+        <a href={`${base}features/`}>← All features</a>
+        <a href={`${base}download/`}>Get RECN →</a>
+      </p>
+    </article>
+  </main>
+  <Footer />
+</Base>

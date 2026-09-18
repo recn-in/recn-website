@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { GROUPS, isNew } from '../../lib/features';
+
+const base = import.meta.env.BASE_URL;
+
+// One file per feature in src/content/features. Everything listed is in the
+// builds people can download today.
+const features = (await getCollection('features')).sort((a, b) => a.data.order - b.data.order);
+const fresh = features.filter((feature) => isNew(feature.data.shipped))
+  .sort((a, b) => b.data.shipped.valueOf() - a.data.shipped.valueOf());
+const sections = [
+  ...(fresh.length > 0 ? [{ name: 'New', items: fresh }] : []),
+  ...GROUPS.map((name) => ({ name, items: features.filter((feature) => feature.data.group === name) })),
+].filter((section) => section.items.length > 0);
+---
+
+<Base title="What RECN does" description="Everything in RECN today: recording, layered sessions, notes and drawings, transcripts and search, and device-to-device sync across macOS, Windows, iPhone, iPad and Android.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">FEATURES</p>
+      <h1>What RECN does</h1>
+      <p>A recorder that keeps the sound, the words and the context in one place, on every device you own. This is everything in the builds you can download today.</p>
+    </header>
+
+    <div class="log log--features">
+      {sections.map((section) => (
+        <section aria-labelledby={`group-${section.name.toLowerCase()}`}>
+          <h2 id={`group-${section.name.toLowerCase()}`}>{section.name}</h2>
+          <div>
+            <article>
+              <ul>
+                {section.items.map((feature) => (
+                  <li>
+                    <a href={`${base}features/${feature.slug}/`}>
+                      <strong>{feature.data.title} <b aria-hidden="true">→</b></strong>
+                      {feature.data.summary}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+      ))}
+    </div>
+        </section>
+      ))}
+    </div>
+
+    <div class="download-actions">
+      <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
+      <a class="button button--secondary" href={`${base}how-it-works/`}>How the sync works <span>→</span></a>
+    </div>
+  </main>
+  <Footer />
+</Base>
