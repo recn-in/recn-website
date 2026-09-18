@@ -4,7 +4,7 @@
 // 0 to 1 while c runs from i - 0.5 to i + 0.5, and fades at both ends. Nothing
 // depends on scroll direction, so it scrubs backwards as well as forwards.
 import * as THREE from 'three';
-import { type Act, band, ramp, type Tone } from './kit';
+import { type Act, band, ramp, STILL, type Tone } from './kit';
 import { HOME, type Globe, onGlobe } from './globe-acts';
 
 export type Build = (globe: Globe, chapters: HTMLElement[]) => Act[];
@@ -98,7 +98,7 @@ export const start = (canvas: HTMLCanvasElement, story: HTMLElement, overlay: HT
   const draw = (ms: number) => {
     // Reduced motion: no idle movement, and every self-drawing intro is complete.
     // (The first frame's timestamp can be a hair earlier than `began`.)
-    const t = still.matches ? 1000 : Math.max(0, ms - began) / 1000;
+    const t = still.matches ? STILL : Math.max(0, ms - began) / 1000;
     c += (chapterAt() - c) * (still.matches ? 1 : 0.1);
     lean.lerp(pointer, 0.06);
 
