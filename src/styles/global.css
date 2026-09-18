@@ -366,20 +366,95 @@ main { overflow-x: clip; }
 .download-grid a {
   display: flex;
   position: relative;
-  min-height: 116px;
+  min-height: 218px;
   flex-direction: column;
-  justify-content: space-between;
   margin: 0 -1px -1px 0;
-  padding: 18px;
+  padding: 24px 24px 0;
+  overflow: hidden;
   border: 1px solid var(--divider);
+  transition: background .35s ease, color .35s ease, border-color .35s ease;
 }
 
+/* A red playhead draws across the card being pointed at. */
+.download-grid a::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--accent);
+  content: '';
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+.download-grid a:hover::before,
+.download-grid a:focus-visible::before { transform: scaleX(1); }
 .download-grid a:hover { background: var(--surface); }
-.download-grid a.is-mine { z-index: 1; border-color: var(--ink); }
-.download-grid span { display: flex; align-items: center; color: var(--secondary); font: 600 0.64rem/1 var(--mono); gap: 9px; }
-.download-grid svg { width: 17px; height: 17px; fill: var(--ink); }
-.download-grid strong { font-size: 0.9rem; }
-.download-grid small { color: var(--secondary); font: 500 0.6rem/1.45 var(--mono); }
+
+/* The visitor's own platform is the solid one. */
+.download-grid a.is-mine { z-index: 1; border-color: var(--ink); background: var(--ink); color: var(--background); }
+.download-grid a.is-mine span,
+.download-grid a.is-mine small { color: color-mix(in srgb, var(--background) 62%, transparent); }
+.download-grid a.is-mine svg { fill: var(--background); }
+
+.download-grid span { display: flex; align-items: center; color: var(--secondary); font: 600 0.68rem/1 var(--mono); letter-spacing: .04em; gap: 14px; text-transform: uppercase; }
+.download-grid svg { width: 38px; height: 38px; fill: var(--ink); transition: fill .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
+.download-grid a:hover svg { transform: translateY(-3px); }
+.download-grid strong { display: flex; align-items: baseline; margin-top: 34px; font-size: 1.3rem; font-weight: 620; letter-spacing: -.025em; gap: 10px; }
+.download-grid strong b { display: inline-block; font-weight: 400; transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
+.download-grid a:hover strong b { transform: translate(3px, -3px); }
+.download-grid a[data-release-platform='macos']:hover strong b,
+.download-grid a[data-release-platform='windows']:hover strong b { transform: translateY(4px); }
+.download-grid small { margin-top: 8px; color: var(--secondary); font: 500 0.62rem/1.45 var(--mono); }
+
+.download-grid__wave {
+  display: flex;
+  height: 66px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: auto -24px 0;
+  padding-top: 18px;
+  opacity: .16;
+  transition: opacity .4s ease;
+}
+
+.download-grid__wave i {
+  width: 2px;
+  height: 100%;
+  transform: scaleY(calc(var(--h) * .3));
+  transform-origin: bottom;
+  background: currentColor;
+}
+
+.download-grid a:hover .download-grid__wave,
+.download-grid a:focus-visible .download-grid__wave { opacity: .55; }
+.download-grid a.is-mine .download-grid__wave { opacity: .4; }
+
+@keyframes download-wave {
+  from { transform: scaleY(calc(var(--h) * .22)); }
+  to { transform: scaleY(var(--h)); }
+}
+
+@keyframes download-rise {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .download-grid a { animation: download-rise .7s cubic-bezier(.2, .8, .2, 1) both; }
+  .download-grid a:nth-child(2) { animation-delay: .07s; }
+  .download-grid a:nth-child(3) { animation-delay: .14s; }
+  .download-grid a:nth-child(4) { animation-delay: .21s; }
+
+  .download-grid a:hover .download-grid__wave i,
+  .download-grid a:focus-visible .download-grid__wave i,
+  .download-grid a.is-mine .download-grid__wave i {
+    animation: download-wave .62s ease-in-out calc(var(--i) * -83ms) infinite alternate;
+  }
+  .download-grid a.is-mine:not(:hover) .download-grid__wave i { animation-duration: 1.5s; }
+}
+
 .simple-page > .build-caveat { max-width: 640px; }
 
 .release-browser {
@@ -571,6 +646,7 @@ main { overflow-x: clip; }
   .home-closing { min-height: 560px; padding-top: 100px; padding-bottom: 100px; }
   .simple-page { padding-top: 60px; padding-bottom: 80px; }
   .download-grid { grid-template-columns: 1fr; }
+  .download-grid a.is-mine { order: -1; }
 
   .person { grid-template-columns: 52px 1fr; }
   .person__links { grid-column: 2; }

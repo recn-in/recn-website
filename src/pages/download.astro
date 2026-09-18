@@ -9,11 +9,15 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
 // Desktop cards start at the releases list; the script below points them at
 // the newest nightly and fills in the file name and size.
 const platforms = [
-  { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', note: 'Signed and notarized', live: true },
-  { id: 'windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', note: 'Per-user installer', live: true },
-  { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight ↗', note: 'Updates arrive through TestFlight', live: false },
-  { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access ↗', note: 'Updates arrive through Google Play', live: false },
+  { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
+  { id: 'windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer', live: true },
+  { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight', arrow: '↗', note: 'Updates arrive through TestFlight', live: false },
+  { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access', arrow: '↗', note: 'Updates arrive through Google Play', live: false },
 ];
+
+// Each card carries a strip of waveform bars: quiet at rest, playing on hover.
+const bars = Array.from({ length: 56 }, (_, i) =>
+  (0.22 + 0.78 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.43))).toFixed(2));
 ---
 
 <Base title="Get RECN" description="RECN Rec for macOS, Windows, iPhone, iPad and Android.">
@@ -33,8 +37,11 @@ const platforms = [
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
               {platform.name}
             </span>
-            <strong>{platform.action}</strong>
+            <strong>{platform.action} <b aria-hidden="true">{platform.arrow}</b></strong>
             <small data-asset-meta={platform.live ? '' : undefined}>{platform.note}</small>
+            <div class="download-grid__wave" aria-hidden="true">
+              {bars.map((height, i) => <i style={`--h:${height};--i:${i}`}></i>)}
+            </div>
           </a>
         ))}
       </div>
