@@ -43,7 +43,8 @@
     const draw = (ms: number) => {
       const t = ms / 1000;
       const travel = ((t * 0.06) % 1.5) - 0.25;
-      const mid = height * 0.6;
+      // Level with the constellation in the hero's window, so the ribbon runs through it.
+      const mid = height * 0.53;
       const amp = Math.min(height * 0.11, 90);
       const fan = Math.min(height * 0.2, 170);
 

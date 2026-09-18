@@ -430,7 +430,9 @@
     isolation: isolate;
     overflow: visible;
     color: var(--ink);
-    --story-shadow: 0 48px 110px color-mix(in srgb, #111 16%, transparent);
+    --story-shadow: 0 30px 90px color-mix(in srgb, #111 9%, transparent);
+    /* The window is glass over the hero's waveform ribbon, not a pasted screenshot. */
+    --story-glass: color-mix(in srgb, var(--background) 58%, transparent);
   }
 
   .sync-story__aura {
@@ -455,10 +457,11 @@
     width: 88%;
     height: 72%;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
     border-radius: 14px;
-    background: var(--background);
+    background: var(--story-glass);
     box-shadow: var(--story-shadow);
+    backdrop-filter: blur(2px);
   }
 
   .sync-story__desktop-topbar {
@@ -468,7 +471,7 @@
     align-items: center;
     padding: 0 12px;
     border-bottom: 1px solid var(--divider);
-    background: color-mix(in srgb, var(--surface) 78%, var(--background));
+    background: color-mix(in srgb, var(--surface) 45%, transparent);
     color: var(--secondary);
     font: 600 .48rem/1 var(--mono);
     letter-spacing: .08em;
@@ -480,7 +483,7 @@
   .sync-story__desktop-state i { width: 5px; height: 5px; border-radius: 50%; background: var(--safe); box-shadow: 0 0 0 4px color-mix(in srgb, var(--safe) 12%, transparent); }
 
   .sync-story__app { display: grid; grid-template-columns: 118px 1fr; height: calc(100% - 34px); }
-  .sync-story__sidebar { display: flex; flex-direction: column; padding: 19px 12px; border-right: 1px solid var(--divider); background: color-mix(in srgb, var(--surface) 55%, var(--background)); }
+  .sync-story__sidebar { display: flex; flex-direction: column; padding: 19px 12px; border-right: 1px solid var(--divider); background: color-mix(in srgb, var(--surface) 35%, transparent); }
   .sync-story__sidebar b { margin: 0 7px 21px; font-size: .57rem; letter-spacing: .15em; }
   .sync-story__sidebar span { display: flex; align-items: center; min-height: 29px; padding: 0 8px; color: var(--secondary); font-size: .52rem; gap: 7px; }
   .sync-story__sidebar span i { width: 8px; height: 8px; border: 1px solid currentColor; }
@@ -517,7 +520,7 @@
     width: 27%;
     aspect-ratio: .49 / 1;
     transform: rotate(2deg);
-    filter: drop-shadow(0 34px 38px color-mix(in srgb, #111 24%, transparent));
+    filter: drop-shadow(0 26px 34px color-mix(in srgb, #111 13%, transparent));
     transition: transform .8s cubic-bezier(.2,.8,.2,1);
   }
 
@@ -562,6 +565,10 @@
   .sync-story__meter i { display: block; width: 100%; height: 100%; transform: scaleX(0); transform-origin: left; background: var(--ink); }
   .sync-story__privacy { grid-column: 2; margin-top: 9px; color: var(--secondary); font: 600 .38rem/1 var(--mono); letter-spacing: .06em; }
   .sync-story__privacy span { display: inline-block; width: 15px; height: 1px; margin: 0 7px 3px; background: var(--divider); }
+
+  @media (prefers-contrast: more) {
+    .sync-story { --story-glass: var(--background); }
+  }
 
   @keyframes mobile-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--single) 40%, transparent); } to { box-shadow: 0 0 0 10px transparent; } }
   @keyframes wave { to { transform: scaleY(calc(var(--wave, .5) * 1.55)); } }
