@@ -366,13 +366,12 @@ main { overflow-x: clip; }
 .download-grid a {
   display: flex;
   position: relative;
-  min-height: 218px;
+  min-height: 168px;
   flex-direction: column;
   margin: 0 -1px -1px 0;
-  padding: 24px 24px 0;
+  padding: 20px 20px 0;
   overflow: hidden;
   border: 1px solid var(--divider);
-  transition: background .35s ease, color .35s ease, border-color .35s ease;
 }
 
 /* A red playhead draws across the card being pointed at. */
@@ -392,31 +391,22 @@ main { overflow-x: clip; }
 .download-grid a:hover::before,
 .download-grid a:focus-visible::before { transform: scaleX(1); }
 .download-grid a:hover { background: var(--surface); }
+.download-grid a.is-mine { z-index: 1; border-color: var(--ink); }
+.download-grid span { display: flex; align-items: center; color: var(--secondary); font: 600 0.64rem/1 var(--mono); gap: 11px; }
+.download-grid svg { width: 24px; height: 24px; fill: var(--ink); }
+.download-grid strong { margin-top: 26px; font-size: 1.05rem; font-weight: 620; letter-spacing: -.015em; }
+.download-grid strong b { font-weight: 400; }
+.download-grid small { margin-top: 6px; color: var(--secondary); font: 500 0.6rem/1.45 var(--mono); }
 
-/* The visitor's own platform is the solid one. */
-.download-grid a.is-mine { z-index: 1; border-color: var(--ink); background: var(--ink); color: var(--background); }
-.download-grid a.is-mine span,
-.download-grid a.is-mine small { color: color-mix(in srgb, var(--background) 62%, transparent); }
-.download-grid a.is-mine svg { fill: var(--background); }
-
-.download-grid span { display: flex; align-items: center; color: var(--secondary); font: 600 0.68rem/1 var(--mono); letter-spacing: .04em; gap: 14px; text-transform: uppercase; }
-.download-grid svg { width: 38px; height: 38px; fill: var(--ink); transition: fill .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
-.download-grid a:hover svg { transform: translateY(-3px); }
-.download-grid strong { display: flex; align-items: baseline; margin-top: 34px; font-size: 1.3rem; font-weight: 620; letter-spacing: -.025em; gap: 10px; }
-.download-grid strong b { display: inline-block; font-weight: 400; transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
-.download-grid a:hover strong b { transform: translate(3px, -3px); }
-.download-grid a[data-release-platform='macos']:hover strong b,
-.download-grid a[data-release-platform='windows']:hover strong b { transform: translateY(4px); }
-.download-grid small { margin-top: 8px; color: var(--secondary); font: 500 0.62rem/1.45 var(--mono); }
-
+/* A strip of waveform bars: flat at rest, playing on the card being pointed at. */
 .download-grid__wave {
   display: flex;
-  height: 66px;
+  height: 44px;
   align-items: flex-end;
   justify-content: space-between;
-  margin: auto -24px 0;
-  padding-top: 18px;
-  opacity: .16;
+  margin: auto -20px 0;
+  padding-top: 16px;
+  opacity: .14;
   transition: opacity .4s ease;
 }
 
@@ -429,30 +419,18 @@ main { overflow-x: clip; }
 }
 
 .download-grid a:hover .download-grid__wave,
-.download-grid a:focus-visible .download-grid__wave { opacity: .55; }
-.download-grid a.is-mine .download-grid__wave { opacity: .4; }
+.download-grid a:focus-visible .download-grid__wave { opacity: .45; }
 
 @keyframes download-wave {
   from { transform: scaleY(calc(var(--h) * .22)); }
   to { transform: scaleY(var(--h)); }
 }
 
-@keyframes download-rise {
-  from { opacity: 0; transform: translateY(12px); }
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .download-grid a { animation: download-rise .7s cubic-bezier(.2, .8, .2, 1) both; }
-  .download-grid a:nth-child(2) { animation-delay: .07s; }
-  .download-grid a:nth-child(3) { animation-delay: .14s; }
-  .download-grid a:nth-child(4) { animation-delay: .21s; }
-
   .download-grid a:hover .download-grid__wave i,
-  .download-grid a:focus-visible .download-grid__wave i,
-  .download-grid a.is-mine .download-grid__wave i {
+  .download-grid a:focus-visible .download-grid__wave i {
     animation: download-wave .62s ease-in-out calc(var(--i) * -83ms) infinite alternate;
   }
-  .download-grid a.is-mine:not(:hover) .download-grid__wave i { animation-duration: 1.5s; }
 }
 
 .simple-page > .build-caveat { max-width: 640px; }
