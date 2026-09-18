@@ -227,6 +227,24 @@ main { overflow-x: clip; }
 
 .home-hero h1 span { color: var(--secondary); }
 
+/* The name, spelled out: three words take turns, with R·E·C·N lit inside each. */
+.recn-name a { display: inline-grid; color: var(--tertiary); font-size: 0.78rem; }
+.recn-name a > span { grid-area: 1 / 1; opacity: 0; animation: recn-name 10.5s infinite; }
+.recn-name a > span:nth-child(2) { animation-delay: 3.5s; }
+.recn-name a > span:nth-child(3) { animation-delay: 7s; }
+.recn-name b { color: var(--ink); font-weight: inherit; }
+.recn-name i { margin-left: 14px; color: var(--secondary); font-style: normal; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+@keyframes recn-name {
+  0% { opacity: 0; translate: 0 6px; }
+  3%, 30% { opacity: 1; translate: 0; }
+  33.3%, 100% { opacity: 0; translate: 0 -6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recn-name a { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .recn-name a > span { opacity: 1; animation: none; }
+  .recn-name i { display: none; }
+}
+
 .home-hero__intro,
 .simple-page__header > p:last-child {
   max-width: 570px;

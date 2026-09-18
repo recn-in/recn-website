@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Story from '../../components/Story.astro';
-import { GROUPS, isNew } from '../../lib/features';
+import { GROUPS, isNew, SETS } from '../../lib/features';
 import { ACTS } from '../../story/features-story';
 
 const base = import.meta.env.BASE_URL;
@@ -20,35 +20,68 @@ const features = await Promise.all(
 // In the browser a missing act only costs the drawing, silently; here it costs the build.
 const undrawn = features.filter((feature) => !ACTS[feature.slug]).map((feature) => feature.slug);
 if (undrawn.length) throw new Error(`features: no act in src/story/features-story.ts for ${undrawn.join(', ')}`);
-const groups = GROUPS.map((name) => ({ name, first: features.find((feature) => feature.data.group === name) }));
+
+// The page is three sets, one per word in the name. Each opens on why it
+// exists before it shows what it does.
+const WHY: Record<(typeof SETS)[number]['id'], string> = {
+  record: 'The recorder should never be why you lost the idea. So it is one press or one shortcut away, the sound goes to disk as it arrives, and nothing you play is thrown away: not the take you replaced, not the part you trimmed off.',
+  reckon: 'To reckon is to remember, and to work something out. A recording you cannot find is a recording you do not have, so the words sit beside the sound: notes that hold the recording itself, comments pinned to the second, transcripts made on the phone, and one search across all of it.',
+  reconcile: 'Most apps settle their differences on someone else’s server. Your devices settle them with each other. Each one holds the whole library, edits merge field by field, and a recording turns green only when a verified copy is on all of them. No account. No cloud.',
+};
+const sets = SETS.map((set) => ({ ...set, features: features.filter((feature) => (set.groups as readonly string[]).includes(feature.data.group)) }));
 ---
 
-<Base title="What RECN does" description="Everything in RECN today, and what each part does behind the scenes: recording, layered sessions, notes and drawings, transcripts and search, and device-to-device sync across macOS, Windows, iPhone, iPad and Android.">
+<Base title="What RECN does" description="RECN is three words: record, reckon, reconcile. Everything the app does today, grouped by the one it serves, with what happens behind the scenes: recording and layered sessions, notes, transcripts and search, and device-to-device sync across macOS, Windows, iPhone, iPad and Android.">
   <Header />
   <main id="main-content">
     <div class="story" data-story="features">
+      <nav class="story-nav" aria-label="Feature sets" data-story-nav>
+        <div class="shell">
+          {sets.map((set) => (
+            <div class="story-nav__set" data-set={set.id}>
+              <a href={`#${set.id}`}>{set.word}</a>
+              <span>{set.features.map((feature) => <a href={`#${feature.slug}`}>{feature.data.title}</a>)}</span>
+            </div>
+          ))}
+        </div>
+      </nav>
       <Story />
       <div class="story__chapters shell">
         <section class="story__chapter" data-story-chapter data-act="intro">
           <div class="story__card">
-            <p class="label">FEATURES</p>
-            <h1>What RECN does</h1>
-            <p>A recorder that keeps the sound, the words and the context in one place, on every device you own. Scroll to watch what each part does behind the scenes. Everything here is in the builds you can download today.</p>
-            <p class="story__spec story__jump">
-              {groups.map(({ name, first }) => first && <a href={`#${first.slug}`}>{name}</a>)}
-            </p>
+            <p class="label">THE NAME</p>
+            <h1>RECN is three words.</h1>
+            <p>An idea arrives once, and rarely at a good time. What happens to it next is the whole app: you record it, you reckon with it, and your devices reconcile it. Everything RECN does is one of those three.</p>
+            <ul class="story__sets">
+              {sets.map((set) => <li><a href={`#${set.id}`}><strong>{set.word}</strong>{set.promise} <b aria-hidden="true">→</b></a></li>)}
+            </ul>
           </div>
         </section>
-        {features.map(({ slug, data, Words }) => (
-          <section class="story__chapter" id={slug} data-story-chapter data-act={slug}>
-            <div class="story__card">
-              <p class="label">{data.group.toUpperCase()}{isNew(data.shipped) && <em>New</em>}</p>
-              <h2>{data.title}</h2>
-              <p>{data.summary}</p>
-              <Words />
-              <p class="story__spec">{data.platforms.join(' · ')}</p>
-            </div>
-          </section>
+        {sets.map((set, n) => (
+          <>
+            <section class="story__chapter" id={set.id} data-story-chapter data-act={`set-${set.id}`} data-set={set.id}>
+              <div class="story__card">
+                <p class="label">{['ONE', 'TWO', 'THREE'][n]} OF THREE</p>
+                <h2 class="story__word">{set.word}.</h2>
+                <p class="story__promise">{set.promise}.</p>
+                <p>{WHY[set.id]}</p>
+                <p class="story__spec story__jump">
+                  {set.features.map((feature) => <a href={`#${feature.slug}`}>{feature.data.title}</a>)}
+                </p>
+              </div>
+            </section>
+            {set.features.map(({ slug, data, Words }) => (
+              <section class="story__chapter" id={slug} data-story-chapter data-act={slug} data-set={set.id}>
+                <div class="story__card">
+                  <p class="label">{set.word.toUpperCase()} · {data.group.toUpperCase()}{isNew(data.shipped) && <em>New</em>}</p>
+                  <h2>{data.title}</h2>
+                  <p>{data.summary}</p>
+                  <Words />
+                  <p class="story__spec">{data.platforms.join(' · ')}</p>
+                </div>
+              </section>
+            ))}
+          </>
         ))}
       </div>
     </div>
@@ -60,6 +93,25 @@ const groups = GROUPS.map((name) => ({ name, first: features.find((feature) => f
   <Footer />
 </Base>
 
+<script>
+  // The bar marks the set, and the feature, the reader is in.
+  const nav = document.querySelector<HTMLElement>('[data-story-nav]');
+  const chapters = Array.from(document.querySelectorAll<HTMLElement>('[data-story-chapter]'));
+  let queued = false;
+  const mark = () => {
+    queued = false;
+    const centre = innerHeight / 2;
+    const here = chapters.find((chapter) => chapter.getBoundingClientRect().bottom > centre) ?? chapters[chapters.length - 1];
+    nav?.querySelectorAll<HTMLElement>('[data-set]').forEach((set) => set.toggleAttribute('data-current', set.dataset.set === here.dataset.set));
+    nav?.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
+      if (link.hash === `#${here.id}`) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(mark); } }, { passive: true });
+  mark();
+</script>
+
 <style>
   .label em { margin-left: 10px; color: var(--accent); font-style: normal; }
   .story__spec { text-transform: uppercase; }
@@ -69,4 +121,42 @@ const groups = GROUPS.map((name) => ({ name, first: features.find((feature) => f
   .story__jump { display: flex; flex-wrap: wrap; gap: 4px 14px; }
   .story__jump a { color: var(--secondary); }
   .story__jump a:hover { color: var(--accent); }
+
+  /* A set's opening says its word first, then what it promises. */
+  .story__card .story__word { font-size: clamp(2.6rem, 5vw, 4.2rem); }
+  .story__card > .story__promise:not(.label) { margin-top: 14px; color: var(--ink); font-size: 1.08rem; font-weight: 560; line-height: 1.35; }
+  .story__sets { margin: 22px 0 0; padding: 0; border-top: 1px solid var(--divider); list-style: none; }
+  .story__sets a { display: block; padding: 11px 0; border-bottom: 1px solid var(--divider); color: var(--secondary); font-size: 0.86rem; line-height: 1.45; }
+  .story__sets strong { display: block; color: var(--ink); font: 600 0.62rem/1.8 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  .story__sets b { display: inline-block; color: var(--tertiary); font-weight: 400; transition: transform .3s ease, color .3s ease; }
+  .story__sets a:hover b { transform: translateX(3px); color: var(--accent); }
+
+  /* The bar under the header: three words, and the features of the one you are in. */
+  .story-nav {
+    position: sticky;
+    z-index: 5;
+    top: 64px;
+    border-bottom: 1px solid var(--divider);
+    background: color-mix(in srgb, var(--background) 92%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .story-nav .shell { display: flex; overflow-x: auto; align-items: center; gap: 26px; scrollbar-width: none; white-space: nowrap; }
+  .story-nav .shell::-webkit-scrollbar { display: none; }
+  .story-nav__set { display: flex; align-items: center; gap: 18px; }
+  .story-nav a { display: block; padding: 14px 0; color: var(--tertiary); transition: color .2s ease; }
+  .story-nav a:hover { color: var(--ink); }
+  .story-nav__set[data-current] > a { color: var(--ink); box-shadow: inset 0 -2px var(--accent); }
+  .story-nav__set > span { display: none; gap: 16px; letter-spacing: .05em; }
+  .story-nav__set[data-current] > span { display: flex; }
+  .story-nav__set > span a { color: var(--secondary); font-weight: 500; }
+  .story-nav__set > span a[aria-current] { color: var(--accent); }
+
+  @media (max-width: 899px) {
+    .story-nav .shell { justify-content: space-between; gap: 0; }
+    .story-nav__set[data-current] > span { display: none; }
+  }
 </style>

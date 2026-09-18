@@ -16,7 +16,14 @@ const base = import.meta.env.BASE_URL;
   <main id="main-content">
     <section class="home-hero shell" aria-labelledby="home-title">
       <div class="home-hero__copy">
-        <p class="label">RECN · LATTICE</p>
+        <p class="label recn-name">
+          {/* The four letters are inside all three words; each word is a third of the app. */}
+          <a href={`${base}features/`} aria-label="RECN is three words: record, reckon, reconcile. See what each one means.">
+            <span aria-hidden="true"><b>REC</b>ORD<i>catch it before it goes</i></span>
+            <span aria-hidden="true"><b>REC</b>KO<b>N</b><i>find it again</i></span>
+            <span aria-hidden="true"><b>REC</b>O<b>N</b>CILE<i>every device agrees</i></span>
+          </a>
+        </p>
         <h1 id="home-title">Your recordings.<br /><span>In motion.</span></h1>
         <p class="home-hero__intro">Capture on one device. Continue on another. RECN moves recordings and context directly between your own devices. No account. No cloud library.</p>
         <div class="download-actions">

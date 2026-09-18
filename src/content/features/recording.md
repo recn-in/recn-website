@@ -1,7 +1,7 @@
 ---
 title: Recording
 summary: Press record and the audio goes straight to a file, with a meter and a live waveform while it runs.
-group: Record
+group: Capture
 order: 1
 platforms: [macOS, Windows, iPhone, iPad, Android]
 shipped: 2026-07-15
