@@ -2,37 +2,53 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import SyncStory from '../components/SyncStory.astro';
+
+const base = import.meta.env.BASE_URL;
+
+// One chapter per screen. The drawing behind them is keyed to their order, so
+// adding or moving one means retiming SyncStory.astro.
+const chapters = [
+  ['THE USUAL WAY', 'Your phone is three feet from your computer.', 'Most apps move a recording between them by sending it to a data centre on another continent and back. You make an account for the privilege, and someone else keeps a copy.'],
+  ['WHAT WE REMOVED', 'So we deleted the middle.', 'RECN has no backend. No server holds your library, so there is no account to create, no password to lose, and nothing for us to read, sell or switch off.'],
+  ['WHAT IS LEFT', 'Every device is the library.', 'Each device you pair holds the real thing: every recording, note, project and session, and the audio on its own disk. Nothing waits on a network to open, record or edit.'],
+  ['HOW IT MOVES', 'Small facts. Big sound.', 'A title or a line in a note is a small fact with its own timestamp, so edits made on two devices both survive. Audio is big. It crosses in chunks, picks up where it stopped, and counts as a copy only when its digest matches. Amber until then. Green after.'],
+  ['IN THE SAME ROOM', 'No internet required.', 'Devices on one network find each other and sync on their own. A rehearsal room with no signal is enough.'],
+  ['ANYWHERE ELSE', 'A key is an address.', 'Every device holds a key, and apart they dial each other by it, directly, over a connection encrypted between the two of them. When a network will not allow that, a relay passes along packets it cannot read. It is a postman, not a cloud.'],
+  ['THE IDEA', 'A lattice, not a cloud.', 'Add a device and the lattice grows by one. No device is in charge, and none of them is ours. Your work lives where you are.'],
+];
 ---
 
 <Base
-  title="How RECN syncs"
-  description="No server holds your library. Every device does, and they keep each other current: Lattice for the merging, Iroh for the connection."
+  title="How RECN works"
+  description="No backend, no account, no cloud library. How RECN keeps every device current by letting them talk to each other."
 >
   <Header />
   <main id="main-content">
+    <div class="story" data-story>
+      <SyncStory />
+      <div class="story__chapters shell">
+        {chapters.map(([label, title, words], i) => (
+          <section class="story__chapter" data-story-chapter>
+            <div class="story__card">
+              <p class="label">{label}</p>
+              {i === 0 ? <h1>{title}</h1> : <h2>{title}</h2>}
+              <p>{words}</p>
+              {i === chapters.length - 1 && (
+                <div class="download-actions">
+                  <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
+                </div>
+              )}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+
     <article class="article-shell prose">
-      <header class="post-header">
-        <p class="label">HOW IT WORKS</p>
-        <h1>Every device is the library.</h1>
-      </header>
-
-      <p>RECN has no server holding your recordings. Each device you pair keeps the real thing — the full record of your recordings, notes, projects and sessions, and the audio on its own disk — and the devices keep each other current. Nothing waits on a network to open, record or edit.</p>
-      <p>The layer that does this is called <strong>Lattice</strong>. It rides on <a href="https://www.iroh.computer" target="_blank" rel="noreferrer">Iroh</a>.</p>
-
-      <h2>Small facts and big sound travel separately</h2>
-      <p>A title, a marker, a line in a note: these are small facts. Every field carries its own timestamp, so if you rename a recording on your phone while your Mac moves it to another project, both edits survive. If both devices rename it, the later one wins, and it wins the same way everywhere. Note text and drawings merge more finely still, so two devices editing one note end up with all of the words.</p>
-      <p>Audio is different. A rehearsal can be 600 MB. It moves in chunks, picks up where it stopped after a dropped connection, and counts as a copy only once its length and SHA-256 digest match the original. Until then it is partial, and RECN says so. The Sync screen shows where each recording really lives: amber until a verified copy is on every device you have paired, green once it is.</p>
-
-      <h2>In the same room</h2>
-      <p>Devices on one network announce themselves over Bonjour. You approve a pairing once; after that they find each other and sync on their own, with no internet at all. That matters in a rehearsal room with no signal.</p>
-
-      <h2>Anywhere else</h2>
-      <p>Each device holds a cryptographic key, and that key is its address. To pair across networks, one device shows a QR code and the other scans it. From then on a device dials its peer by key. The connection is QUIC, encrypted between the two devices. They connect directly whenever the networks between them allow it; when they don’t, the traffic passes through a relay that forwards packets it cannot read.</p>
-      <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything above still works nearby.</p>
-
       <h2>Standing on Iroh</h2>
-      <p>We did not build the hard networking part. Iroh, from the team at n0, does dial-by-key, hole punching and relays, and does them well. Until September 2026 Lattice spoke plain TCP and only on the local network. Moving to Iroh brought encryption, real device identity and the internet in one step, without adding a second way to sync.</p>
-      <p>The idea underneath is older and simpler than any of it: two machines in the same room should talk to each other, not to a data centre three thousand miles away.</p>
+      <p>The layer that merges your library is ours, and it is called <strong>Lattice</strong>. The hard networking underneath it is not. <a href="https://www.iroh.computer" target="_blank" rel="noreferrer">Iroh</a>, from the team at n0, does dial-by-key, hole punching and relays, and does them well. Until September 2026 Lattice spoke plain TCP and only on the local network. Moving to Iroh brought encryption, real device identity and the internet in one step, without adding a second way to sync.</p>
+      <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything still works nearby.</p>
 
       <h2>What isn’t there yet</h2>
       <ul>
@@ -41,7 +57,42 @@ import Footer from '../components/Footer.astro';
         <li>There is no cloud copy. The plan is an always-on anchor device that speaks the same protocol, not a separate cloud sync.</li>
         <li>Phones sync while RECN is open. Background sync is not built.</li>
       </ul>
+      <p class="feature-next">
+        <a href={`${base}features/sync/`}>What sync looks like in the app →</a>
+        <a href={`${base}download/`}>Get RECN →</a>
+      </p>
     </article>
   </main>
   <Footer />
 </Base>
+
+<style>
+  .story { position: relative; }
+  .story__chapters { position: relative; z-index: 1; width: min(100%, 1440px); margin-top: -100svh; }
+  .story__chapter { display: flex; min-height: 100svh; align-items: center; }
+  .story__card { max-width: min(400px, 34vw); }
+  .story__card h1,
+  .story__card h2 { margin-top: 18px; font-size: clamp(2rem, 3.6vw, 3.1rem); font-weight: 560; letter-spacing: -.05em; line-height: 1; }
+  .story__card > p:not(.label) { margin-top: 22px; color: var(--secondary); font-size: 1rem; line-height: 1.7; }
+
+  /* With the drawing running, each chapter comes forward as it is reached. */
+  :global(.story--live) .story__card {
+    opacity: var(--near, 1);
+    transform: translateY(calc((1 - var(--near, 1)) * 18px));
+  }
+
+  @media (max-width: 899px) {
+    .story__chapter { align-items: flex-end; padding-bottom: 7svh; }
+    .story__card {
+      max-width: none;
+      padding: 20px;
+      border: 1px solid var(--divider);
+      background: color-mix(in srgb, var(--background) 84%, transparent);
+      backdrop-filter: blur(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.story--live) .story__card { opacity: 1; transform: none; }
+  }
+</style>

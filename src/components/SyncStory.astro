@@ -1,0 +1,390 @@
+<div class="story__stage" aria-hidden="true">
+  <canvas data-story-stage></canvas>
+  <p class="story__count" data-story-count></p>
+</div>
+
+<script>
+  // The story's stage: one line-drawn scene whose whole state is a function of
+  // how far the page has scrolled, so it scrubs forwards and backwards alike.
+  // `c` is the chapter the viewport is centred on, as a float.
+  import * as THREE from 'three';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-story-stage]');
+  const story = document.querySelector<HTMLElement>('[data-story]');
+  const count = document.querySelector<HTMLElement>('[data-story-count]');
+  const chapters = Array.from(document.querySelectorAll<HTMLElement>('[data-story-chapter]'));
+
+  const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+  const ramp = (c: number, a: number, b: number) => { const k = clamp01((c - a) / (b - a)); return k * k * (3 - 2 * k); };
+  const band = (c: number, a: number, b: number, d: number, e: number) => ramp(c, a, b) * (1 - ramp(c, d, e));
+
+  const start = () => {
+    if (!canvas || !story || chapters.length === 0) return;
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    story.classList.add('story--live');
+
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
+    const world = new THREE.Group(); // the globe and everything pinned to it
+    scene.add(world);
+
+    // ── materials, coloured from the theme tokens ────────────────────────
+    type Tone = 'ink' | 'dim' | 'accent' | 'single' | 'safe';
+    const tokens: Record<Tone, string> = { ink: '--ink', dim: '--tertiary', accent: '--accent', single: '--single', safe: '--safe' };
+    const painted: { material: THREE.Material & { color: THREE.Color }; tone: Tone }[] = [];
+    const paint = () => {
+      const style = getComputedStyle(document.documentElement);
+      painted.forEach(({ material, tone }) => material.color.set(style.getPropertyValue(tokens[tone]).trim()));
+    };
+    const lineMat = (tone: Tone, dashed = false) => {
+      const material = dashed
+        ? new THREE.LineDashedMaterial({ transparent: true, dashSize: 0.03, gapSize: 0.025 })
+        : new THREE.LineBasicMaterial({ transparent: true });
+      painted.push({ material, tone });
+      return material;
+    };
+    const dotMat = (tone: Tone, size: number) => {
+      const material = new THREE.PointsMaterial({ transparent: true, size, sizeAttenuation: false });
+      painted.push({ material, tone });
+      return material;
+    };
+
+    // Everything drawn carries its own visibility; `show` fades it.
+    const show = (object: THREE.Object3D, amount: number, base = 1) => {
+      object.visible = amount > 0.004;
+      const material = (object as THREE.Line).material as THREE.Material | undefined;
+      if (material) material.opacity = amount * base;
+    };
+
+    // ── geometry helpers ─────────────────────────────────────────────────
+    const segments = (points: number[], tone: Tone, dashed = false) => {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+      const line = new THREE.LineSegments(geometry, lineMat(tone, dashed));
+      if (dashed) line.computeLineDistances();
+      return line;
+    };
+    const onGlobe = (lat: number, lon: number, r = 1) => {
+      const a = THREE.MathUtils.degToRad(lat);
+      const o = THREE.MathUtils.degToRad(lon);
+      return new THREE.Vector3(r * Math.cos(a) * Math.sin(o), r * Math.sin(a), r * Math.cos(a) * Math.cos(o));
+    };
+    const ARC = 72;
+    const arc = (from: THREE.Vector3, to: THREE.Vector3, lift: number, tone: Tone, dashed = false) => {
+      const points: THREE.Vector3[] = [];
+      for (let i = 0; i <= ARC; i += 1) {
+        const t = i / ARC;
+        points.push(from.clone().lerp(to, t).normalize().multiplyScalar(1 + lift * Math.sin(Math.PI * t)));
+      }
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), lineMat(tone, dashed));
+      if (dashed) line.computeLineDistances();
+      line.userData.points = points;
+      world.add(line);
+      return line;
+    };
+    const reveal = (line: THREE.Line, k: number) => line.geometry.setDrawRange(0, Math.ceil(k * (ARC + 1)));
+    const along = (line: THREE.Line, t: number) => {
+      const points = line.userData.points as THREE.Vector3[];
+      return points[Math.min(ARC, Math.floor(clamp01(t) * ARC))];
+    };
+    // Flat glyphs that always face the viewer, so the scene reads as a drawing.
+    const facing: THREE.Object3D[] = [];
+    const glyph = (points: number[], tone: Tone, at: THREE.Vector3, size: number) => {
+      const mark = segments(points, tone);
+      mark.position.copy(at);
+      mark.scale.setScalar(size);
+      world.add(mark);
+      facing.push(mark);
+      return mark;
+    };
+    const SQUARE = [-1, -1, 0, 1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, 1, 0, -1, -1, 0];
+    const SERVER = [...SQUARE, -1, 0.34, 0, 1, 0.34, 0, -1, -0.34, 0, 1, -0.34, 0];
+    const CROSS = [-1.5, -1.5, 0, 1.5, 1.5, 0, -1.5, 1.5, 0, 1.5, -1.5, 0];
+
+    // ── the globe: a graticule and its silhouette ────────────────────────
+    const grid: number[] = [];
+    for (let lat = -60; lat <= 60; lat += 30) {
+      for (let lon = 0; lon < 360; lon += 6) grid.push(...onGlobe(lat, lon).toArray(), ...onGlobe(lat, lon + 6).toArray());
+    }
+    for (let lon = 0; lon < 360; lon += 30) {
+      for (let lat = -90; lat < 90; lat += 6) grid.push(...onGlobe(lat, lon).toArray(), ...onGlobe(lat + 6, lon).toArray());
+    }
+    const graticule = segments(grid, 'dim');
+    world.add(graticule);
+    const rim: number[] = [];
+    for (let i = 0; i < 120; i += 1) {
+      const a = (i / 120) * Math.PI * 2;
+      const b = ((i + 1) / 120) * Math.PI * 2;
+      rim.push(Math.cos(a), Math.sin(a), 0, Math.cos(b), Math.sin(b), 0);
+    }
+    const silhouette = segments(rim, 'ink');
+    scene.add(silhouette);
+
+    // ── chapters 0–1: the long way round, and the middle we deleted ──────
+    const home = onGlobe(6, -10);
+    const phone = onGlobe(9, -13);
+    const laptop = onGlobe(3, -7);
+    const farAway = onGlobe(40, 46);
+    const phoneMark = glyph(SQUARE, 'ink', phone, 0.022);
+    const laptopMark = glyph(SQUARE, 'ink', laptop, 0.03);
+    const serverMark = glyph(SERVER, 'ink', farAway, 0.05);
+    const strike = glyph(CROSS, 'accent', farAway, 0.075);
+    const wayUp = arc(phone, farAway, 0.26, 'ink');
+    const wayDown = arc(farAway, laptop, 0.16, 'ink');
+    const direct = arc(phone, laptop, 0.03, 'accent');
+    const parcel = new THREE.Points(new THREE.BufferGeometry().setFromPoints([home.clone()]), dotMat('single', 7));
+    world.add(parcel);
+
+    // ── chapters 2–4: up close, every device holds the library ───────────
+    const room = new THREE.Group(); // drawn flat, facing the viewer
+    scene.add(room);
+    const device = (w: number, h: number, x: number, y: number, extra: number[] = []) => {
+      const outline = [-w, -h, 0, w, -h, 0, w, -h, 0, w, h, 0, w, h, 0, -w, h, 0, -w, h, 0, -w, -h, 0];
+      const rows: number[] = [];
+      for (let i = 0; i < 3; i += 1) rows.push(-w * 0.6, h * (0.45 - i * 0.4), 0, w * (0.6 - i * 0.22), h * (0.45 - i * 0.4), 0);
+      const frame = segments([...outline, ...extra], 'ink');
+      const library = segments(rows, 'dim');
+      frame.position.set(x, y, 0);
+      library.position.set(x, y, 0);
+      room.add(frame, library);
+      return { frame, library, at: new THREE.Vector3(x, y, 0), h };
+    };
+    const devices = [
+      device(0.36, 0.23, 0, 0.62, [-0.46, -0.29, 0, 0.46, -0.29, 0]), // laptop, with its base
+      device(0.13, 0.26, -0.66, -0.42), // phone
+      device(0.27, 0.2, 0.66, -0.42), // tablet
+    ];
+    const links = segments(devices.flatMap((d, i) => [...d.at.toArray(), ...devices[(i + 1) % 3].at.toArray()]), 'dim');
+    room.add(links);
+    const walls = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.5, 2.1, 0.9)), lineMat('dim', true));
+    walls.computeLineDistances();
+    walls.position.y = 0.06;
+    room.add(walls);
+    const FACTS = 9;
+    const facts = new THREE.Points(new THREE.BufferGeometry().setFromPoints(Array.from({ length: FACTS }, () => new THREE.Vector3())), dotMat('ink', 4));
+    room.add(facts);
+    const CHUNKS = 5;
+    const chunks = new THREE.Points(new THREE.BufferGeometry().setFromPoints(Array.from({ length: CHUNKS }, () => new THREE.Vector3())), dotMat('single', 9));
+    room.add(chunks);
+    const landed = segments([-0.2, -0.17, 0, 0.12, -0.17, 0], 'safe');
+    landed.position.copy(devices[0].at);
+    room.add(landed);
+
+    // ── chapter 5: anywhere else, by key, with a relay as the fallback ───
+    const cityA = onGlobe(40, 28);
+    const cityB = onGlobe(-24, 46);
+    const relayAt = onGlobe(52, 2);
+    const cityAMark = glyph(SQUARE, 'ink', cityA, 0.03);
+    const cityBMark = glyph(SQUARE, 'ink', cityB, 0.03);
+    const homeMark = glyph(SQUARE, 'ink', home, 0.03);
+    const relayMark = segments(rim, 'dim');
+    relayMark.position.copy(relayAt);
+    relayMark.scale.setScalar(0.045);
+    world.add(relayMark);
+    facing.push(relayMark);
+    const byKey = arc(home, cityA, 0.22, 'accent');
+    const toRelay = arc(home, relayAt, 0.16, 'ink', true);
+    const fromRelay = arc(relayAt, cityB, 0.3, 'ink', true);
+
+    // ── chapter 6: a lattice, not a cloud ────────────────────────────────
+    const nodes = Array.from({ length: 22 }, (_, i) => onGlobe(Math.sin(i * 2.4) * 58, i * 47 + Math.cos(i * 1.3) * 20));
+    const lattice = new THREE.Points(new THREE.BufferGeometry().setFromPoints(nodes), dotMat('ink', 5));
+    world.add(lattice);
+    // Each node reaches for its two nearest neighbours; a pair is drawn once.
+    const pairs = new Set<string>();
+    nodes.forEach((node, i) => [...nodes.keys()]
+      .filter((j) => j !== i)
+      .sort((x, y) => node.distanceTo(nodes[x]) - node.distanceTo(nodes[y]))
+      .slice(0, 2)
+      .forEach((j) => pairs.add(`${Math.min(i, j)}-${Math.max(i, j)}`)));
+    const threads = [...pairs].map((pair, n) => {
+      const [i, j] = pair.split('-').map(Number);
+      return arc(nodes[i], nodes[j], 0.08, n % 5 === 0 ? 'accent' : 'ink');
+    });
+
+    paint();
+
+    // ── scroll → chapter ────────────────────────────────────────────────
+    const chapterAt = () => {
+      const centre = innerHeight / 2;
+      for (let i = 0; i < chapters.length; i += 1) {
+        const box = chapters[i].getBoundingClientRect();
+        if (centre < box.bottom || i === chapters.length - 1) {
+          return Math.min(chapters.length - 1, Math.max(0, i + (centre - box.top) / box.height - 0.5));
+        }
+      }
+      return 0;
+    };
+
+    const wide = new THREE.Vector3(0, 0.3, 5.7);
+    let fit = 1;
+
+    const resize = () => {
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      // The words sit on the left of a wide screen and at the bottom of a
+      // narrow one; slide the picture out from under them.
+      if (width >= 900) camera.setViewOffset(width, height, -width * 0.2, 0, width, height);
+      else camera.setViewOffset(width, height, 0, height * 0.2, width, height);
+      camera.updateProjectionMatrix();
+      // A portrait screen is narrower than the globe is wide: stand further back.
+      fit = Math.max(1, 0.78 / camera.aspect);
+      wide.set(0, 0.3, 5.7 * fit);
+    };
+
+    const origin = new THREE.Vector3();
+    const near = new THREE.Vector3();
+    const focus = new THREE.Vector3();
+    const inverse = new THREE.Quaternion();
+    let c = chapterAt();
+    const began = performance.now();
+    let frame = 0;
+    let visible = true;
+
+    const draw = (ms: number) => {
+      const t = still.matches ? 0 : ms / 1000;
+      const intro = still.matches ? 9 : (ms - began) / 1000;
+      c += (chapterAt() - c) * (still.matches ? 1 : 0.09);
+
+      // The globe holds still while we look at one spot on it, turns to show
+      // the rest of the world, then drifts once the lattice is up.
+      world.rotation.y = 0.15 - 0.55 * ramp(c, 4.45, 5.0) + t * 0.06 * ramp(c, 5.5, 5.9);
+      world.updateMatrixWorld();
+
+      // Camera: the whole globe, then down to one room on it, then back out.
+      const close = ramp(c, 1.15, 2.5) * (1 - ramp(c, 4.4, 4.9));
+      focus.copy(home).applyMatrix4(world.matrixWorld);
+      near.copy(focus).multiplyScalar(1 + 0.95 * fit);
+      camera.position.lerpVectors(wide, near, close);
+      camera.lookAt(origin.copy(focus).multiplyScalar(close));
+      camera.updateMatrixWorld();
+
+      const distance = camera.position.length();
+      silhouette.position.copy(camera.position).multiplyScalar(1 / (distance * distance));
+      silhouette.scale.setScalar(Math.sqrt(1 - 1 / (distance * distance)));
+      silhouette.quaternion.copy(camera.quaternion);
+      inverse.copy(world.quaternion).invert();
+      facing.forEach((mark) => mark.quaternion.copy(inverse).multiply(camera.quaternion));
+
+      const globe = 1 - band(c, 2.2, 2.9, 4.4, 4.8);
+      show(graticule, globe, 0.85);
+      show(silhouette, globe, 0.9);
+
+      // 0 → 1: up to the data centre and back down; then it is struck out.
+      const longWay = 1 - ramp(c, 1.25, 1.75);
+      // The opening draws itself on arrival; everything after it is scroll.
+      reveal(wayUp, ramp(intro, 0.4, 1.7));
+      reveal(wayDown, ramp(intro, 1.5, 2.7));
+      show(wayUp, longWay, 0.8);
+      show(wayDown, longWay, 0.8);
+      show(serverMark, longWay);
+      show(strike, band(c, 0.85, 1.1, 1.25, 1.75));
+      const trip = (t * 0.22) % 1;
+      parcel.position.copy(trip < 0.5 ? along(wayUp, trip * 2) : along(wayDown, trip * 2 - 1));
+      show(parcel, longWay * ramp(intro, 2.7, 3.2));
+      const pair = 1 - ramp(c, 2.2, 2.8);
+      show(phoneMark, pair);
+      show(laptopMark, pair);
+      reveal(direct, ramp(c, 1.35, 1.9));
+      show(direct, pair);
+
+      // 2 → 4: the room. Small facts flit; audio crosses in chunks and lands green.
+      const inside = band(c, 2.3, 2.95, 4.35, 4.7);
+      room.position.copy(focus);
+      room.quaternion.copy(camera.quaternion);
+      room.scale.setScalar(0.15 * (0.86 + 0.14 * inside));
+      room.visible = inside > 0.004;
+      devices.forEach((d) => { show(d.frame, inside); show(d.library, inside, 0.8); });
+      show(links, inside, 0.7);
+      show(walls, inside * ramp(c, 3.5, 3.9), 0.8);
+      const moving = inside * ramp(c, 2.8, 3.3);
+      const factSpots = facts.geometry.getAttribute('position');
+      for (let i = 0; i < FACTS; i += 1) {
+        const k = (t * (0.5 + (i % 3) * 0.17) + i * 0.37) % 1;
+        const from = devices[i % 3].at;
+        const to = devices[(i + 1 + (i % 2)) % 3].at;
+        factSpots.setXYZ(i, from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k, 0);
+      }
+      factSpots.needsUpdate = true;
+      show(facts, moving, 0.85);
+      const chunkSpots = chunks.geometry.getAttribute('position');
+      const cycle = (t * 0.16) % 1;
+      for (let i = 0; i < CHUNKS; i += 1) {
+        const k = clamp01((cycle - i * 0.1) / 0.45);
+        chunkSpots.setXYZ(i, devices[1].at.x + (devices[0].at.x - devices[1].at.x) * k, devices[1].at.y + (devices[0].at.y - devices[1].at.y) * k, 0);
+      }
+      chunkSpots.needsUpdate = true;
+      const arriving = clamp01((cycle - 0.85) / 0.1) * (1 - clamp01((cycle - 0.97) / 0.03));
+      show(chunks, moving * ramp(c, 2.9, 3.4) * (1 - arriving));
+      show(landed, moving * (still.matches ? 1 : clamp01((cycle - 0.8) / 0.1)));
+
+      // 5: two cities by key, a third through a relay that cannot read a thing.
+      const apart = ramp(c, 4.6, 4.85);
+      [homeMark, cityAMark, cityBMark].forEach((mark) => show(mark, apart));
+      reveal(byKey, ramp(c, 4.65, 4.9));
+      show(byKey, apart);
+      show(relayMark, ramp(c, 4.8, 4.95));
+      reveal(toRelay, ramp(c, 4.85, 5.05));
+      reveal(fromRelay, ramp(c, 4.98, 5.2));
+      show(toRelay, apart, 0.8);
+      show(fromRelay, apart, 0.8);
+
+      // 6: the lattice fills in, thread by thread.
+      show(lattice, ramp(c, 5.5, 5.75));
+      threads.forEach((thread, i) => {
+        const from = 5.55 + (i / threads.length) * 0.28;
+        reveal(thread, ramp(c, from, from + 0.14));
+        show(thread, ramp(c, 5.5, 5.6), 0.7);
+      });
+
+      if (count) count.textContent = `${String(Math.round(c) + 1).padStart(2, '0')} / ${String(chapters.length).padStart(2, '0')}`;
+      chapters.forEach((chapter, i) => chapter.style.setProperty('--near', String(clamp01(1.35 - Math.abs(c - i) * 1.7))));
+      renderer.render(scene, camera);
+    };
+
+    const tick = (ms: number) => {
+      draw(ms);
+      frame = visible && !document.hidden ? requestAnimationFrame(tick) : 0;
+    };
+    const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
+
+    resize();
+    wake();
+    new ResizeObserver(resize).observe(canvas);
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) wake(); }).observe(story);
+    new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    document.addEventListener('visibilitychange', wake);
+  };
+
+  // No WebGL is not an error worth a broken page: the chapters read on their own.
+  try {
+    start();
+  } catch (error) {
+    console.warn('The story runs without its drawing:', error);
+  }
+</script>
+
+<style>
+  .story__stage {
+    position: sticky;
+    z-index: 0;
+    top: 0;
+    height: 100svh;
+    pointer-events: none;
+  }
+
+  .story__stage canvas { display: block; width: 100%; height: 100%; }
+
+  .story__count {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 26px;
+    color: var(--tertiary);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: .1em;
+  }
+</style>
