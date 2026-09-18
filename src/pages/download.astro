@@ -1,0 +1,129 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { apple, android, windows } from '../lib/platformMarks';
+
+const releases = 'https://github.com/recn-in/recn-releases/releases';
+
+// Desktop cards start at the releases list; the script below points them at
+// the newest nightly and fills in the file name and size.
+const platforms = [
+  { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
+  { id: 'windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer', live: true },
+  { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight', arrow: '↗', note: 'Updates arrive through TestFlight', live: false },
+  { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access', arrow: '↗', note: 'Updates arrive through Google Play', live: false },
+];
+
+---
+
+<Base title="Get RECN" description="RECN Rec for macOS, Windows, iPhone, iPad and Android.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">DOWNLOAD</p>
+      <h1>Get RECN</h1>
+      <p>One library on every device you own. Install it on two and they find each other.</p>
+    </header>
+
+    <section class="release-browser" aria-label="Downloads" data-release-browser>
+      <div class="download-grid">
+        {platforms.map((platform) => (
+          <a href={platform.href} data-release-platform={platform.id}>
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
+              {platform.name}
+            </span>
+            <strong>{platform.action} <b aria-hidden="true">{platform.arrow}</b></strong>
+            <small data-asset-meta={platform.live ? '' : undefined}>{platform.note}</small>
+          </a>
+        ))}
+      </div>
+
+      <article class="release-card">
+        <header class="release-card__header">
+          <div>
+            <p class="release-card__eyebrow">Desktop · nightly</p>
+            <h2 data-release-name>Latest build</h2>
+          </div>
+          <time data-release-date></time>
+        </header>
+        <section class="release-notes" aria-labelledby="release-notes-heading">
+          <header>
+            <h3 id="release-notes-heading">What changed</h3>
+            <a href={`${import.meta.env.BASE_URL}releases/`}>All releases →</a>
+          </header>
+          <ul data-release-notes>
+            <li>The latest notes are on the releases page.</li>
+          </ul>
+        </section>
+      </article>
+    </section>
+
+    <p class="build-caveat">Desktop builds ship nightly, straight from the latest merged work, and update themselves. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { RELEASES_API, NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
+
+  const root = document.querySelector<HTMLElement>('[data-release-browser]');
+
+  // The visitor's own platform leads the grid.
+  const ua = navigator.userAgent;
+  const mine = /Android/.test(ua) ? 'android'
+    : /iPhone|iPad/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios'
+    : /Mac/.test(ua) ? 'macos'
+    : /Windows/.test(ua) ? 'windows' : '';
+  root?.querySelector(`[data-release-platform="${mine}"]`)?.classList.add('is-mine');
+
+  const setAsset = (platform: string, asset: ReleaseAsset | undefined) => {
+    const link = root?.querySelector<HTMLAnchorElement>(`[data-release-platform="${platform}"]`);
+    const meta = link?.querySelector<HTMLElement>('[data-asset-meta]');
+    if (!link || !asset) return;
+    link.href = asset.browser_download_url;
+    if (meta) meta.textContent = `${asset.name} · ${(asset.size / 1_000_000).toFixed(0)} MB`;
+  };
+
+  if (root) {
+    fetch(`${RELEASES_API}?per_page=30`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`GitHub releases: ${response.status}`);
+        return response.json() as Promise<GitHubRelease[]>;
+      })
+      .then((all) => {
+        // Newest nightly whose installers have finished uploading.
+        const nightly = all.find((release) => !release.draft
+          && NIGHTLY_TAG.test(release.tag_name)
+          && release.assets.some((asset) => asset.name.endsWith('.dmg'))
+          && release.assets.some((asset) => asset.name.endsWith('.exe')));
+        if (!nightly) return;
+
+        setAsset('macos', nightly.assets.find((asset) => asset.name.endsWith('.dmg')));
+        setAsset('windows', nightly.assets.find((asset) => asset.name.endsWith('.exe')));
+
+        const name = root.querySelector<HTMLElement>('[data-release-name]');
+        const date = root.querySelector<HTMLTimeElement>('[data-release-date]');
+        const notes = root.querySelector<HTMLUListElement>('[data-release-notes]');
+        if (name) name.textContent = `Nightly ${nightly.tag_name.split('.').pop()}`;
+        if (date && nightly.published_at) {
+          date.dateTime = nightly.published_at;
+          date.textContent = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+            .format(new Date(nightly.published_at));
+        }
+        const lines = changes(nightly.body).slice(0, 8);
+        if (notes && lines.length > 0) {
+          notes.replaceChildren(...lines.map((line) => {
+            const item = document.createElement('li');
+            item.textContent = line;
+            return item;
+          }));
+        }
+      })
+      // The static links already lead to the releases page; say why they stayed.
+      .catch((error) => console.warn('Live release details unavailable:', error));
+  }
+</script>

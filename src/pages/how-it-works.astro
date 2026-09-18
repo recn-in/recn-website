@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SyncStory from '../components/SyncStory.astro';
+
+const base = import.meta.env.BASE_URL;
+
+// One chapter per act, in the order src/story/stage.ts lists its acts. Each is
+// a label, a headline, the words, and one line of specifics.
+const chapters = [
+  ['THE USUAL WAY', 'Your phone is three feet from your computer.', 'Most apps move a recording between them by sending it to a data centre on another continent and back. You make an account for the privilege, and someone else keeps a copy.', ''],
+  ['WHAT WE REMOVED', 'So we deleted the middle.', 'RECN has no backend. No server holds your library, so there is no account to create, no password to lose, and nothing for us to read, sell or switch off.', 'NO BACKEND · NO ACCOUNT · NO CLOUD LIBRARY'],
+  ['WHAT IS LEFT', 'Every device is the library.', 'Each device you pair holds the real thing, in two parts: the facts about your work in a database of its own, and the sound itself as files on its own disk. Nothing waits on a network to open, record or edit.', 'FACTS IN A LOCAL DATABASE · SOUND AS LOCAL FILES'],
+  ['IT STARTS WITH A RECORDING', 'Caught, drawn and saved at the same moment.', 'While you play, the audio is written into its file as it arrives. Nothing is held in memory waiting for you to press stop, so a three-hour rehearsal is as safe as a ten-second idea. What you end up with is two things: a small fact and a big file.', 'STREAMED TO DISK · ANY LENGTH'],
+  ['THE SMALL FACTS', 'Two edits. Two devices. Both survive.', 'A recording is not one blob of settings. Its name, its project, its tags are separate fields, and each one carries its own clock. Rename it on the phone while the Mac files it somewhere else, and neither edit overwrites the other.', 'MERGED FIELD BY FIELD'],
+  ['WHO WINS', 'A clock that every device agrees on.', 'Every edit is stamped with the time, a counter and the device that made it. When a message arrives, the receiver moves its own clock forward. So if two devices do change the same field, there is exactly one later edit, and every device picks the same one without asking anybody.', 'HYBRID LOGICAL CLOCK · TIME, COUNTER, DEVICE'],
+  ['THE WORDS', 'Notes merge letter by letter.', 'A note is too rich for “latest edit wins”. Type on the phone while someone types in the same note on the Mac, and when the devices meet both sets of words are there, in the same order on each. Drawings merge the same way, shape by shape.', 'CRDT · NO LOCK, NO SHARED DRAFT'],
+  ['AFTER TIME APART', 'Only the gap travels.', 'A Mac that has been shut for a week does not download your library again. Each side says how far it has seen from every device. The other side works out exactly what is missing, announces how much is coming, and sends only that.', 'VERSION VECTORS · A MANIFEST, THEN THE DELTA'],
+  ['THE BIG SOUND', 'Cut into pieces. Every piece fingerprinted.', 'Audio does not travel as one long hopeful stream. A recording is cut into 4 MiB pieces and each piece gets its own SHA-256 fingerprint, as does the whole file. A piece is checked the moment it lands, and a bad one is fetched again on its own.', '4 MIB PIECES · SHA-256 EACH'],
+  ['WHEN IT GOES WRONG', 'A dropped connection costs nothing.', 'The pieces already verified are written in a journal on disk, so a transfer that dies at piece three comes back at piece four, even after the app restarts. If two of your devices hold the file, they split the rest between them. Only when the whole file’s fingerprint matches does it count as a copy.', 'RESUMABLE · SEVERAL SOURCES AT ONCE'],
+  ['TWO LANES', 'The heartbeat never waits behind the audio.', 'Between every pair of devices run two lanes. One carries heartbeats, facts and acknowledgements. The other carries audio pieces and nothing else. A 2 GB session filling the pipe cannot make a healthy peer look dead.', 'CONTROL LANE · BULK LANE'],
+  ['IN THE SAME ROOM', 'No internet required.', 'On one network, a device simply says it is here. The others hear it, check its key against the devices you have paired, and start syncing. A rehearsal room with no signal is enough. The announcement carries a device name and a key, never your name.', 'BONJOUR · WORKS OFFLINE'],
+  ['THE FIRST HELLO', 'Pairing is two devices agreeing. Nothing else.', 'Nearby, one device asks and the other confirms. Across networks, one shows a code and the other scans it. The code holds a key, a way to reach it and a one-time token that expires in five minutes. No account is consulted, because there is none.', 'QR OR CODE · ONE-TIME TOKEN · 5 MINUTES'],
+  ['TRUST', 'Pair once. The whole set syncs.', 'Trust is a graph your devices keep among themselves. Pair the phone with the Mac and the Mac with the iPad, and the phone and iPad sync too. Remove a device and the mark sits on that device alone, so taking one out never disconnects the others.', 'A TRUST GRAPH · PER-DEVICE REMOVAL'],
+  ['ANYWHERE ELSE', 'A key is an address.', 'Apart, your devices cannot see each other, and both sit behind routers that refuse strangers. So a relay introduces them by key, both reach out at the same instant, each router lets its own device’s conversation through, and they are talking directly.', 'DIAL BY KEY · HOLE PUNCHING'],
+  ['WHEN A WALL STAYS SHUT', 'A postman, not a cloud.', 'Some networks will not allow a direct line. Then the relay carries the packets itself. They are sealed between your two devices before they leave, so it forwards what it cannot open and keeps nothing. The Sync screen tells you which it is: Local, Direct or Relayed.', 'QUIC · TLS 1.3 · KEYS ONLY ON YOUR DEVICES'],
+  ['THE POINT OF IT', 'Every copy is a whole copy.', 'A recording is amber until a verified copy sits on every device you have paired, and green after. There is no master and no thin client. Lose a phone and nothing is missing, because nothing lived only in the middle.', 'AMBER · NOT EVERYWHERE YET · GREEN · EVERYWHERE'],
+  ['THE WHOLE WORLD', 'Home, the studio, a hotel room.', 'The same rules hold at any distance. Direct when the networks allow, relayed when they do not, and never through a server that holds your work. If you would rather nothing left the building, one switch keeps everything on the local network.', 'ONLY ON MY LOCAL NETWORK · OR ANYWHERE'],
+  ['THE IDEA', 'A lattice, not a cloud.', 'Add a device and the lattice grows by one. No device is in charge, and none of them is ours. Your work lives where you are.', ''],
+];
+---
+
+<Base
+  title="How RECN works"
+  description="No backend, no account, no cloud library. How RECN keeps every device current by letting them talk to each other."
+>
+  <Header />
+  <main id="main-content">
+    <div class="story" data-story>
+      <SyncStory />
+      <div class="story__chapters shell">
+        {chapters.map(([label, title, words, spec], i) => (
+          <section class="story__chapter" data-story-chapter>
+            <div class="story__card">
+              <p class="label">{label}</p>
+              {i === 0 ? <h1>{title}</h1> : <h2>{title}</h2>}
+              <p>{words}</p>
+              {spec && <p class="story__spec">{spec}</p>}
+              {i === chapters.length - 1 && (
+                <div class="download-actions">
+                  <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
+                </div>
+              )}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+
+    <article class="article-shell prose">
+      <h2>Standing on Iroh</h2>
+      <p>The layer that merges your library is ours, and it is called <strong>Lattice</strong>. The hard networking underneath it is not. <a href="https://www.iroh.computer" target="_blank" rel="noreferrer">Iroh</a>, from the team at n0, does dial-by-key, hole punching and relays, and does them well. Until September 2026 Lattice spoke plain TCP and only on the local network. Moving to Iroh brought encryption, real device identity and the internet in one step, without adding a second way to sync.</p>
+      <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything still works nearby.</p>
+
+      <h2>What isn’t there yet</h2>
+      <ul>
+        <li>Relays are n0’s public ones for now. RECN-run relays come before launch.</li>
+        <li>There are no accounts. Pairing is device to device, which also means no web access, and no recovery if you lose every device you own.</li>
+        <li>There is no cloud copy. The plan is an always-on anchor device that speaks the same protocol, not a separate cloud sync.</li>
+        <li>Phones sync while RECN is open. Background sync is not built.</li>
+      </ul>
+      <p class="feature-next">
+        <a href={`${base}features/sync/`}>What sync looks like in the app →</a>
+        <a href={`${base}download/`}>Get RECN →</a>
+      </p>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .story { position: relative; }
+  .story__chapters { position: relative; z-index: 1; width: min(100%, 1440px); margin-top: -100svh; }
+  /* Taller than the screen, so each act has room to play while its words hold still. */
+  .story__chapter { min-height: 170svh; }
+  .story__card { position: sticky; top: 50svh; max-width: min(400px, 33vw); translate: 0 -50%; }
+  .story__card h1,
+  .story__card h2 { margin-top: 18px; font-size: clamp(1.9rem, 3.3vw, 2.9rem); font-weight: 560; letter-spacing: -.05em; line-height: 1.02; }
+  .story__card > p:not(.label):not(.story__spec) { margin-top: 22px; color: var(--secondary); font-size: 0.98rem; line-height: 1.7; }
+  .story__spec { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--divider); color: var(--ink); font: 600 0.6rem/1.6 var(--mono); letter-spacing: .07em; }
+
+  /* With the drawing running, each chapter's words come forward with its act. */
+  /* Sharper than the act's own fade, so two chapters' words never sit on top of each other. */
+  :global(.story--live) .story__card { opacity: clamp(0, calc(var(--near, 1) * 2.4 - 1.4), 1); }
+
+  @media (max-width: 899px) {
+    .story__chapter { display: flex; align-items: flex-end; }
+    .story__card {
+      top: auto;
+      bottom: 4svh;
+      max-width: none;
+      padding: 18px;
+      border: 1px solid var(--divider);
+      background: color-mix(in srgb, var(--background) 86%, transparent);
+      backdrop-filter: blur(6px);
+      translate: none;
+    }
+    .story__card h1,
+    .story__card h2 { margin-top: 12px; font-size: 1.5rem; }
+    .story__card > p:not(.label):not(.story__spec) { margin-top: 12px; font-size: 0.86rem; line-height: 1.55; }
+    .story__spec { margin-top: 12px; padding-top: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.story--live) .story__card { opacity: 1; }
+  }
+</style>

@@ -5,6 +5,8 @@ category: research
 excerpt: "How RECN exchanges library changes and audio between nearby devices."
 ---
 
+*Update, September 2026: the TCP transport described below is gone. RECN now runs on [Iroh](https://www.iroh.computer): encrypted QUIC connections dialled by device key, on the local network and across the internet. The merge and blob design still stands. A new write-up is coming.*
+
 This describes the sync architecture in the working build as of July 12, 2026.
 
 RECN has two awkward requirements: it should work without waiting for a server, and it has to move recordings that are much larger than the notes around them.
