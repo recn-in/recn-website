@@ -4,7 +4,7 @@ summary: Speech becomes text on the phone itself, and the transcript then follow
 group: Find
 order: 1
 platforms: [macOS, Windows, iPhone, iPad]
-shipped: 2026-07-11
+shipped: 2026-07-15
 ---
 
 You know someone said the thing. You do not know which of forty voice memos it is in. A transcript turns that hour of listening into a search.

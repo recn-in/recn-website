@@ -4,7 +4,7 @@ summary: No account and no hosted library. Your recordings live on your devices,
 group: Private
 order: 1
 platforms: [macOS, Windows, iPhone, iPad, Android]
-shipped: 2026-07-13
+shipped: 2026-07-15
 ---
 
 Half-finished songs, rehearsals, a voice memo of an argument about a chorus. None of that is material anyone wants sitting on a company's servers by default, so RECN does not put it there.

@@ -448,6 +448,7 @@ main { overflow-x: clip; }
 .log--features li { padding: 0; }
 .log--features li a { display: block; padding: 12px 0; }
 .log--features li strong b { display: inline-block; color: var(--tertiary); font-weight: 400; transition: transform .3s ease, color .3s ease; }
+.log--features li strong em { margin-left: 10px; color: var(--accent); font: 600 0.56rem/1 var(--mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; vertical-align: 1px; }
 .log--features li a:hover strong b { transform: translateX(3px); color: var(--accent); }
 
 /* Line mockups of real screens: strokes only, in the theme's ink. */

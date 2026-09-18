@@ -4,7 +4,7 @@ summary: One field that looks through names, note text, transcripts and project 
 group: Find
 order: 2
 platforms: [macOS, Windows, iPhone, iPad, Android]
-shipped: 2026-07-12
+shipped: 2026-07-15
 ---
 
 After a year of recording, the name you gave a take is often the only clue you have left, and sometimes not even that. Search is how a library stops being a pile.

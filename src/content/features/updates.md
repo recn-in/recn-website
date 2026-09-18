@@ -4,7 +4,7 @@ summary: The desktop app updates itself, and your phone tells you when a new bui
 group: Everywhere
 order: 3
 platforms: [macOS, Windows, iPhone, iPad, Android]
-shipped: 2026-07-14
+shipped: 2026-07-15
 ---
 
 RECN is in beta, which means it changes every week. You should not have to go looking for that, and you should certainly never lose a recording to an update that arrived at the wrong moment.
