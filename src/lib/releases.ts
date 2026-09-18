@@ -13,10 +13,14 @@ export const RELEASES_API = 'https://api.github.com/repos/recn-in/recn-releases/
 export const NIGHTLY_TAG = /^v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const MOBILE_TAG = /^mobile-\d+\.\d+\.\d+-(\d+)$/;
 
-// Release bodies carry one change per `- ` line. Older desktop bodies are raw
-// commit subjects: drop the tooling ones, then the `scope:` prefix and the
-// trailing `(sha)` from the rest.
-export const changes = (body: string | null): string[] => (body ?? '').split('\n')
+// Release bodies carry one change per `- ` line, under `## What changed` when
+// the body has other sections. Older desktop bodies are raw commit subjects:
+// drop the tooling ones, then the `scope:` prefix and the trailing `(sha)`.
+export const changes = (body: string | null): string[] => (body ?? '')
+  .split(/^##\s+/m)
+  .filter((section, index, all) => all.length === 1 || /^What changed/i.test(section))
+  .join('\n')
+  .split('\n')
   .filter((line) => /^\s*-\s+/.test(line))
   .map((line) => line.replace(/^\s*-\s+/, '').replace(/\s*\([0-9a-f]{7,}\)\s*$/, '').trim())
   .filter((line) => !/^(ci|docs|chore|test|refactor|build|style|progress)(\([^)]*\))?:/i.test(line))

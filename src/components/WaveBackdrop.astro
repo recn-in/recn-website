@@ -1,0 +1,119 @@
+<canvas class="wave-backdrop" data-wave-backdrop aria-hidden="true"></canvas>
+
+<script>
+  // A ribbon of thin waveform lines. A swell travels along it like a signal
+  // passing from one device to the next, and the ribbon leans toward the
+  // pointer. One line is the accent: the recording itself.
+  const LINES = 36;
+  const ACCENT = 22;
+  const STEP = 6;
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-wave-backdrop]');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx) {
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let width = 0;
+    let height = 0;
+    let ink = '';
+    let accent = '';
+    let pointer = -1; // 0..1 across the canvas, -1 while away
+    let lean = 0.5;
+    let pull = 0;
+    let frame = 0;
+    let visible = true;
+
+    const readTheme = () => {
+      const style = getComputedStyle(document.documentElement);
+      ink = style.getPropertyValue('--waveform').trim();
+      accent = style.getPropertyValue('--accent').trim();
+    };
+
+    const resize = () => {
+      const ratio = Math.min(devicePixelRatio, 2);
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    const swellAt = (u: number, centre: number, spread: number) => Math.exp(-((u - centre) ** 2) / spread);
+
+    const draw = (ms: number) => {
+      const t = ms / 1000;
+      const travel = ((t * 0.06) % 1.5) - 0.25;
+      const mid = height * 0.6;
+      const amp = Math.min(height * 0.11, 90);
+      const fan = Math.min(height * 0.2, 170);
+
+      lean += ((pointer < 0 ? 0.5 : pointer) - lean) * 0.04;
+      pull += ((pointer < 0 ? 0 : 1) - pull) * 0.04;
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i < LINES; i += 1) {
+        const p = i / (LINES - 1);
+        const centred = 1 - Math.abs(p - 0.5) * 2;
+        ctx.beginPath();
+        for (let x = 0; x <= width + STEP; x += STEP) {
+          const u = x / width;
+          const swell = swellAt(u, travel, 0.05) + pull * 0.7 * swellAt(u, lean, 0.02);
+          const loud = (0.18 + 0.82 * Math.min(swell, 1.2)) * Math.sin(Math.PI * Math.min(Math.max(u, 0), 1)) ** 0.6;
+          const y = mid
+            + (p - 0.5) * fan * (0.3 + loud)
+            + Math.sin(u * 6.5 + t * 0.55 + p * 2.4) * amp * loud
+            + Math.sin(u * 15 - t * 0.8 + p * 5.2) * amp * 0.34 * loud
+            + Math.sin(u * 43 + t * 1.9 + p * 9) * amp * 0.1 * swell;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = i === ACCENT ? accent : ink;
+        ctx.globalAlpha = i === ACCENT ? 0.75 : 0.05 + 0.2 * centred;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const tick = (ms: number) => {
+      draw(ms);
+      frame = visible && !document.hidden && !still.matches ? requestAnimationFrame(tick) : 0;
+    };
+    const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
+
+    readTheme();
+    resize();
+    // Reduced motion gets one still frame, mid-swell.
+    if (still.matches) draw(9000); else wake();
+
+    new ResizeObserver(() => { resize(); if (still.matches) draw(9000); }).observe(canvas);
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) wake(); }).observe(canvas);
+    new MutationObserver(() => { readTheme(); if (still.matches) draw(9000); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    document.addEventListener('visibilitychange', wake);
+    still.addEventListener('change', wake);
+    addEventListener('pointermove', (event) => {
+      const box = canvas.getBoundingClientRect();
+      const inside = event.clientY >= box.top && event.clientY <= box.bottom;
+      pointer = inside ? (event.clientX - box.left) / box.width : -1;
+    }, { passive: true });
+  }
+</script>
+
+<style>
+  .wave-backdrop {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    height: 100%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    /* Faded at top and bottom, and held back under the hero copy on the left. */
+    mask-image:
+      linear-gradient(to bottom, transparent, #000 22%, #000 82%, transparent),
+      linear-gradient(to right, rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.3) 30%, #000 58%);
+    mask-composite: intersect;
+  }
+</style>

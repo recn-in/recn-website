@@ -14,6 +14,10 @@ test('keeps what a person would read, in order', () => {
     '- desktop(browse): the folded switcher\'s bar sits under its glyph (c462fd5e)',
     '- fix(lattice): scope-vector review fixes (7af1c11c)',
     '- Reset RECN: unpair every device, keep the library',
+    '',
+    '## Install',
+    '',
+    '- **macOS:** `RECN-Rec-0.0.1-beta-nightly.204.dmg` — signed + notarized',
   ].join('\n');
   assert.deepEqual(changes(body), [
     'The mic indicator turns off once audio goes idle',
