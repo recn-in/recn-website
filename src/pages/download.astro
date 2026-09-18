@@ -2,8 +2,18 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { apple, android, windows } from '../lib/platformMarks';
 
 const releases = 'https://github.com/recn-in/recn-releases/releases';
+
+// Desktop cards start at the releases list; the script below points them at
+// the newest nightly and fills in the file name and size.
+const platforms = [
+  { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', note: 'Signed and notarized', live: true },
+  { id: 'windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', note: 'Per-user installer', live: true },
+  { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight ↗', note: 'Updates arrive through TestFlight', live: false },
+  { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access ↗', note: 'Updates arrive through Google Play', live: false },
+];
 ---
 
 <Base title="Get RECN" description="RECN Rec for macOS, Windows, iPhone, iPad and Android.">
@@ -17,26 +27,16 @@ const releases = 'https://github.com/recn-in/recn-releases/releases';
 
     <section class="release-browser" aria-label="Downloads" data-release-browser>
       <div class="download-grid">
-        <a href={releases} data-release-platform="macos">
-          <span>macOS</span>
-          <strong>Download .dmg</strong>
-          <small data-asset-meta>Signed and notarized</small>
-        </a>
-        <a href={releases} data-release-platform="windows">
-          <span>Windows</span>
-          <strong>Download .exe</strong>
-          <small data-asset-meta>Per-user installer</small>
-        </a>
-        <a href="https://testflight.apple.com/join/h2Xw8MpE" data-release-platform="ios">
-          <span>iPhone · iPad</span>
-          <strong>Join on TestFlight ↗</strong>
-          <small>Updates arrive through TestFlight</small>
-        </a>
-        <a href="https://play.google.com/apps/testing/com.recn.rec" data-release-platform="android">
-          <span>Android</span>
-          <strong>Join early access ↗</strong>
-          <small>Updates arrive through Google Play</small>
-        </a>
+        {platforms.map((platform) => (
+          <a href={platform.href} data-release-platform={platform.id}>
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
+              {platform.name}
+            </span>
+            <strong>{platform.action}</strong>
+            <small data-asset-meta={platform.live ? '' : undefined}>{platform.note}</small>
+          </a>
+        ))}
       </div>
 
       <article class="release-card">

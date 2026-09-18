@@ -2,7 +2,7 @@
   class="wave-backdrop"
   data-wave-backdrop
   role="img"
-  aria-label="A ribbon of waveform lines runs across the page. Your devices ride one red line, and recordings travel along it from one device to the next: amber while only one copy exists, green once the second copy is verified."
+  aria-label="A ribbon of waveform lines runs across the page. A Mac, an iPhone, a Windows PC and an Android phone ride one red line, and recordings travel along it from one device to the next: amber while only one copy exists, green once the second copy is verified."
 ></canvas>
 
 <div class="wave-stage" data-wave-stage>
@@ -13,13 +13,22 @@
 </div>
 
 <script>
+  import { apple, android, windows } from '../lib/platformMarks';
+
   // The hero is one drawing: a ribbon of thin waveform lines with a swell
   // travelling through it. The accent line carries the devices, and
   // recordings move along it between them. The ribbon leans toward the pointer.
   const LINES = 36;
   const ACCENT = 22;
   const STEP = 6;
-  const DEVICES = ['Mac', 'iPhone', 'iPad', 'Windows', 'Android'];
+  const DEVICES = [
+    { name: 'Mac', mark: new Path2D(apple) },
+    { name: 'iPhone', mark: new Path2D(apple) },
+    { name: 'Windows', mark: new Path2D(windows) },
+    { name: 'Android', mark: new Path2D(android) },
+  ];
+  const TILE = 30;
+  const MARK = 15;
   const TRAVEL = 2.8; // seconds for a recording to cross
   const SETTLE = 1.6; // seconds the verified pulse lasts
 
@@ -33,7 +42,7 @@
     let width = 0;
     let height = 0;
     let mid = 0;
-    let devices: { name: string; u: number }[] = [];
+    let devices: { name: string; mark: Path2D; u: number }[] = [];
     let transfers: { from: number; to: number; start: number }[] = [];
     let nextSpawn = 0;
     let pointer = -1; // 0..1 across the canvas, -1 while away
@@ -68,10 +77,10 @@
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       mid = room.top - box.top + room.height / 2;
 
-      const names = room.width >= 640 ? DEVICES : [DEVICES[0], DEVICES[1], DEVICES[4]];
+      const shown = room.width >= 520 ? DEVICES : [DEVICES[0], DEVICES[1], DEVICES[3]];
       const left = (room.left - box.left + room.width * 0.08) / width;
       const right = (room.right - box.left - room.width * 0.08) / width;
-      devices = names.map((name, index) => ({ name, u: left + ((right - left) * index) / (names.length - 1) }));
+      devices = shown.map((device, index) => ({ ...device, u: left + ((right - left) * index) / (shown.length - 1) }));
       transfers = [];
     };
 
@@ -138,7 +147,8 @@
         }
       }
 
-      // Devices ride the accent line; one that just verified a copy pulses green.
+      // Devices ride the accent line as tiles with their platform mark; one that
+      // just verified a copy pulses green.
       ctx.font = `600 11px ${colour.mono}`;
       ctx.textAlign = 'center';
       ctx.letterSpacing = '1px';
@@ -150,20 +160,28 @@
           ctx.strokeStyle = colour.safe;
           ctx.globalAlpha = glow;
           ctx.beginPath();
-          ctx.arc(x, y, 10 + (1 - glow) * 22, 0, Math.PI * 2);
+          ctx.arc(x, y, TILE * 0.7 + (1 - glow) * 24, 0, Math.PI * 2);
           ctx.stroke();
           ctx.globalAlpha = 1;
         }
-        ctx.fillStyle = glow > 0.05 ? colour.safe : colour.background;
+        ctx.fillStyle = colour.background;
         ctx.strokeStyle = glow > 0.05 ? colour.safe : colour.ink;
         ctx.lineWidth = 1.25;
         ctx.beginPath();
-        ctx.rect(x - 6.5, y - 6.5, 13, 13);
+        ctx.rect(x - TILE / 2, y - TILE / 2, TILE, TILE);
         ctx.fill();
         ctx.stroke();
         ctx.lineWidth = 1;
+
+        ctx.save();
+        ctx.translate(x - MARK / 2, y - MARK / 2);
+        ctx.scale(MARK / 24, MARK / 24);
+        ctx.fillStyle = colour.ink;
+        ctx.fill(device.mark);
+        ctx.restore();
+
         ctx.fillStyle = colour.secondary;
-        ctx.fillText(device.name.toUpperCase(), x, y - 19);
+        ctx.fillText(device.name.toUpperCase(), x, y - TILE / 2 - 9);
       });
     };
 

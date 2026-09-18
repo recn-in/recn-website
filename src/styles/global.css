@@ -376,7 +376,8 @@ main { overflow-x: clip; }
 
 .download-grid a:hover { background: var(--surface); }
 .download-grid a.is-mine { z-index: 1; border-color: var(--ink); }
-.download-grid span { color: var(--secondary); font: 600 0.64rem/1 var(--mono); }
+.download-grid span { display: flex; align-items: center; color: var(--secondary); font: 600 0.64rem/1 var(--mono); gap: 9px; }
+.download-grid svg { width: 17px; height: 17px; fill: var(--ink); }
 .download-grid strong { font-size: 0.9rem; }
 .download-grid small { color: var(--secondary); font: 500 0.6rem/1.45 var(--mono); }
 .simple-page > .build-caveat { max-width: 640px; }
