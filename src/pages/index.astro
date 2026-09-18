@@ -9,7 +9,7 @@ const base = import.meta.env.BASE_URL;
 
 <Base
   title="RECN — Your recordings, in motion"
-  description="Recordings, notes, and sessions that move directly between your nearby devices. RECN Rec is available for macOS and Windows; mobile is in development."
+  description="Recordings, notes, and sessions that move directly between your own devices. RECN Rec runs on macOS, Windows, iPhone, iPad and Android."
 >
   <Header />
 
@@ -18,26 +18,15 @@ const base = import.meta.env.BASE_URL;
       <div class="home-hero__copy">
         <p class="label">RECN · LATTICE</p>
         <h1 id="home-title">Your recordings.<br /><span>In motion.</span></h1>
-        <p class="home-hero__intro">Capture on one device. Continue on another. RECN moves recordings and context directly across your local network—without a cloud relay.</p>
+        <p class="home-hero__intro">Capture on one device. Continue on another. RECN moves recordings and context directly between your own devices. No account. No cloud library.</p>
         <div class="download-actions">
-          <a class="button button--primary" href="https://github.com/recn-in/recn-releases/releases/download/v0.0.1-beta/RECN-Rec-Beta-macOS.dmg">Download Beta for macOS <span>↓</span></a>
-          <a class="button button--secondary" href="https://github.com/recn-in/recn-releases/releases/download/v0.0.1-beta/RECN-Rec-Beta-Windows-Setup.exe">Download Beta for Windows <span>↓</span></a>
-          <a class="button button--secondary" href={`${base}mobile/`}>
-            <span class="platform-icon platform-icon--android" aria-hidden="true">🤖</span>
-            Android APK <span>→</span>
-          </a>
+          <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
         </div>
         <div class="home-hero__facts" aria-label="Product facts">
-          <span><i></i>Direct on LAN</span>
+          <span><i></i>Device to device</span>
           <span><i></i>macOS · Windows</span>
-          <span>
-            <span class="platform-icon platform-icon--apple" aria-hidden="true"></span>
-            iOS TestFlight signups in place
-          </span>
-          <span>
-            <span class="platform-icon platform-icon--android" aria-hidden="true">🤖</span>
-            Android APK available
-          </span>
+          <span><i></i>iPhone · iPad on TestFlight</span>
+          <span><i></i>Android on Google Play</span>
         </div>
       </div>
       <ConstellationField />
@@ -46,14 +35,14 @@ const base = import.meta.env.BASE_URL;
     <section class="home-manifesto shell" aria-labelledby="manifesto-title">
       <p class="label">THE SHORTEST DISTANCE</p>
       <h2 id="manifesto-title">Your phone is three feet from your computer.<br />Your recording shouldn’t travel three thousand miles.</h2>
-      <p>RECN finds approved devices nearby, sends the file directly, then verifies the finished copy. The network disappears. Your work simply appears where you need it.</p>
+      <p>In the same room, RECN sends the file straight across it, with no internet at all. Apart, your devices find each other by key and connect directly when they can, through an encrypted relay when they can’t. Either way, a copy counts only once it is verified.</p>
     </section>
 
-    <section class="capability-list shell" aria-label="How RECN nearby sync works">
+    <section class="capability-list shell" aria-label="How RECN sync works">
       <article>
         <span>01</span>
-        <h2>Nearby, not online.</h2>
-        <p>Paired RECN apps discover each other on the same reachable network.</p>
+        <h2>Nearby first.</h2>
+        <p>On the same network, paired devices sync with no internet. Apart, they reach each other by key.</p>
       </article>
       <article>
         <span>02</span>
@@ -83,12 +72,11 @@ const base = import.meta.env.BASE_URL;
 
     <section class="home-closing shell">
       <p class="label">RECN REC</p>
-      <h2>Record now.<br />Pick up anywhere nearby.</h2>
+      <h2>Record now.<br />Pick up anywhere.</h2>
       <div class="download-actions">
-        <a class="button button--primary" href={`${base}desktop/`}>Get the desktop app <span>→</span></a>
-        <a class="button button--secondary" href={`${base}mobile/`}>Mobile development status</a>
+        <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
       </div>
-      <p class="build-caveat">Early builds. Glitches are expected. TestFlight signups are in place for iOS, and Android APK links are published on the mobile page.</p>
+      <p class="build-caveat">Early builds. Glitches are expected.</p>
       <section class="signup-block" aria-labelledby="home-contact-title">
         <p class="label">GET IN TOUCH</p>
         <h2 id="home-contact-title">Get release updates and private beta notes</h2>

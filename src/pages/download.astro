@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const releases = 'https://github.com/recn-in/recn-releases/releases';
+---
+
+<Base title="Get RECN" description="RECN Rec for macOS, Windows, iPhone, iPad and Android.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">DOWNLOAD</p>
+      <h1>Get RECN</h1>
+      <p>One library on every device you own. Install it on two and they find each other.</p>
+    </header>
+
+    <section class="release-browser" aria-label="Downloads" data-release-browser>
+      <div class="download-grid download-grid--platforms">
+        <a href={releases} data-release-platform="macos">
+          <span>macOS</span>
+          <strong>Download .dmg</strong>
+          <small data-asset-meta>Signed and notarized</small>
+        </a>
+        <a href={releases} data-release-platform="windows">
+          <span>Windows</span>
+          <strong>Download .exe</strong>
+          <small data-asset-meta>Per-user installer</small>
+        </a>
+        <a href="https://testflight.apple.com/join/h2Xw8MpE" data-release-platform="ios">
+          <span>iPhone · iPad</span>
+          <strong>Join on TestFlight ↗</strong>
+          <small>Updates arrive through TestFlight</small>
+        </a>
+        <a href="https://play.google.com/apps/testing/com.recn.rec" data-release-platform="android">
+          <span>Android</span>
+          <strong>Join early access ↗</strong>
+          <small>Updates arrive through Google Play</small>
+        </a>
+      </div>
+
+      <article class="release-card">
+        <header class="release-card__header">
+          <div>
+            <p class="release-card__eyebrow">Desktop · nightly</p>
+            <h2 data-release-name>Latest build</h2>
+          </div>
+          <time data-release-date></time>
+        </header>
+        <section class="release-notes" aria-labelledby="release-notes-heading">
+          <header>
+            <h3 id="release-notes-heading">What changed</h3>
+            <a href={releases} target="_blank" rel="noreferrer">All builds ↗</a>
+          </header>
+          <ul data-release-notes>
+            <li>The latest notes are on GitHub.</li>
+          </ul>
+        </section>
+      </article>
+    </section>
+
+    <p class="build-caveat">Desktop builds ship nightly, straight from the latest merged work, and update themselves. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  interface ReleaseAsset { name: string; browser_download_url: string; size: number }
+  interface GitHubRelease {
+    tag_name: string;
+    body: string | null;
+    published_at: string | null;
+    draft: boolean;
+    assets: ReleaseAsset[];
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-release-browser]');
+
+  // The visitor's own platform leads the grid.
+  const ua = navigator.userAgent;
+  const mine = /Android/.test(ua) ? 'android'
+    : /iPhone|iPad/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios'
+    : /Mac/.test(ua) ? 'macos'
+    : /Windows/.test(ua) ? 'windows' : '';
+  root?.querySelector(`[data-release-platform="${mine}"]`)?.classList.add('is-mine');
+
+  const setAsset = (platform: string, asset: ReleaseAsset | undefined) => {
+    const link = root?.querySelector<HTMLAnchorElement>(`[data-release-platform="${platform}"]`);
+    const meta = link?.querySelector<HTMLElement>('[data-asset-meta]');
+    if (!link || !asset) return;
+    link.href = asset.browser_download_url;
+    if (meta) meta.textContent = `${asset.name} · ${(asset.size / 1_000_000).toFixed(0)} MB`;
+  };
+
+  // Nightly bodies are raw commit subjects: drop the tooling ones, then the
+  // `scope:` prefix and trailing `(sha)` from the rest.
+  const changes = (body: string | null) => (body ?? '').split('\n')
+    .filter((line) => /^\s*-\s+/.test(line))
+    .map((line) => line.replace(/^\s*-\s+/, '').replace(/\s*\([0-9a-f]{7,}\)\s*$/, ''))
+    .filter((line) => !/^(ci|docs|chore|test|refactor|build|style|progress)(\([^)]*\))?:/i.test(line))
+    .map((line) => line.replace(/^[a-z_]+(\([^)]*\))?:\s*/i, ''))
+    .map((line) => line.charAt(0).toUpperCase() + line.slice(1))
+    .slice(0, 8);
+
+  if (root) {
+    fetch('https://api.github.com/repos/recn-in/recn-releases/releases?per_page=30', {
+      headers: { Accept: 'application/vnd.github+json' },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`GitHub releases: ${response.status}`);
+        return response.json() as Promise<GitHubRelease[]>;
+      })
+      .then((all) => {
+        // Newest nightly whose installers have finished uploading.
+        const nightly = all.find((release) => !release.draft
+          && /^v\d+\.\d+\.\d+-beta-nightly\.\d+$/.test(release.tag_name)
+          && release.assets.some((asset) => asset.name.endsWith('.dmg'))
+          && release.assets.some((asset) => asset.name.endsWith('.exe')));
+        if (!nightly) return;
+
+        setAsset('macos', nightly.assets.find((asset) => asset.name.endsWith('.dmg')));
+        setAsset('windows', nightly.assets.find((asset) => asset.name.endsWith('.exe')));
+
+        const name = root.querySelector<HTMLElement>('[data-release-name]');
+        const date = root.querySelector<HTMLTimeElement>('[data-release-date]');
+        const notes = root.querySelector<HTMLUListElement>('[data-release-notes]');
+        if (name) name.textContent = `Nightly ${nightly.tag_name.split('.').pop()}`;
+        if (date && nightly.published_at) {
+          date.dateTime = nightly.published_at;
+          date.textContent = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+            .format(new Date(nightly.published_at));
+        }
+        const lines = changes(nightly.body);
+        if (notes && lines.length > 0) {
+          notes.replaceChildren(...lines.map((line) => {
+            const item = document.createElement('li');
+            item.textContent = line;
+            return item;
+          }));
+        }
+      })
+      // The static links already lead to the releases page; say why they stayed.
+      .catch((error) => console.warn('Live release details unavailable:', error));
+  }
+</script>
