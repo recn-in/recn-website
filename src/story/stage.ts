@@ -1,13 +1,15 @@
-// Runs the story: one renderer, one globe, and an Act per chapter. `c` is the
+// Runs a story: one renderer, one globe, and an Act per chapter, which the
+// page's own story module builds (sync-story, features-story). `c` is the
 // chapter the viewport is centred on, as a float; act `i` plays its `q` from
 // 0 to 1 while c runs from i - 0.5 to i + 0.5, and fades at both ends. Nothing
 // depends on scroll direction, so it scrubs backwards as well as forwards.
 import * as THREE from 'three';
 import { type Act, band, ramp, type Tone } from './kit';
-import { HOME, type Globe, anywhere, deleted, everyDevice, lattice, onGlobe, usualWay } from './globe-acts';
-import { catchUp, clocks, discovery, fields, lanes, noteMerge, pairing, pieces, punch, record, relay, replicas, resume, trust } from './flat-acts';
+import { HOME, type Globe, onGlobe } from './globe-acts';
 
-export const start = (canvas: HTMLCanvasElement, story: HTMLElement, overlay: HTMLElement, count: HTMLElement | null) => {
+export type Build = (globe: Globe, chapters: HTMLElement[]) => Act[];
+
+export const start = (canvas: HTMLCanvasElement, story: HTMLElement, overlay: HTMLElement, count: HTMLElement | null, build: Build) => {
   const chapters = Array.from(story.querySelectorAll<HTMLElement>('[data-story-chapter]'));
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -21,13 +23,7 @@ export const start = (canvas: HTMLCanvasElement, story: HTMLElement, overlay: HT
 
   const globe: Globe = { wide: new THREE.Vector3(0, 0.3, 5.7), close: new THREE.Vector3(), focus: new THREE.Vector3(), camera, fit: 1 };
 
-  // Chapter order. The page's chapters array must match it one for one.
-  const acts: Act[] = [
-    usualWay(globe), deleted(globe), everyDevice(globe),
-    record(), fields(), clocks(), noteMerge(), catchUp(), pieces(), resume(), lanes(),
-    discovery(), pairing(), trust(), punch(), relay(), replicas(),
-    anywhere(globe), lattice(globe),
-  ];
+  const acts = build(globe, chapters);
   if (acts.length !== chapters.length) throw new Error(`story: ${acts.length} acts for ${chapters.length} chapters`);
   acts.forEach((act) => {
     // Glyphs pinned to the globe turn with it; everything else floats in the scene.

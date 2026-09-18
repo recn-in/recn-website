@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { Act, band, between, mix, ramp, turn, type Tone, type XY } from './kit';
 
-const device = (act: Act, x: number, y: number, name: string, w = 0.3, h = 0.22) => {
+export const device = (act: Act, x: number, y: number, name: string, w = 0.3, h = 0.22) => {
   const box = act.rect(x, y, w, h);
   const tag = act.label(name, x, y + h / 2 + 0.07);
   return { box, tag, at: [x, y] as XY };

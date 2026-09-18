@@ -1,0 +1,113 @@
+<div class="story__stage" aria-hidden="true">
+  <canvas data-story-stage></canvas>
+  <div class="story__labels" data-story-labels></div>
+  <p class="story__count" data-story-count></p>
+</div>
+
+<script>
+  import { start } from '../story/stage';
+
+  // The page names its story on [data-story]; each one brings its own acts.
+  const stories = {
+    sync: () => import('../story/sync-story'),
+    features: () => import('../story/features-story'),
+  };
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-story-stage]');
+  const story = document.querySelector<HTMLElement>('[data-story]');
+  const labels = document.querySelector<HTMLElement>('[data-story-labels]');
+
+  // No WebGL is not worth a broken page: the chapters read on their own.
+  if (canvas && story && labels) {
+    stories[story.dataset.story as keyof typeof stories]()
+      .then(({ build }) => start(canvas, story, labels, document.querySelector<HTMLElement>('[data-story-count]'), build))
+      .catch((error) => console.warn('The story runs without its drawing:', error));
+  }
+</script>
+
+<style>
+  .story__stage {
+    position: sticky;
+    z-index: 0;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .story__stage canvas { display: block; width: 100%; height: 100%; }
+  .story__labels { position: absolute; inset: 0; }
+
+  /* Labels are placed by the stage; each is anchored at its own centre line. */
+  .story__labels :global(span) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -0.5em;
+    color: var(--secondary);
+    font: 600 0.56rem/1 var(--mono);
+    letter-spacing: .07em;
+    opacity: 0;
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  .story__labels :global(span[data-align='center']) { translate: -50% 0; }
+  .story__labels :global(span[data-align='right']) { translate: -100% 0; }
+  .story__labels :global(span[data-tone='ink']) { color: var(--ink); }
+  .story__labels :global(span[data-tone='accent']) { color: var(--accent); }
+  .story__labels :global(span[data-tone='single']) { color: var(--single); }
+  .story__labels :global(span[data-tone='safe']) { color: var(--safe); }
+
+  .story__count {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 26px;
+    color: var(--tertiary);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: .1em;
+  }
+
+  @media (max-width: 899px) {
+    .story__labels :global(span) { font-size: 0.44rem; letter-spacing: .04em; }
+  }
+</style>
+
+<!-- The chapters are the page's own markup, so their styles cannot be scoped here. -->
+<style is:global>
+  .story { position: relative; }
+  .story__chapters { position: relative; z-index: 1; width: min(100%, 1440px); margin-top: -100svh; }
+  /* Taller than the screen, so each act has room to play while its words hold still. */
+  .story__chapter { min-height: 170svh; }
+  .story__card { position: sticky; top: 50svh; max-width: min(400px, 33vw); translate: 0 -50%; }
+  .story__card h1,
+  .story__card h2 { margin-top: 18px; font-size: clamp(1.9rem, 3.3vw, 2.9rem); font-weight: 560; letter-spacing: -.05em; line-height: 1.02; }
+  .story__card > p:not(.label):not(.story__spec) { margin-top: 22px; color: var(--secondary); font-size: 0.98rem; line-height: 1.7; }
+  .story__spec { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--divider); color: var(--ink); font: 600 0.6rem/1.6 var(--mono); letter-spacing: .07em; }
+
+  /* With the drawing running, each chapter's words come forward with its act. */
+  /* Sharper than the act's own fade, so two chapters' words never sit on top of each other. */
+  .story--live .story__card { opacity: clamp(0, calc(var(--near, 1) * 2.4 - 1.4), 1); }
+
+  @media (max-width: 899px) {
+    .story__chapter { display: flex; align-items: flex-end; }
+    .story__card {
+      top: auto;
+      bottom: 4svh;
+      max-width: none;
+      padding: 18px;
+      border: 1px solid var(--divider);
+      background: color-mix(in srgb, var(--background) 86%, transparent);
+      backdrop-filter: blur(6px);
+      translate: none;
+    }
+    .story__card h1,
+    .story__card h2 { margin-top: 12px; font-size: 1.5rem; }
+    .story__card > p:not(.label):not(.story__spec) { margin-top: 12px; font-size: 0.86rem; line-height: 1.55; }
+    .story__spec { margin-top: 12px; padding-top: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story--live .story__card { opacity: 1; }
+  }
+</style>

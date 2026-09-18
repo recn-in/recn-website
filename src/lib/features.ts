@@ -4,6 +4,3 @@ const MONTH = 30 * 24 * 60 * 60 * 1000;
 
 /** A feature is New for its first 30 days; the site rebuilds often enough for the tag to age out by itself. */
 export const isNew = (shipped: Date, now = new Date()) => now.getTime() - shipped.getTime() < MONTH;
-
-export const monthYear = (date: Date) =>
-  date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
