@@ -13,7 +13,6 @@ Pair your devices once and they keep each other current on their own. On one net
 
 <figure class="mock">
 <svg viewBox="0 0 720 440" role="img" aria-label="Line drawing of the desktop Sync screen. A header holds a safety and structure toggle and a pair button, one status line sits under it, recording dots float between three device hubs in a field with a legend, and a file list on the right gives every recording a status dot and one cell per device.">
-  <rect x="0.5" y="0.5" width="719" height="439" class="dim"/>
   <text x="24" y="35">SYNC</text>
   <rect x="404" y="18" width="164" height="26" class="dim"/>
   <path class="dim" d="M486 18v26"/>

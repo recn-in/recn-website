@@ -13,7 +13,6 @@ A drawing in RECN is its own kind of item, beside recordings, notes and sessions
 
 <figure class="mock">
 <svg viewBox="0 0 720 420" role="img" aria-label="Line drawing of the RECN canvas: an infinite board holding labelled boxes joined by a bent arrow, a dashed frame, a freehand circle and a selected shape with handles. Small floating islands hold the tools, undo and redo, zoom, and the selected shape's properties.">
-  <rect x="0.5" y="0.5" width="719" height="419" class="dim"/>
   <!-- a frame: a labelled dashed rect -->
   <rect x="70" y="70" width="400" height="200" class="dim dash"/>
   <text x="70" y="62">SONG · V2</text>

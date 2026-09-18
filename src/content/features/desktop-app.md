@@ -13,7 +13,6 @@ RECN on the desktop is one shell: a navigation rail, the library, whatever is se
 
 <figure class="mock">
 <svg viewBox="0 0 720 440" role="img" aria-label="Line drawing of the RECN desktop window. A narrow left rail lists Library, Notes, Sync and Settings. A header carries the title, a search field and Record and New buttons. The feed below has three rows selected and a right-click menu open over them offering Move to project and Delete three items. A preview pane sits to the right and a player bar runs along the bottom.">
-  <rect x="0.5" y="0.5" width="719" height="439" class="dim"/>
   <!-- rail -->
   <path class="dim" d="M96 0v440"/>
   <text x="20" y="48">LIBRARY</text>

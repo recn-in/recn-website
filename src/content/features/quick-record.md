@@ -14,7 +14,6 @@ Turn on **Keep RECN running in the background** and RECN stays alive after you c
 <figure class="mock">
 <svg viewBox="0 0 720 360" role="img" aria-label="Line drawing of a desktop with no RECN window open. The menu bar at the top holds a small RECN item whose menu is open, listing Open RECN, Stop recording, Settings and Quit RECN, with the recording entry marked. Below, two keycap rows show the Control Option Space and Control Option R shortcuts.">
   <!-- desktop with no app window -->
-  <rect x="0.5" y="0.5" width="719" height="359" class="dim"/>
   <path class="dim" d="M0 40h720"/>
   <!-- status item -->
   <circle cx="540" cy="20" r="7" class="accent"/>

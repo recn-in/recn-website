@@ -13,7 +13,6 @@ Recordings, notes, projects, sessions and their audio stay on the device that ma
 
 <figure class="mock">
 <svg viewBox="0 0 720 400" role="img" aria-label="Line drawing of the desktop Settings window. A rail on the left lists the panes under Workspace, Devices and System with Privacy selected, and the pane on the right holds the share crash reports switch and a list of permissions with their states.">
-  <rect x="0.5" y="0.5" width="719" height="399" class="dim"/>
   <text x="24" y="35">SETTINGS</text>
   <rect x="448" y="18" width="220" height="26" class="dim"/>
   <circle cx="464" cy="31" r="5"/>

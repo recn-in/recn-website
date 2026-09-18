@@ -13,7 +13,6 @@ Above 900 points wide, RECN lays itself out in three: navigation, the list, and 
 
 <figure class="mock">
 <svg viewBox="0 0 720 420" role="img" aria-label="Line drawing of RECN on a landscape iPad. A left sidebar lists Library, Notes, a Projects section and Sync. A middle list column shows recordings and notes with one row selected. The right pane holds the selected recording's player: a waveform with a playhead, a transport row and a duration.">
-  <rect x="0.5" y="0.5" width="719" height="419" class="dim"/>
   <!-- sidebar -->
   <path class="dim" d="M168 0v420"/>
   <text x="24" y="44">LIBRARY</text>
