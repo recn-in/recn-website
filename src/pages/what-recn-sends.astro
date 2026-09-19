@@ -72,7 +72,7 @@ const events = [
         <li>Titles, file names, or file paths in usage events</li>
         <li>What you search for</li>
         <li>Device names</li>
-        <li>Location. RECN adds none to any event. PostHog and Sentry receive your network (IP) address as part of receiving each request, like any internet service.</li>
+        <li>Location. RECN adds none, and tells PostHog not to look up a location from your network (IP) address. PostHog and Sentry still receive that address as part of receiving each request, like any internet service.</li>
       </ul>
       <p>More detail, including retention and how to ask for deletion, is in the <a href={`${base}privacy/`}>privacy policy</a>.</p>
     </article>
