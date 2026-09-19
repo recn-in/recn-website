@@ -590,10 +590,10 @@ main { overflow-x: clip; }
 .brew-command pre {
   margin: 0;
   padding: 14px 110px 14px 16px;
-  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font: 0.75rem/1.9 var(--mono);
 }
-.brew-command__line { display: block; }
 .brew-command__line::before { content: "$ "; color: var(--secondary); user-select: none; }
 .brew-command button {
   position: absolute;
