@@ -2,15 +2,16 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+const base = import.meta.env.BASE_URL;
 ---
 
-<Base title="Privacy policy — RECN" description="How RECN handles recordings, notes, diagnostics, and support requests.">
+<Base title="Privacy policy — RECN" description="How RECN handles recordings, notes, usage stats, crash reports, and support requests.">
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
       <p class="label">PRIVACY</p>
       <h1>Your recordings. Your devices.</h1>
-      <p>Privacy policy for RECN, also called RECN Rec, and this website. Updated September 16, 2026.</p>
+      <p>Privacy policy for RECN, also called RECN Rec, and this website. Updated September 19, 2026.</p>
     </header>
     <article class="prose privacy-policy" aria-label="RECN privacy policy">
       <p>RECN is developed by Shubham Sinha. For privacy questions or requests, email <a href="mailto:sinhashubham472@gmail.com">sinhashubham472@gmail.com</a>.</p>
@@ -24,8 +25,12 @@ import Footer from '../components/Footer.astro';
       <p>If you pair devices, RECN uses local-network discovery and peer-to-peer connections to exchange your library and related metadata with those devices. Device identifiers and names help identify paired devices. RECN does not provide a hosted cloud recording library.</p>
       <p>Exporting or sharing sends the files you select to the app, person, or destination you choose. Those destinations handle the copies under their own practices. Your operating system may also back up app data, depending on your device and backup settings.</p>
 
+      <h2>Usage stats</h2>
+      <p>Release builds send usage stats to PostHog, on its EU cloud, so we can see how many people use RECN and which features they use. Usage stats are on by default. They include the name you typed during setup, a random id made on this install, an opaque tag shared by your paired devices, how many devices you have paired, your device type, operating system, and app version, and events such as "a recording was saved" or "a note was created". They never include recordings, notes, transcripts, titles, file names, search text, or device names. <a href={`${base}what-recn-sends/`}>What RECN sends</a> lists every event and property.</p>
+      <p>One switch controls usage stats and crash reports together: <strong>Share crash reports and usage stats</strong> in the app's Settings under Privacy. Turning it off stops both immediately and deletes the install's random id, so turning it back on starts a new id that is not linked to the old one. PostHog receives your network address as part of receiving each request. RECN does not add location to any event.</p>
+
       <h2>Crash and error reports</h2>
-      <p>Release builds use Sentry to help diagnose crashes and errors. Crash reporting is on by default. You can turn off <strong>Share crash reports</strong> in the app's Settings under Privacy.</p>
+      <p>Release builds use Sentry to help diagnose crashes and errors. Crash reporting is on by default and is turned off by the same <strong>Share crash reports and usage stats</strong> switch.</p>
       <p>Reports can contain app and operating-system versions, device characteristics, diagnostic identifiers, stack traces, and recent technical logs. Logs may include file names, local paths, or device and connection details. RECN removes home-directory prefixes from outgoing Dart error text and logs, but this is not a guarantee that every diagnostic field is anonymous. Native crash reports are handled by Sentry's native SDK.</p>
       <p>Recordings, note documents, and photos are not intentionally attached to crash reports. RECN disables Sentry's default personal-information collection and performance tracing. Sentry still processes the network information needed to receive reports. Turning reporting off stops future reporting; it does not automatically remove reports already received.</p>
 
@@ -36,14 +41,14 @@ import Footer from '../components/Footer.astro';
 
       <h2>Retention and deletion</h2>
       <p>Your local library remains on your devices until you delete it or remove the app's data. You can delete recordings and notes in RECN. Check paired devices, exported files, and operating-system backups separately: deleting the app or a local copy does not necessarily remove those other copies. Device identity stored in secure storage may survive an app reinstall.</p>
-      <p>Diagnostic reports are subject to the retention settings of the Sentry project. Support messages are kept to handle and follow up on your request, and update-signup details are kept while you want to receive updates. Email us to request deletion of support or signup information, to stop updates, or to ask about a diagnostic report. We may need information to locate your report because RECN has no account tying reports to your email address.</p>
+      <p>Crash reports and usage stats are kept under the retention settings of the Sentry and PostHog projects. Turning sharing off does not delete what was already sent. Support messages are kept to handle and follow up on your request, and update-signup details are kept while you want to receive updates. Email us to request deletion of support or signup information, to stop updates, or to ask about a crash report or usage stats. Because RECN has no account, we may need details such as the name you typed during setup to find your data.</p>
       <p>We cannot retrieve or remotely delete a library stored only on your device. There is no RECN account to close.</p>
 
       <h2>Teen users</h2>
       <p>RECN is intended for people aged <strong>13 and over</strong>, including teenagers. It is not directed at children under 13. If you believe a child under 13 has sent us personal information, contact us so we can investigate and remove it where applicable.</p>
 
       <h2>Service providers and changes</h2>
-      <p>The services mentioned above may process information in countries other than yours. Their privacy information is available from <a href="https://sentry.io/privacy/">Sentry</a>, <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub</a>, <a href="https://formspree.io/legal/privacy-policy/">Formspree</a>, and <a href="https://huggingface.co/privacy">Hugging Face</a>. Google Play, Apple, and any apps you use to share files have their own privacy practices.</p>
+      <p>The services mentioned above may process information in countries other than yours. Their privacy information is available from <a href="https://sentry.io/privacy/">Sentry</a>, <a href="https://posthog.com/privacy">PostHog</a>, <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub</a>, <a href="https://formspree.io/legal/privacy-policy/">Formspree</a>, and <a href="https://huggingface.co/privacy">Hugging Face</a>. Google Play, Apple, and any apps you use to share files have their own privacy practices.</p>
       <p>We will update this page when RECN's data practices change and revise the date above. Contact <a href="mailto:sinhashubham472@gmail.com">sinhashubham472@gmail.com</a> with questions about this policy or your information.</p>
     </article>
   </main>

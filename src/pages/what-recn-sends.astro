@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const base = import.meta.env.BASE_URL;
+
+const common = [
+  ['Install id', 'A random id made on this install. Not tied to an account or your hardware. Replaced with a new one if you turn sharing off and on again.'],
+  ['Owner name', 'The name you typed during setup.'],
+  ['Mesh tag', 'An opaque tag your paired devices share, so they count as one person. It is a hash, not a device id.'],
+  ['Devices in mesh', 'How many devices you have paired, including this one.'],
+  ['Surface', 'desktop or mobile.'],
+  ['Form factor', 'phone, tablet, or desktop.'],
+  ['OS', 'macOS, Windows, Linux, iOS, or Android.'],
+  ['App version', 'The RECN build you are running.'],
+  ['Time', 'When the event happened.'],
+];
+
+const events = [
+  ['app_opened', 'RECN launches, and the first time it comes back to the front each day.', '—'],
+  ['onboarding_completed', 'You finish setup.', '—'],
+  ['recording_saved', 'A recording is saved.', 'source (for example, recorder)'],
+  ['session_saved', 'A session is saved.', '—'],
+  ['note_created', 'You create a note.', 'kind: text or drawing'],
+  ['transcription_completed', 'A transcript finishes.', '—'],
+  ['audiogram_rendered', 'An audiogram video finishes rendering.', '—'],
+  ['export_completed', 'An export finishes.', 'format: the file type, or stems'],
+  ['device_paired', 'You pair a device.', '—'],
+  ['device_removed', 'You remove a paired device.', '—'],
+  ['permission_denied', 'A permission RECN needs is refused.', 'permission (for example, microphone)'],
+  ['search_used', 'You search. Once per search, not per keystroke.', '—'],
+  ['sync_problem', 'Sync hits a problem. At most once a day for each kind of problem.', 'cause: the kind of problem, from a fixed list'],
+];
+---
+
+<Base title="What RECN sends — RECN" description="Every usage event and crash report RECN sends, and what it never sends.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">PRIVACY</p>
+      <h1>What RECN sends</h1>
+      <p>The complete list. Updated September 19, 2026.</p>
+    </header>
+    <article class="prose sends" aria-label="What RECN sends">
+      <p>RECN sends two things: <strong>usage stats</strong> to PostHog (EU cloud) and <strong>crash reports</strong> to Sentry. Both are on by default and both stop the moment you turn off <strong>Share crash reports and usage stats</strong> in Settings under Privacy. Turning it off also deletes this install's random id, so if you turn it back on you start as a new, unlinked install. Only release builds send anything.</p>
+
+      <h2>Sent with every usage event</h2>
+      <div class="sends__scroll">
+        <table>
+          <thead><tr><th scope="col">Property</th><th scope="col">What it is</th></tr></thead>
+          <tbody>{common.map(([name, what]) => <tr><th scope="row">{name}</th><td>{what}</td></tr>)}</tbody>
+        </table>
+      </div>
+
+      <h2>Usage events</h2>
+      <p>Each event is sent once, when the thing succeeds. Events are not queued: if you are offline, they are dropped.</p>
+      <div class="sends__scroll">
+        <table>
+          <thead><tr><th scope="col">Event</th><th scope="col">Sent when</th><th scope="col">Extra property</th></tr></thead>
+          <tbody>{events.map(([name, when, extra]) => <tr><th scope="row"><code>{name}</code></th><td>{when}</td><td>{extra}</td></tr>)}</tbody>
+        </table>
+      </div>
+
+      <h2>Crash reports</h2>
+      <p>When RECN crashes or hits an error, Sentry receives the error and stack trace, recent technical logs from the app, and device and operating-system details. Home-folder paths are removed from Dart error text and logs before they leave your device. Recordings, notes, and photos are not attached.</p>
+
+      <h2>Never sent</h2>
+      <ul>
+        <li>Recordings or any audio</li>
+        <li>Notes, drawings, or attached images</li>
+        <li>Transcripts</li>
+        <li>Titles, file names, or file paths in usage events</li>
+        <li>What you search for</li>
+        <li>Device names</li>
+        <li>Location. RECN adds none to any event. PostHog and Sentry receive your network (IP) address as part of receiving each request, like any internet service.</li>
+      </ul>
+      <p>More detail, including retention and how to ask for deletion, is in the <a href={`${base}privacy/`}>privacy policy</a>.</p>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .sends { max-width: 78ch; margin-top: 3rem; color: var(--ink); }
+  .sends__scroll { overflow-x: auto; }
+  .sends table { width: 100%; border-collapse: collapse; font-size: 0.9rem; line-height: 1.5; }
+  .sends th, .sends td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--divider); text-align: left; vertical-align: top; }
+  .sends thead th { color: var(--secondary); font-weight: 600; }
+  .sends tbody th { color: var(--ink); font-weight: 600; white-space: nowrap; }
+</style>
