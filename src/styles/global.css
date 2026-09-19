@@ -576,6 +576,7 @@ main { overflow-x: clip; }
 .prose ul, .prose ol { padding-left: 1.25em; }
 .prose li + li { margin-top: 0.35em; }
 .prose blockquote { padding-left: 18px; border-left: 2px solid var(--divider); color: var(--secondary); }
+.build-caveat code { font-family: var(--mono); overflow-wrap: anywhere; }
 .prose code { padding: 0.13em 0.3em; background: var(--surface); font-family: var(--mono); font-size: 0.84em; }
 .prose pre { padding: 18px; overflow-x: auto; border: 1px solid var(--divider); background: var(--surface); font-size: 0.78rem; }
 .prose pre code { padding: 0; background: transparent; }
