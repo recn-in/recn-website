@@ -39,7 +39,11 @@ const platforms = [
           </a>
         ))}
       </div>
-      <p class="build-caveat">On a Mac with Homebrew: <code>brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec</code></p>
+      <div class="brew-command">
+        <span>Homebrew</span>
+        <code data-brew-command>brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec</code>
+        <button type="button" data-brew-copy aria-live="polite">Copy</button>
+      </div>
 
       <article class="release-card">
         <header class="release-card__header">
@@ -70,6 +74,20 @@ const platforms = [
   import { RELEASES_API, NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
 
   const root = document.querySelector<HTMLElement>('[data-release-browser]');
+
+  const copy = document.querySelector<HTMLButtonElement>('[data-brew-copy]');
+  copy?.addEventListener('click', async () => {
+    const command = document.querySelector('[data-brew-command]')?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(command);
+      copy.textContent = 'Copied';
+    } catch {
+      // Clipboard blocked (insecure origin, denied permission): select it so ⌘C works.
+      getSelection()?.selectAllChildren(copy.previousElementSibling!);
+      copy.textContent = 'Press ⌘C';
+    }
+    setTimeout(() => { copy.textContent = 'Copy'; }, 1600);
+  });
 
   // The visitor's own platform leads the grid.
   const ua = navigator.userAgent;
