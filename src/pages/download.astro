@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import { apple, android, windows } from '../lib/platformMarks';
 
 const releases = 'https://github.com/recn-in/recn-releases/releases';
-const brewCommand = 'brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec';
+const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
 
 // Desktop cards start at the releases list; the script below points them at
 // the newest nightly and fills in the file name and size.
@@ -49,7 +49,7 @@ const platforms = [
             <em aria-live="polite">Copy</em>
           </button>
         </div>
-        <p class="brew-command__hint">Seeing “No Cask with this name”? Your tap is out of date — run <code>brew update</code>, then install again.</p>
+        <p class="brew-command__hint">Taps and trusts <code>recn-in/recn</code>, then installs or updates the <code>recn-rec</code> cask. Run it again any time to update.</p>
       </div>
 
       <article class="release-card">
