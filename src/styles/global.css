@@ -584,7 +584,7 @@ main { overflow-x: clip; }
 
 .site-footer { border-top: 1px solid var(--divider); }
 .site-footer__inner { display: flex; min-height: 64px; align-items: center; justify-content: space-between; color: var(--secondary); font-size: 0.7rem; }
-.site-footer nav { display: flex; gap: 22px; }
+.site-footer nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 22px; }
 .site-footer a:hover { color: var(--ink); }
 
 .theme-control { display: flex; border: 1px solid var(--divider); }
