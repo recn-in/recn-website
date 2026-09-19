@@ -576,7 +576,44 @@ main { overflow-x: clip; }
 .prose ul, .prose ol { padding-left: 1.25em; }
 .prose li + li { margin-top: 0.35em; }
 .prose blockquote { padding-left: 18px; border-left: 2px solid var(--divider); color: var(--secondary); }
-.build-caveat code { font-family: var(--mono); overflow-wrap: anywhere; }
+.brew-command {
+  margin-top: -1px;
+  padding: 20px;
+  border: 1px solid var(--divider);
+}
+.brew-command > span { color: var(--secondary); font: 600 0.64rem/1 var(--mono); }
+.brew-command__box {
+  position: relative;
+  margin-top: 14px;
+  background: var(--surface);
+}
+.brew-command pre {
+  margin: 0;
+  padding: 14px 110px 14px 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 0.75rem/1.9 var(--mono);
+}
+.brew-command__line::before { content: "$ "; color: var(--secondary); user-select: none; }
+.brew-command button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--divider);
+  background: var(--background);
+  color: var(--ink);
+  font: 600 0.64rem/1 var(--mono);
+  cursor: pointer;
+  transition: border-color .2s ease;
+}
+.brew-command button:hover { border-color: var(--ink); }
+.brew-command button.is-done { border-color: var(--accent); color: var(--accent); }
+.brew-command button em { font-style: normal; }
+.brew-command svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.3; }
 .prose code { padding: 0.13em 0.3em; background: var(--surface); font-family: var(--mono); font-size: 0.84em; }
 .prose pre { padding: 18px; overflow-x: auto; border: 1px solid var(--divider); background: var(--surface); font-size: 0.78rem; }
 .prose pre code { padding: 0; background: transparent; }

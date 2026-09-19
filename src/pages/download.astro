@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import { apple, android, windows } from '../lib/platformMarks';
 
 const releases = 'https://github.com/recn-in/recn-releases/releases';
+const brewCommand = 'brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec';
 
 // Desktop cards start at the releases list; the script below points them at
 // the newest nightly and fills in the file name and size.
@@ -39,7 +40,16 @@ const platforms = [
           </a>
         ))}
       </div>
-      <p class="build-caveat">On a Mac with Homebrew: <code>brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec</code></p>
+      <div class="brew-command">
+        <span>Homebrew · macOS</span>
+        <div class="brew-command__box">
+          <pre><code class="brew-command__line">{brewCommand}</code></pre>
+          <button type="button" data-brew-copy={brewCommand} aria-label="Copy Homebrew command">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>
+            <em aria-live="polite">Copy</em>
+          </button>
+        </div>
+      </div>
 
       <article class="release-card">
         <header class="release-card__header">
@@ -70,6 +80,21 @@ const platforms = [
   import { RELEASES_API, NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
 
   const root = document.querySelector<HTMLElement>('[data-release-browser]');
+
+  const copy = document.querySelector<HTMLButtonElement>('[data-brew-copy]');
+  const copyLabel = copy?.querySelector('em');
+  copy?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(copy.dataset.brewCopy ?? '');
+      copyLabel!.textContent = 'Copied';
+    } catch {
+      // Clipboard blocked (insecure origin, denied permission): select it so ⌘C works.
+      getSelection()?.selectAllChildren(copy.previousElementSibling!);
+      copyLabel!.textContent = 'Press ⌘C';
+    }
+    copy.classList.add('is-done');
+    setTimeout(() => { copyLabel!.textContent = 'Copy'; copy.classList.remove('is-done'); }, 1600);
+  });
 
   // The visitor's own platform leads the grid.
   const ua = navigator.userAgent;
