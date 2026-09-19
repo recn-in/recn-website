@@ -5,6 +5,10 @@ import Footer from '../components/Footer.astro';
 import { apple, android, windows } from '../lib/platformMarks';
 
 const releases = 'https://github.com/recn-in/recn-releases/releases';
+const brewCommands = [
+  'brew tap recn-in/recn https://github.com/recn-in/recn-releases',
+  'brew install --cask recn-rec',
+];
 
 // Desktop cards start at the releases list; the script below points them at
 // the newest nightly and fills in the file name and size.
@@ -40,9 +44,14 @@ const platforms = [
         ))}
       </div>
       <div class="brew-command">
-        <span>Homebrew</span>
-        <code data-brew-command>brew tap recn-in/recn https://github.com/recn-in/recn-releases && brew install --cask recn-rec</code>
-        <button type="button" data-brew-copy aria-live="polite">Copy</button>
+        <span>Homebrew · macOS</span>
+        <div class="brew-command__box">
+          <pre><code>{brewCommands.map((command) => <span class="brew-command__line">{command}</span>)}</code></pre>
+          <button type="button" data-brew-copy={brewCommands.join('\n')} aria-label="Copy Homebrew commands">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>
+            <em aria-live="polite">Copy</em>
+          </button>
+        </div>
       </div>
 
       <article class="release-card">
@@ -76,17 +85,18 @@ const platforms = [
   const root = document.querySelector<HTMLElement>('[data-release-browser]');
 
   const copy = document.querySelector<HTMLButtonElement>('[data-brew-copy]');
+  const copyLabel = copy?.querySelector('em');
   copy?.addEventListener('click', async () => {
-    const command = document.querySelector('[data-brew-command]')?.textContent ?? '';
     try {
-      await navigator.clipboard.writeText(command);
-      copy.textContent = 'Copied';
+      await navigator.clipboard.writeText(copy.dataset.brewCopy ?? '');
+      copyLabel!.textContent = 'Copied';
     } catch {
       // Clipboard blocked (insecure origin, denied permission): select it so ⌘C works.
       getSelection()?.selectAllChildren(copy.previousElementSibling!);
-      copy.textContent = 'Press ⌘C';
+      copyLabel!.textContent = 'Press ⌘C';
     }
-    setTimeout(() => { copy.textContent = 'Copy'; }, 1600);
+    copy.classList.add('is-done');
+    setTimeout(() => { copyLabel!.textContent = 'Copy'; copy.classList.remove('is-done'); }, 1600);
   });
 
   // The visitor's own platform leads the grid.
