@@ -18,9 +18,15 @@ const common = [
 
 const events = [
   ['app_opened', 'RECN launches, and the first time it comes back to the front each day.', '—'],
+  ['app_ready', 'RECN finishes starting up. Once per launch.', 'startup_ms: how long startup took'],
+  ['app_error', 'Something goes wrong and RECN logs an error. At most once a day for each area.', 'area: which part of RECN (for example, sync or recorder). Never the error message.'],
   ['onboarding_completed', 'You finish setup.', '—'],
-  ['recording_saved', 'A recording is saved.', 'source (for example, recorder)'],
-  ['session_saved', 'A session is saved.', '—'],
+  ['recording_saved', 'A recording is saved.', 'source (for example, recorder); length in seconds; mono or stereo; input kind: built-in, wired, USB, Bluetooth, or other. Never the device name.'],
+  ['session_saved', 'A session is saved.', 'takes: how many takes it has'],
+  ['editor_action', 'You use a session editing tool. At most once a day for each tool.', 'action: loop, marker, punch, split, trim, move, or delete'],
+  ['drawing_tool', 'You use a drawing tool. At most once a day for each tool.', 'tool (for example, pen or eraser)'],
+  ['library_view', 'You switch how your library is shown. At most once a day for each view.', 'view: the view you picked'],
+  ['update_started', 'You start installing a RECN update.', '—'],
   ['note_created', 'You create a note.', 'kind: text or drawing'],
   ['transcription_completed', 'A transcript finishes.', '—'],
   ['audiogram_rendered', 'An audiogram video finishes rendering.', '—'],
@@ -71,6 +77,7 @@ const events = [
         <li>Transcripts</li>
         <li>Titles, file names, or file paths in usage events</li>
         <li>What you search for</li>
+        <li>Error messages in usage stats. Usage stats carry only the area of RECN an error came from; crash reports are described above.</li>
         <li>Device names</li>
         <li>Location. RECN adds none, and tells PostHog not to look up a location from your network (IP) address. PostHog and Sentry still receive that address as part of receiving each request, like any internet service.</li>
       </ul>
