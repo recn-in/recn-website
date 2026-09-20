@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://recn-in.github.io/recn-website/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/download/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/features/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/releases/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/how-it-works/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/guide/desktop/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/blog/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/blog/inside-lattice/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/blog/introducing-recn/</loc></url>
-  <url><loc>https://recn-in.github.io/recn-website/blog/on-device-transcription/</loc></url>
+  <url><loc>https://recn.in/</loc></url>
+  <url><loc>https://recn.in/download/</loc></url>
+  <url><loc>https://recn.in/features/</loc></url>
+  <url><loc>https://recn.in/releases/</loc></url>
+  <url><loc>https://recn.in/how-it-works/</loc></url>
+  <url><loc>https://recn.in/guide/desktop/</loc></url>
+  <url><loc>https://recn.in/blog/</loc></url>
+  <url><loc>https://recn.in/blog/inside-lattice/</loc></url>
+  <url><loc>https://recn.in/blog/introducing-recn/</loc></url>
+  <url><loc>https://recn.in/blog/on-device-transcription/</loc></url>
 </urlset>
