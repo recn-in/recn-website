@@ -1,10 +1,10 @@
-# Windows Store download
+# Windows download options
 
-The Windows download card points to Microsoft Store product `9MWNZ7BZN9Q8`.
-Keep this change in draft until the listing is published and the public link
-can install RECN. The live site retains its existing executable download until then.
+Windows offers both a direct nightly `.exe` download and the Microsoft Store
+listing (`9MWNZ7BZN9Q8`). The Store listing currently returns Product not found,
+so its card says coming soon and directs visitors to the `.exe` option.
 
-- [x] Replace the Windows download link and remove its nightly executable override.
-- [x] Local `npm test` (5 passed), `npm run build`, and built Windows link check.
-- [ ] Verify the public Store listing and installation on Windows.
-- [ ] Merge and deploy after Store publication.
+- [x] Restore the direct Windows download and nightly asset resolution.
+- [x] Keep the Microsoft Store link separate from release asset updates.
+- [x] Local tests (5 passed), production build, and both generated links verified.
+- [ ] Verify Store publication and Windows installation, then remove coming-soon copy.
