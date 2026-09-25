@@ -7,11 +7,12 @@ import { apple, android, windows } from '../lib/platformMarks';
 const releases = 'https://github.com/recn-in/recn-releases/releases';
 const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
 
-// The macOS card resolves to the newest nightly; Windows installs and updates
-// through the Microsoft Store.
+// Direct desktop downloads resolve to the newest nightly. The Store link
+// stays separate so release discovery cannot replace it.
 const platforms = [
   { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
-  { id: 'windows', name: 'Windows', mark: windows, href: 'https://apps.microsoft.com/detail/9MWNZ7BZN9Q8', action: 'Get from Microsoft Store', arrow: '↗', note: 'Installs and updates through Microsoft Store', live: false },
+  { id: 'windows', name: 'Windows · direct download', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer · nightly builds', live: true },
+  { id: 'windows-store', name: 'Windows · Microsoft Store', mark: windows, href: 'https://apps.microsoft.com/detail/9MWNZ7BZN9Q8', action: 'View in Microsoft Store', arrow: '↗', note: 'Coming soon · use the .exe download for now', live: false },
   { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight', arrow: '↗', note: 'Updates arrive through TestFlight', live: false },
   { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access', arrow: '↗', note: 'Updates arrive through Google Play', live: false },
 ];
@@ -72,7 +73,7 @@ const platforms = [
       </article>
     </section>
 
-    <p class="build-caveat">macOS builds ship nightly and update themselves. Windows installs and updates through Microsoft Store. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
+    <p class="build-caveat">Direct macOS and Windows downloads ship nightly and update themselves. Microsoft Store availability is coming soon; use the Windows .exe download for now. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
   </main>
   <Footer />
 </Base>
@@ -130,6 +131,7 @@ const platforms = [
         if (!nightly) return;
 
         setAsset('macos', nightly.assets.find((asset) => asset.name.endsWith('.dmg')));
+        setAsset('windows', nightly.assets.find((asset) => asset.name.endsWith('.exe')));
 
         const name = root.querySelector<HTMLElement>('[data-release-name]');
         const date = root.querySelector<HTMLTimeElement>('[data-release-date]');
