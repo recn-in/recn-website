@@ -64,3 +64,29 @@ test('history shows each change once, by day, newest first', async () => {
     { date: '2026-09-17', entries: [{ family: 'Desktop', label: 'Nightly 202', lines: ['A'] }] },
   ]);
 });
+
+test('Rec, Work and Node tags never match each other', async () => {
+  const t = await import('./releases.ts');
+  const tags = {
+    rec: 'v0.1.0-beta-nightly.3', mobile: 'mobile-0.1.0-12', work: 'work-v0.1.0-beta-nightly.3',
+    workMobile: 'work-mobile-0.1.0-12', node: 'node-v0.1.0-beta-nightly.2',
+  };
+  const re = { rec: t.NIGHTLY_TAG, mobile: t.MOBILE_TAG, work: t.WORK_NIGHTLY_TAG, workMobile: t.WORK_MOBILE_TAG, node: t.NODE_NIGHTLY_TAG };
+  for (const [family, tag] of Object.entries(tags)) {
+    for (const [name, regex] of Object.entries(re)) assert.equal(regex.test(tag), name === family, `${name} vs ${tag}`);
+  }
+});
+
+test('history keeps Work and Node apart from Rec', async () => {
+  const { history } = await import('./releases.ts');
+  const days = history([
+    release('node-v0.1.0-beta-nightly.2', '2026-10-27T10:00:00Z', ['Pairs by QR']),
+    release('work-mobile-0.1.0-4', '2026-10-27T09:00:00Z', ['Same line']),
+    release('work-v0.1.0-beta-nightly.1', '2026-10-27T08:00:00Z', ['Same line']),
+    release('v0.0.1-beta-nightly.5', '2026-10-27T07:00:00Z', ['Same line']),
+    release('v0.0.1-beta-nightly.4', '2026-10-26T07:00:00Z', ['Old']),
+  ]);
+  assert.deepEqual(days[0].entries.map((e) => [e.family, e.label]), [
+    ['Desktop', 'Nightly 5'], ['Work desktop', 'Nightly 1'], ['Work mobile', 'Build 4'], ['Node', 'Nightly 2'],
+  ]);
+});
