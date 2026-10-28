@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import type { ProductId } from '../lib/products';
+import { ICON_VERSION, type ProductId } from '../lib/products';
 
 interface Props {
   title: string;
@@ -17,8 +17,8 @@ const {
 
 const base = import.meta.env.BASE_URL;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
-const icon = product ? `${base}${product}-icon-1024.png` : `${base}favicon.png`;
-const socialImage = new URL(product ? icon : `${base}og-image.png`, Astro.site ?? Astro.url.origin);
+const icon = `${base}${product ? `${product}-icon-1024` : 'favicon'}.png?v=${ICON_VERSION}`;
+const socialImage = new URL(product ? icon : `${base}og-image.png?v=${ICON_VERSION}`, Astro.site ?? Astro.url.origin);
 ---
 
 <!doctype html>
