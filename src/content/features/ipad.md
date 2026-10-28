@@ -1,5 +1,5 @@
 ---
-title: RECN on iPad
+title: On iPad
 summary: On a wide iPad the app becomes three panes, and what you open lands beside the list instead of on top of it.
 group: Everywhere
 order: 1

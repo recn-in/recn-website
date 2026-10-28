@@ -4,6 +4,7 @@ summary: Press record and the audio goes straight to a file, with a meter and a 
 group: Capture
 order: 1
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-07-15
 ---
 

@@ -23,6 +23,8 @@ const features = defineCollection({
     group: z.enum(['Capture', 'Sessions', 'Notes', 'Find', 'Sync', 'Everywhere', 'Private']),
     order: z.number(),
     platforms: z.array(z.enum(['macOS', 'Windows', 'iPhone', 'iPad', 'Android'])).min(1),
+    // Which app the feature lives in. Most live in both; audio features are Rec's, the drawing canvas is Work's.
+    apps: z.array(z.enum(['rec', 'work'])).min(1).default(['rec', 'work']),
     shipped: z.date(),
   }),
 });

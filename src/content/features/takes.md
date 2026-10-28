@@ -4,6 +4,7 @@ summary: Record the part again and the take you replaced stays on the track, one
 group: Sessions
 order: 2
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-09-09
 ---
 

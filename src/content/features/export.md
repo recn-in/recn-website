@@ -4,6 +4,7 @@ summary: Hand the whole session over as one file, or render it to WAV or AAC.
 group: Sessions
 order: 5
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-09-08
 ---
 

@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Story from '../../components/Story.astro';
 import { GROUPS, isNew, SETS } from '../../lib/features';
+import { PRODUCTS } from '../../lib/products';
 import { ACTS } from '../../story/features-story';
 
 const base = import.meta.env.BASE_URL;
@@ -28,10 +29,11 @@ const WHY: Record<(typeof SETS)[number]['id'], string> = {
   reckon: 'To reckon is to remember, and to work something out. A recording you cannot find is a recording you do not have, so the words sit beside the sound: notes that hold the recording itself, comments pinned to the second, transcripts made on the phone, and one search across all of it.',
   reconcile: 'Most apps settle their differences on someone else’s server. Your devices settle them with each other. Each one holds the whole library, edits merge field by field, and a recording turns green only when a verified copy is on all of them. No account. No cloud.',
 };
+const appName = (id: string) => PRODUCTS.find((product) => product.id === id)!.name;
 const sets = SETS.map((set) => ({ ...set, features: features.filter((feature) => (set.groups as readonly string[]).includes(feature.data.group)) }));
 ---
 
-<Base title="What RECN does" description="RECN is three words: record, reckon, reconcile. Everything the app does today, grouped by the one it serves, with what happens behind the scenes: recording and layered sessions, notes, transcripts and search, and device-to-device sync across macOS, Windows, iPhone, iPad and Android.">
+<Base title="What RECN does" description="RECN is three words: record, reckon, reconcile. Everything Rec and Work do today, grouped by the one it serves, with what happens behind the scenes: recording and layered sessions, notes, transcripts and search, and device-to-device sync across macOS, Windows, iPhone, iPad and Android.">
   <Header />
   <main id="main-content">
     <div class="story" data-story="features">
@@ -51,7 +53,7 @@ const sets = SETS.map((set) => ({ ...set, features: features.filter((feature) =>
           <div class="story__card">
             <p class="label">THE NAME</p>
             <h1>RECN is three words.</h1>
-            <p>An idea arrives once, and rarely at a good time. What happens to it next is the whole app: you record it, you reckon with it, and your devices reconcile it. Everything RECN does is one of those three.</p>
+            <p>An idea arrives once, and rarely at a good time. What happens to it next is the whole family: you record it, you reckon with it, and your devices reconcile it. Everything Rec and Work do is one of those three, and each feature below says which app it lives in.</p>
             <ul class="story__sets">
               {sets.map((set) => <li><a href={`#${set.id}`}><strong>{set.word}</strong>{set.promise} <b aria-hidden="true">→</b></a></li>)}
             </ul>
@@ -73,7 +75,7 @@ const sets = SETS.map((set) => ({ ...set, features: features.filter((feature) =>
             {set.features.map(({ slug, data, Words }) => (
               <section class="story__chapter" id={slug} data-story-chapter data-act={slug} data-set={set.id}>
                 <div class="story__card">
-                  <p class="label">{set.word.toUpperCase()} · {data.group.toUpperCase()}{isNew(data.shipped) && <em>New</em>}</p>
+                  <p class="label">{data.apps.map(appName).join(' · ').toUpperCase()} · {data.group.toUpperCase()}{isNew(data.shipped) && <em>New</em>}</p>
                   <h2>{data.title}</h2>
                   <p>{data.summary}</p>
                   <Words />
