@@ -17,9 +17,22 @@ const platforms = [
   { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access', arrow: '↗', note: 'Updates arrive through Google Play', live: false },
 ];
 
+const work = [
+  { id: 'work-macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
+  { id: 'work-windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer · nightly builds', live: true },
+  { id: 'work-ios', name: 'iPhone · iPad', mark: apple, href: '', action: 'Coming to TestFlight', arrow: '', note: 'Not open yet', live: false },
+  { id: 'work-android', name: 'Android', mark: android, href: '', action: 'Coming to Google Play', arrow: '', note: 'Not open yet', live: false },
+];
+
+const nodeArchives = [
+  { id: 'node-linux-x64', name: 'Linux · x64', mark: '', suffix: 'linux-x64.tar.gz' },
+  { id: 'node-linux-arm64', name: 'Linux · arm64', mark: '', suffix: 'linux-arm64.tar.gz' },
+  { id: 'node-macos-arm64', name: 'macOS · Apple silicon', mark: apple, suffix: 'macos-arm64.tar.gz' },
+  { id: 'node-windows-x64', name: 'Windows · x64', mark: windows, suffix: 'windows-x64.zip' },
+];
 ---
 
-<Base title="Get RECN" description="RECN Rec for macOS, Windows, iPhone, iPad and Android.">
+<Base title="Get RECN" description="RECN Rec and RECN Work for macOS, Windows, iPhone, iPad and Android, and RECN Node for a NAS, Mac mini or desktop.">
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
@@ -73,13 +86,66 @@ const platforms = [
       </article>
     </section>
 
+    <section class="release-browser" aria-labelledby="work-heading">
+      <p class="label">RECN WORK</p>
+      <h2 id="work-heading">RECN Work</h2>
+      <div class="download-grid">
+        {work.map((platform) => (
+          platform.href === '' && !platform.live ? (
+            <div data-release-platform={platform.id}>
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
+                {platform.name}
+              </span>
+              <strong>{platform.action}</strong>
+              <small>{platform.note}</small>
+            </div>
+          ) : (
+            <a href={platform.href} data-release-platform={platform.id}>
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
+                {platform.name}
+              </span>
+              <strong>{platform.action} <b aria-hidden="true">{platform.arrow}</b></strong>
+              <small data-asset-meta>{platform.note}</small>
+            </a>
+          )
+        ))}
+      </div>
+    </section>
+
+    <section class="release-browser" aria-labelledby="node-heading">
+      <p class="label">RECN NODE</p>
+      <h2 id="node-heading">RECN Node</h2>
+      <p>A headless server for a NAS, a Mac mini or a desktop. It holds your libraries, pairs with your phones and desktops, and keeps them in sync. Rec and Work on your phone never need it.</p>
+      <div class="download-grid">
+        {nodeArchives.map((archive) => (
+          <a href={releases} data-release-platform={archive.id} data-node-suffix={archive.suffix}>
+            <span>
+              {archive.mark && <svg viewBox="0 0 24 24" aria-hidden="true"><path d={archive.mark} /></svg>}
+              {archive.name}
+            </span>
+            <strong>Download <b aria-hidden="true">↓</b></strong>
+            <small data-asset-meta>{archive.suffix.endsWith('.zip') ? '.zip' : '.tar.gz'} · nightly builds</small>
+          </a>
+        ))}
+      </div>
+      <div class="brew-command">
+        <span>Run it</span>
+        <div class="brew-command__box">
+          <pre><code class="brew-command__line">bin/recn-node --data-dir ~/recn-node</code></pre>
+        </div>
+        <p class="brew-command__hint">Unpack the archive, run this from inside it, then open the URL it prints. <a href={`${import.meta.env.BASE_URL}how-it-works/#node`}>How RECN Node works →</a></p>
+      </div>
+    </section>
+
     <p class="build-caveat">Direct macOS and Windows downloads ship nightly and update themselves. Microsoft Store availability is coming soon; use the Windows .exe download for now. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
   </main>
   <Footer />
 </Base>
 
 <script>
-  import { RELEASES_API, NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
+  import { RELEASES_API, NIGHTLY_TAG, WORK_NIGHTLY_TAG, NODE_NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
 
   const root = document.querySelector<HTMLElement>('[data-release-browser]');
 
@@ -107,7 +173,7 @@ const platforms = [
   root?.querySelector(`[data-release-platform="${mine}"]`)?.classList.add('is-mine');
 
   const setAsset = (platform: string, asset: ReleaseAsset | undefined) => {
-    const link = root?.querySelector<HTMLAnchorElement>(`[data-release-platform="${platform}"]`);
+    const link = document.querySelector<HTMLAnchorElement>(`[data-release-platform="${platform}"]`);
     const meta = link?.querySelector<HTMLElement>('[data-asset-meta]');
     if (!link || !asset) return;
     link.href = asset.browser_download_url;
@@ -128,10 +194,25 @@ const platforms = [
           && NIGHTLY_TAG.test(release.tag_name)
           && release.assets.some((asset) => asset.name.endsWith('.dmg'))
           && release.assets.some((asset) => asset.name.endsWith('.exe')));
-        if (!nightly) return;
+        setAsset('macos', nightly?.assets.find((asset) => asset.name.endsWith('.dmg')));
+        setAsset('windows', nightly?.assets.find((asset) => asset.name.endsWith('.exe')));
 
-        setAsset('macos', nightly.assets.find((asset) => asset.name.endsWith('.dmg')));
-        setAsset('windows', nightly.assets.find((asset) => asset.name.endsWith('.exe')));
+        // Newest Work build with both installers, newest Node build with its archives.
+        const ready = (tag: RegExp, ...suffixes: string[]) => all.find((release) => !release.draft
+          && tag.test(release.tag_name)
+          && suffixes.every((suffix) => release.assets.some((asset) => asset.name.endsWith(suffix))));
+        const work = ready(WORK_NIGHTLY_TAG, '.dmg', '.exe');
+        if (work) {
+          setAsset('work-macos', work.assets.find((asset) => asset.name.endsWith('.dmg')));
+          setAsset('work-windows', work.assets.find((asset) => asset.name.endsWith('.exe')));
+        }
+        document.querySelectorAll<HTMLElement>('[data-node-suffix]').forEach((card) => {
+          const suffix = card.dataset.nodeSuffix!;
+          const node = ready(NODE_NIGHTLY_TAG, suffix);
+          setAsset(card.dataset.releasePlatform!, node?.assets.find((asset) => asset.name.endsWith(suffix)));
+        });
+
+        if (!nightly) return;
 
         const name = root.querySelector<HTMLElement>('[data-release-name]');
         const date = root.querySelector<HTMLTimeElement>('[data-release-date]');

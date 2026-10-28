@@ -63,11 +63,18 @@ const chapters = [
       <p>The layer that merges your library is ours, and it is called <strong>Lattice</strong>. The hard networking underneath it is not. <a href="https://www.iroh.computer" target="_blank" rel="noreferrer">Iroh</a>, from the team at n0, does dial-by-key, hole punching and relays, and does them well. Until September 2026 Lattice spoke plain TCP and only on the local network. Moving to Iroh brought encryption, real device identity and the internet in one step, without adding a second way to sync.</p>
       <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything still works nearby.</p>
 
+      <h2 id="node">RECN Node</h2>
+      <p>RECN Node is an optional server you run yourself, on a NAS, a Mac mini or any desktop that stays on. It is a library that is always awake: one library per product per person, held on its own disk, so a device that was off can catch up from it. It is not a cloud and not an account. Rec and Work on your phones work the same without it.</p>
+      <p><strong>Running it.</strong> Unpack the archive, run <code>bin/recn-node --data-dir ~/recn-node</code> and open the URL it prints. That status page is served on the machine itself, on localhost.</p>
+      <p><strong>Pairing.</strong> The status page shows a QR code. Scan it from Rec or Work on a phone or desktop and the two trust each other, the same way two of your own devices do. The code holds a key and a one-time token that expires in five minutes.</p>
+      <p><strong>LAN or relay.</strong> Syncing runs over Iroh. On the same network your devices reach the Node directly. Away from home they try a direct line first and fall back to a relay that forwards sealed packets and keeps nothing.</p>
+      <p><strong>For agents.</strong> <code>recn-node mcp</code> starts an MCP server, so Claude Code, Codex and other agents can create notes and drawings in a library on the Node. They reach your devices through normal sync.</p>
+
       <h2>What isn’t there yet</h2>
       <ul>
         <li>Relays are n0’s public ones for now. RECN-run relays come before launch.</li>
         <li>There are no accounts. Pairing is device to device, which also means no web access, and no recovery if you lose every device you own.</li>
-        <li>There is no cloud copy. The plan is an always-on anchor device that speaks the same protocol, not a separate cloud sync.</li>
+        <li>There is no cloud copy. RECN Node is the always-on device you run yourself, speaking the same protocol, not a separate cloud sync.</li>
         <li>Phones sync while RECN is open. Background sync is not built.</li>
       </ul>
       <p class="feature-next">
