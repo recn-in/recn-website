@@ -1,15 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
 <defs>
-<linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B2825"/><stop offset="1" stop-color="#121110"/></linearGradient>
-<radialGradient id="sheen" cx="0.5" cy="0" r="0.75"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.09"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
-<radialGradient id="dot" cx="0.38" cy="0.32" r="0.8"><stop offset="0" stop-color="#F5AE4E"/><stop offset="1" stop-color="#DE8A22"/></radialGradient>
-<linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F4"/><stop offset="1" stop-color="#E9E5DC"/></linearGradient>
+<linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5A63B"/><stop offset="1" stop-color="#D67A14"/></linearGradient>
+<radialGradient id="sheen" cx="0.5" cy="0" r="0.75"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.14"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#F1EDE4"/></linearGradient>
 </defs>
 <g id="field"><rect width="1024" height="1024" fill="url(#field)"/><rect width="1024" height="1024" fill="url(#sheen)"/></g>
 <g id="glyph">
-<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="#000" stroke-opacity="0.28" stroke-width="104" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 14)"/>
-<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="url(#ivory)" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="788" cy="250" r="96" fill="#000" fill-opacity="0.28"/>
-<circle cx="788" cy="236" r="96" fill="url(#dot)"/>
+<g transform="translate(0 14) rotate(-45 512 512)" fill="#000" fill-opacity="0.18">
+<rect x="206" y="436" width="470" height="152" rx="40"/>
+<path d="M 690 436 L 836 512 L 690 588 Z"/>
+</g>
+<g transform="rotate(-45 512 512)">
+<rect x="206" y="436" width="470" height="152" rx="40" fill="url(#ivory)"/>
+<path d="M 690 436 L 836 512 L 690 588 Z" fill="url(#ivory)"/>
+<rect x="300" y="436" width="34" height="152" fill="#D67A14" fill-opacity="0.55"/>
+<path d="M 790 488 L 836 512 L 790 536 Z" fill="#8A4A08"/>
+</g>
 </g>
 </svg>

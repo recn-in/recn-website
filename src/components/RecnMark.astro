@@ -1,5 +1,5 @@
 ---
-import { PRODUCTS, type ProductId } from '../lib/products';
+import { ICON_VERSION, PRODUCTS, type ProductId } from '../lib/products';
 
 interface Props {
   product?: ProductId;
@@ -13,7 +13,7 @@ const base = import.meta.env.BASE_URL;
 
 <img
   class:list={['recn-mark', className]}
-  src={`${base}${product ? `${product}-icon` : 'recn-mark'}.svg`}
+  src={`${base}${product ? `${product}-icon` : 'recn-mark'}.svg?v=${ICON_VERSION}`}
   width="1024"
   height="1024"
   alt={label}
