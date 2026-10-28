@@ -11,4 +11,4 @@ export type ProductId = (typeof PRODUCTS)[number]['id'];
 
 // Bumped whenever an icon file in public/ changes: the file names stay, so the
 // query string is what gets past the browser and Pages caches.
-export const ICON_VERSION = '2';
+export const ICON_VERSION = '3';
