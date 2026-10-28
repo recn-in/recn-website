@@ -2,6 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://recn.in/</loc></url>
   <url><loc>https://recn.in/download/</loc></url>
+  <url><loc>https://recn.in/rec/</loc></url>
+  <url><loc>https://recn.in/work/</loc></url>
+  <url><loc>https://recn.in/node/</loc></url>
   <url><loc>https://recn.in/features/</loc></url>
   <url><loc>https://recn.in/releases/</loc></url>
   <url><loc>https://recn.in/how-it-works/</loc></url>

@@ -1,0 +1,199 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import RecnMark from '../components/RecnMark.astro';
+import { apple, android, windows } from '../lib/platformMarks';
+import { PRODUCTS, type ProductId } from '../lib/products';
+
+export const getStaticPaths = () => PRODUCTS.map((product) => ({ params: { product: product.id }, props: { product } }));
+const { product } = Astro.props as { product: (typeof PRODUCTS)[number] };
+
+const base = import.meta.env.BASE_URL;
+const releases = 'https://github.com/recn-in/recn-releases/releases';
+const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
+
+// One card per download. A `suffix` card is filled from the newest release
+// that carries an asset with that suffix; the others link out as written.
+// A card with no href is not open yet.
+interface Card { id: string; name: string; mark: string; suffix?: string; href?: string; action: string; note: string }
+const cards: Record<ProductId, Card[]> = {
+  rec: [
+    { id: 'macos', name: 'macOS', mark: apple, suffix: '.dmg', href: releases, action: 'Download .dmg ↓', note: 'Signed and notarized' },
+    { id: 'windows', name: 'Windows · direct download', mark: windows, suffix: '.exe', href: releases, action: 'Download .exe ↓', note: 'Per-user installer' },
+    { id: 'windows-store', name: 'Windows · Microsoft Store', mark: windows, href: 'https://apps.microsoft.com/detail/9MWNZ7BZN9Q8', action: 'View in Microsoft Store ↗', note: 'Coming soon · use the .exe for now' },
+    { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight ↗', note: 'Updates arrive through TestFlight' },
+    { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access ↗', note: 'Updates arrive through Google Play' },
+  ],
+  work: [
+    { id: 'macos', name: 'macOS', mark: apple, suffix: '.dmg', href: releases, action: 'Download .dmg ↓', note: 'Signed and notarized' },
+    { id: 'windows', name: 'Windows', mark: windows, suffix: '.exe', href: releases, action: 'Download .exe ↓', note: 'Per-user installer' },
+    { id: 'ios', name: 'iPhone · iPad', mark: apple, action: 'Coming to TestFlight', note: 'Coming soon' },
+    { id: 'android', name: 'Android', mark: android, action: 'Coming to Google Play', note: 'Coming soon' },
+  ],
+  node: [
+    { id: 'macos', name: 'macOS · Apple silicon', mark: apple, suffix: 'macos-arm64.tar.gz', href: releases, action: 'Download ↓', note: '.tar.gz' },
+    { id: 'linux-x64', name: 'Linux · x64', mark: '', suffix: 'linux-x64.tar.gz', href: releases, action: 'Download ↓', note: '.tar.gz' },
+    { id: 'linux-arm64', name: 'Linux · arm64', mark: '', suffix: 'linux-arm64.tar.gz', href: releases, action: 'Download ↓', note: '.tar.gz' },
+    { id: 'windows', name: 'Windows · x64', mark: windows, suffix: 'windows-x64.zip', href: releases, action: 'Download ↓', note: '.zip' },
+  ],
+};
+const nodeInstall = ['tar -xzf recn-node-*.tar.gz && cd recn-node-*', 'bin/recn_node service install', 'bin/recn_node service status'];
+const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>';
+---
+
+<Base product={product.id} title={`Get ${product.name}`} description={product.line}>
+  <Header />
+  <main class="simple-page shell" id="main-content" data-release-product={product.id}>
+    <header class="simple-page__header product-hero">
+      <RecnMark product={product.id} />
+      <div>
+        <p class="label">{product.kind.toUpperCase()}</p>
+        <h1>{product.name}</h1>
+        <p>{product.line}</p>
+      </div>
+    </header>
+
+    <section class="release-browser" aria-label="Downloads">
+      <div class="download-grid">
+        {cards[product.id].map((card) => card.href ? (
+          <a href={card.href} data-release-platform={card.id} data-asset-suffix={card.suffix}>
+            <span>{card.mark && <svg viewBox="0 0 24 24" aria-hidden="true"><path d={card.mark} /></svg>}{card.name}</span>
+            <strong>{card.action}</strong>
+            <small data-asset-meta={card.suffix !== undefined ? '' : undefined}>{card.note}</small>
+          </a>
+        ) : (
+          <div>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d={card.mark} /></svg>{card.name}</span>
+            <strong>{card.action}</strong>
+            <small>{card.note}</small>
+          </div>
+        ))}
+      </div>
+
+      {product.id === 'rec' && (
+        <div class="brew-command">
+          <span>Homebrew · macOS</span>
+          <div class="brew-command__box">
+            <pre><code class="brew-command__line">{brewCommand}</code></pre>
+            <button type="button" data-copy={brewCommand} aria-label="Copy Homebrew command"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
+          </div>
+          <p class="brew-command__hint">Taps and trusts <code>recn-in/recn</code>, then installs or updates the <code>recn-rec</code> cask. Run it again any time to update.</p>
+        </div>
+      )}
+
+      {product.id === 'node' && (
+        <div class="brew-command">
+          <span>Install · three lines</span>
+          <div class="brew-command__box">
+            <pre>{nodeInstall.map((line) => <code class="brew-command__line">{line}</code>)}</pre>
+            <button type="button" data-copy={nodeInstall.join('\n')} aria-label="Copy install commands"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
+          </div>
+          <p class="brew-command__hint">Unpack, install it as a per-user service that starts at login, then open the status page URL it prints (<code>status</code> prints it again any time). Scan the pairing code there from Rec or Work. On Windows unzip and run <code>bin\recn_node.exe service install</code>. A phone never needs a Node. <a href={`${base}how-it-works/#node`}>How RECN Node works →</a></p>
+        </div>
+      )}
+
+      <article class="release-card">
+        <header class="release-card__header">
+          <div>
+            <p class="release-card__eyebrow">{product.name} · latest</p>
+            <h2 data-release-name>Latest build</h2>
+          </div>
+          <time data-release-date></time>
+        </header>
+        <section class="release-notes" aria-labelledby="release-notes-heading">
+          <header>
+            <h3 id="release-notes-heading">What changed</h3>
+            <a href={`${base}releases/#${product.id}`}>All releases →</a>
+          </header>
+          <ul data-release-notes><li>The latest notes are on the releases page.</li></ul>
+        </section>
+      </article>
+    </section>
+
+    <p class="build-caveat">{product.id === 'node'
+      ? 'Early software: keep the data dir backed up like any other library.'
+      : 'Direct macOS and Windows downloads update themselves. This is early software: expect rough edges, and keep copies of work that matters. Mobile betas are for ages 13 and over.'}</p>
+    <p class="small-links">{PRODUCTS.filter((other) => other.id !== product.id).map((other) => <a href={`${base}${other.id}/`}>Get {other.name} →</a>)}</p>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .product-hero { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 28px; }
+  .product-hero :global(.recn-mark) { width: 96px; height: 96px; border: 1px solid var(--divider); border-radius: 22%; }
+  .product-hero h1 { margin-top: 10px; }
+  .product-hero p:last-child { margin-top: 14px; }
+  @media (max-width: 480px) { .product-hero { grid-template-columns: 1fr; gap: 20px; } }
+</style>
+
+<script>
+  import { RELEASES_API, PRODUCT_TAGS, buildName, changes, type GitHubRelease } from '../lib/releases';
+
+  const root = document.querySelector<HTMLElement>('[data-release-product]')!;
+  const tags = PRODUCT_TAGS.find((product) => product.id === root.dataset.releaseProduct)!;
+  const cards = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-asset-suffix]'));
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((copy) => {
+    const copyLabel = copy.querySelector('em')!;
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(copy.dataset.copy ?? '');
+        copyLabel.textContent = 'Copied';
+      } catch {
+        // Clipboard blocked (insecure origin, denied permission): select it so ⌘C works.
+        getSelection()?.selectAllChildren(copy.previousElementSibling!);
+        copyLabel.textContent = 'Press ⌘C';
+      }
+      copy.classList.add('is-done');
+      setTimeout(() => { copyLabel.textContent = 'Copy'; copy.classList.remove('is-done'); }, 1600);
+    });
+  });
+
+  // The visitor's own platform leads the grid.
+  const ua = navigator.userAgent;
+  const mine = /Android/.test(ua) ? 'android'
+    : /iPhone|iPad/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios'
+    : /Mac/.test(ua) ? 'macos'
+    : /Windows/.test(ua) ? 'windows' : '';
+  root.querySelector(`[data-release-platform="${mine}"]`)?.classList.add('is-mine');
+
+  fetch(`${RELEASES_API}?per_page=60`, { headers: { Accept: 'application/vnd.github+json' } })
+    .then((response) => {
+      if (!response.ok) throw new Error(`GitHub releases: ${response.status}`);
+      return response.json() as Promise<GitHubRelease[]>;
+    })
+    .then((all) => {
+      // Newest versioned release whose files have all finished uploading, else the newest nightly with them.
+      const suffixes = cards.map((card) => card.dataset.assetSuffix!);
+      const ready = (tag: RegExp) => all.find((release) => !release.draft && tag.test(release.tag_name)
+        && suffixes.every((suffix) => release.assets.some((asset) => asset.name.endsWith(suffix))));
+      const latest = ready(tags.version) ?? ready(tags.nightly);
+      if (!latest) return;
+
+      for (const card of cards) {
+        // A release carries each installer twice: a versioned name and a stable alias. Link the versioned one.
+        const named = latest.assets.filter((asset) => asset.name.endsWith(card.dataset.assetSuffix!));
+        const asset = named.find((a) => /\d+\.\d+\.\d+/.test(a.name)) ?? named[0];
+        card.href = asset.browser_download_url;
+        card.querySelector('[data-asset-meta]')!.textContent = `${asset.name} · ${(asset.size / 1_000_000).toFixed(0)} MB`;
+      }
+
+      root.querySelector('[data-release-name]')!.textContent = buildName(latest.tag_name);
+      const date = root.querySelector<HTMLTimeElement>('[data-release-date]')!;
+      if (latest.published_at) {
+        date.dateTime = latest.published_at;
+        date.textContent = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(latest.published_at));
+      }
+      const lines = changes(latest.body).slice(0, 8);
+      if (lines.length > 0) {
+        root.querySelector('[data-release-notes]')!.replaceChildren(...lines.map((line) => {
+          const item = document.createElement('li');
+          item.textContent = line;
+          return item;
+        }));
+      }
+    })
+    // The static links already lead to the releases page; say why they stayed.
+    .catch((error) => console.warn('Live release details unavailable:', error));
+</script>

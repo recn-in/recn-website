@@ -27,7 +27,7 @@ const socialImage = new URL(product ? icon : `${base}og-image.svg`, Astro.site ?
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#141414" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="application-base" content={base} />
     <meta name="color-scheme" content="light dark" />
 
@@ -50,7 +50,7 @@ const socialImage = new URL(product ? icon : `${base}og-image.svg`, Astro.site ?
     <script is:inline>
       (() => {
         const saved = localStorage.getItem('recn-theme');
-        document.documentElement.dataset.theme = ['light', 'dark', 'amoled'].includes(saved) ? saved : 'dark';
+        document.documentElement.dataset.theme = ['light', 'dark', 'amoled'].includes(saved) ? saved : 'light';
       })();
     </script>
 
@@ -78,7 +78,7 @@ const socialImage = new URL(product ? icon : `${base}og-image.svg`, Astro.site ?
         document.querySelectorAll('[data-theme-choice]').forEach((button) => {
           button.addEventListener('click', () => applyTheme(button.getAttribute('data-theme-choice')));
         });
-        applyTheme(document.documentElement.dataset.theme || 'dark', false);
+        applyTheme(document.documentElement.dataset.theme || 'light', false);
 
         document.querySelectorAll('[data-signup]').forEach((form) => {
           form.addEventListener('submit', async (event) => {
