@@ -381,7 +381,8 @@ main { overflow-x: clip; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.download-grid a {
+.download-grid a,
+.download-grid > div {
   display: flex;
   position: relative;
   min-height: 150px;
@@ -392,6 +393,7 @@ main { overflow-x: clip; }
 }
 
 .download-grid a:hover { background: var(--surface); }
+.download-grid > div { color: var(--secondary); }
 .download-grid a.is-mine { z-index: 1; border-color: var(--ink); }
 .download-grid span { color: var(--secondary); font: 600 0.64rem/1 var(--mono); }
 /* The platform mark stays out of the way until its card is pointed at or
