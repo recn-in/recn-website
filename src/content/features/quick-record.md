@@ -4,6 +4,7 @@ summary: Rec can sit in the menu bar or tray and record from a keyboard shortcut
 group: Capture
 order: 2
 platforms: [macOS, Windows]
+apps: [rec]
 shipped: 2026-09-17
 ---
 

@@ -4,6 +4,7 @@ summary: Record over what you already have, and every pass keeps its own track a
 group: Sessions
 order: 1
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-07-15
 ---
 

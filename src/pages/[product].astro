@@ -12,6 +12,8 @@ const { product } = Astro.props as { product: (typeof PRODUCTS)[number] };
 const base = import.meta.env.BASE_URL;
 const releases = 'https://github.com/recn-in/recn-releases/releases';
 const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
+// The installer script is Rec-only; Work is the same tap and its own cask.
+const workBrew = ['brew tap recn-in/recn https://github.com/recn-in/recn-releases', 'brew install --cask recn-work'];
 
 // One card per download. A `suffix` card is filled from the newest release
 // that carries an asset with that suffix; the others link out as written.
@@ -79,6 +81,17 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
             <button type="button" data-copy={brewCommand} aria-label="Copy Homebrew command"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
           </div>
           <p class="brew-command__hint">Taps and trusts <code>recn-in/recn</code>, then installs or updates the <code>recn-rec</code> cask. Run it again any time to update.</p>
+        </div>
+      )}
+
+      {product.id === 'work' && (
+        <div class="brew-command">
+          <span>Homebrew · macOS</span>
+          <div class="brew-command__box">
+            <pre>{workBrew.map((line) => <code class="brew-command__line">{line}</code>)}</pre>
+            <button type="button" data-copy={workBrew.join('\n')} aria-label="Copy Homebrew commands"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
+          </div>
+          <p class="brew-command__hint">Newer Homebrew asks you to trust the tap first: <code>brew trust --tap recn-in/recn</code>. Update with <code>brew upgrade --greedy --cask recn-work</code>.</p>
         </div>
       )}
 

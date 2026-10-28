@@ -4,6 +4,7 @@ summary: Move, trim, split and mute the pieces of a session, with the crossfades
 group: Sessions
 order: 3
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-07-15
 ---
 

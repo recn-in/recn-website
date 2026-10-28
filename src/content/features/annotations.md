@@ -4,6 +4,7 @@ summary: Pin a short comment to an exact moment in a recording and see it come b
 group: Notes
 order: 3
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-07-15
 ---
 

@@ -4,6 +4,7 @@ summary: Cycle a section until it is right, record over a fixed range, and name 
 group: Sessions
 order: 4
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [rec]
 shipped: 2026-09-17
 ---
 

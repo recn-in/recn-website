@@ -4,6 +4,7 @@ summary: Speech becomes text on the phone itself, and the transcript then follow
 group: Find
 order: 1
 platforms: [macOS, Windows, iPhone, iPad]
+apps: [rec]
 shipped: 2026-07-15
 ---
 

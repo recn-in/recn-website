@@ -4,6 +4,7 @@ summary: A whiteboard for shapes, lines, text and sketches that lives in the lib
 group: Notes
 order: 2
 platforms: [macOS, Windows, iPhone, iPad, Android]
+apps: [work]
 shipped: 2026-09-17
 ---
 
