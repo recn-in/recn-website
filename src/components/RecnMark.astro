@@ -20,5 +20,12 @@ const base = import.meta.env.BASE_URL;
 />
 
 <style>
-  .recn-mark { display: block; object-fit: contain; }
+  /* Apple app-icon tile: the SVG is full bleed, the img carries the squircle-ish mask and lift.
+     :where keeps specificity low so callers only set width (and may drop the shadow when tiny). */
+  :where(.recn-mark) {
+    display: block;
+    height: auto;
+    border-radius: 22.37%;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.28), 0 2px 6px rgb(0 0 0 / 0.12);
+  }
 </style>
