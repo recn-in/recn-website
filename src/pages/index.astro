@@ -3,13 +3,15 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WaveBackdrop from '../components/WaveBackdrop.astro';
+import RecnMark from '../components/RecnMark.astro';
+import { PRODUCTS } from '../lib/products';
 
 const base = import.meta.env.BASE_URL;
 ---
 
 <Base
-  title="RECN — Your recordings, in motion"
-  description="Recordings, notes, and sessions that move directly between your own devices. RECN Rec runs on macOS, Windows, iPhone, iPad and Android."
+  title="RECN — Rec, Work and RECN Node"
+  description="One family, three products. Rec records, Work writes and draws, RECN Node keeps every library in sync. Device to device, no account, no cloud library."
 >
   <Header />
 
@@ -24,29 +26,40 @@ const base = import.meta.env.BASE_URL;
             <span aria-hidden="true"><b>REC</b>O<b>N</b>CILE<i>every device agrees</i></span>
           </a>
         </p>
-        <h1 id="home-title">Your recordings.<br /><span>In motion.</span></h1>
-        <p class="home-hero__intro">Capture on one device. Continue on another. RECN moves recordings and context directly between your own devices. No account. No cloud library.</p>
+        <h1 id="home-title">Record it. Write it.<br /><span>Keep it everywhere.</span></h1>
+        <p class="home-hero__intro">Rec records. Work writes and draws. RECN Node keeps it all in sync at home or in the studio. Everything moves directly between your own devices. No account. No cloud library.</p>
         <div class="download-actions">
           <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
-          <a class="button button--secondary" href={`${base}how-it-works/`}>No account. No server. See how <span>→</span></a>
+          <a class="button button--secondary" href={`${base}how-it-works/`}>No account. No cloud. See how <span>→</span></a>
         </div>
         <div class="home-hero__facts" aria-label="Product facts">
           <span><i></i>Device to device</span>
-          <span><i></i>macOS · Windows</span>
-          <span><i></i>iOS · TestFlight</span>
-          <span><i></i>Android · Google Play</span>
+          <span><i></i>macOS · Windows · Linux</span>
+          <span><i></i>iPhone · iPad · Android</span>
         </div>
       </div>
       <WaveBackdrop />
     </section>
 
+    <section class="product-cards shell" aria-label="The three products">
+      {PRODUCTS.map((product) => (
+        <article id={product.id}>
+          <RecnMark product={product.id} />
+          <h2>{product.name}</h2>
+          <p>{product.line}</p>
+          <span>{product.platforms}</span>
+          <a class="inline-link" href={`${base}download/#${product.id}`}>Download {product.name} →</a>
+        </article>
+      ))}
+    </section>
+
     <section class="home-manifesto shell" aria-labelledby="manifesto-title">
-      <p class="label">THE SHORTEST DISTANCE</p>
+      <p class="label">REC · WORK · THE SHORTEST DISTANCE</p>
       <h2 id="manifesto-title">Your phone is three feet from your computer.<br />Your recording shouldn’t travel three thousand miles.</h2>
       <p>In the same room, RECN sends the file straight across it, with no internet at all. Apart, your devices find each other by key and connect directly when they can, through an encrypted relay when they can’t. Either way, a copy counts only once it is verified.</p>
     </section>
 
-    <section class="capability-list shell" aria-label="How RECN sync works">
+    <section class="capability-list shell" aria-label="How sync works in Rec and Work">
       <article>
         <span>01</span>
         <h2>Nearby first.</h2>
@@ -66,9 +79,9 @@ const base = import.meta.env.BASE_URL;
 
     <section class="home-system shell" aria-labelledby="system-title">
       <div class="home-system__copy">
-        <p class="label">A LIVING LIBRARY</p>
+        <p class="label">REC · A LIVING LIBRARY</p>
         <h2 id="system-title">See where every recording lives.</h2>
-        <p>The app’s Sync screen draws your library as a constellation, and it is not decoration. Its position reveals which devices hold the bytes. Size shows space. Amber means a recording is not yet on every device you have paired. Green means it is, verified.</p>
+        <p>Rec’s Sync screen draws your library as a constellation, and it is not decoration. Its position reveals which devices hold the bytes. Size shows space. Amber means a recording is not yet on every device you have paired. Green means it is, verified.</p>
         <a class="inline-link" href={`${base}how-it-works/`}>How the sync works →</a>
       </div>
       <div class="home-system__diagram" aria-label="Constellation visual language">
@@ -79,11 +92,11 @@ const base = import.meta.env.BASE_URL;
     </section>
 
     <section class="home-closing shell">
-      <p class="label">RECN REC</p>
-      <h2>Record now.<br />Pick up anywhere.</h2>
+      <p class="label">REC · WORK · RECN NODE</p>
+      <h2>Start now.<br />Pick up anywhere.</h2>
       <div class="download-actions">
         <a class="button button--primary" href={`${base}download/`}>Get RECN <span>→</span></a>
-        <a class="button button--secondary" href={`${base}features/`}>Everything it does <span>→</span></a>
+        <a class="button button--secondary" href={`${base}features/`}>Everything Rec does <span>→</span></a>
       </div>
       <p class="build-caveat">Early builds. Glitches are expected.</p>
       <section class="signup-block" aria-labelledby="home-contact-title">

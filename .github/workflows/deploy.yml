@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Pull requests get the build and tests; only main deploys.
+  pull_request:
+    branches: [main]
   # The Releases page reads recn-releases at build time.
   schedule:
     - cron: '17 */6 * * *'
@@ -36,6 +39,7 @@ jobs:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10

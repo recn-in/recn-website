@@ -41,7 +41,7 @@ export const quickRecord = () => {
   const item = act.circle(0.5, 0.76, 0.04);
   const menu = act.rect(0.5, 0.52, 0.58, 0.22);
   const stop = act.label('STOP RECORDING', 0.5, 0.57, 'center', 'accent');
-  act.label('OPEN RECN', 0.5, 0.47);
+  act.label('OPEN REC', 0.5, 0.47);
   const caps = ['CTRL', 'ALT', 'R'].map((name, i) => ({
     key: act.rect(-0.86 + i * 0.3, 0.52, 0.26, 0.15),
     tag: act.label(name, -0.86 + i * 0.3, 0.52),

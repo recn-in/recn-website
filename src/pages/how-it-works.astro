@@ -64,24 +64,66 @@ const chapters = [
       <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything still works nearby.</p>
 
       <h2 id="node">RECN Node</h2>
-      <p>RECN Node is an optional server you run yourself, on a NAS, a Mac mini or any desktop that stays on. It is a library that is always awake: one library per product per person, held on its own disk, so a device that was off can catch up from it. It is not a cloud and not an account. Rec and Work on your phones work the same without it.</p>
-      <p><strong>Running it.</strong> Unpack the archive, run <code>bin/recn-node --data-dir ~/recn-node</code> and open the URL it prints. That status page is served on the machine itself, on localhost.</p>
-      <p><strong>Pairing.</strong> The status page shows a QR code. Scan it from Rec or Work on a phone or desktop and the two trust each other, the same way two of your own devices do. The code holds a key and a one-time token that expires in five minutes.</p>
-      <p><strong>LAN or relay.</strong> Syncing runs over Iroh. On the same network your devices reach the Node directly. Away from home they try a direct line first and fall back to a relay that forwards sealed packets and keeps nothing.</p>
-      <p><strong>For agents.</strong> <code>recn-node mcp</code> starts an MCP server, so Claude Code, Codex and other agents can create notes and drawings in a library on the Node. They reach your devices through normal sync.</p>
+      <p>RECN Node is the always-on server for a household or studio: one install per Mac, PC, Linux box or NAS. It is a library that is always awake, held on its own disk, so a device that was off can catch up from it and a library is reachable even when every laptop is shut. It is not a cloud and not an account. Rec and Work on a phone never need one.</p>
+      <figure class="node-figure">
+        <svg viewBox="0 0 640 260" role="img" aria-labelledby="node-figure-title">
+          <title id="node-figure-title">Phones and desktops pair to a RECN Node by code; two Nodes sync with each other over Iroh.</title>
+          <g class="node-figure__link">
+            <path d="M118 60 H200 V130" /><path d="M118 130 H200" /><path d="M118 200 H200 V130" />
+            <path d="M522 60 H440 V130" /><path d="M522 130 H440" /><path d="M522 200 H440 V130" />
+          </g>
+          <path class="node-figure__link node-figure__link--iroh" d="M268 130 H372" />
+          <g class="node-figure__device">
+            <rect x="24" y="40" width="94" height="40" rx="6" /><text x="71" y="65">PHONE</text>
+            <rect x="24" y="110" width="94" height="40" rx="6" /><text x="71" y="135">MAC</text>
+            <rect x="24" y="180" width="94" height="40" rx="6" /><text x="71" y="205">PC</text>
+            <rect x="522" y="40" width="94" height="40" rx="6" /><text x="569" y="65">PHONE</text>
+            <rect x="522" y="110" width="94" height="40" rx="6" /><text x="569" y="135">LINUX</text>
+            <rect x="522" y="180" width="94" height="40" rx="6" /><text x="569" y="205">IPAD</text>
+          </g>
+          <g class="node-figure__node">
+            <rect x="200" y="100" width="68" height="60" rx="8" /><text x="234" y="126">NODE</text><text x="234" y="144" class="node-figure__sub">HOME</text>
+            <rect x="372" y="100" width="68" height="60" rx="8" /><text x="406" y="126">NODE</text><text x="406" y="144" class="node-figure__sub">STUDIO</text>
+          </g>
+          <text class="node-figure__caption" x="159" y="246">PAIR BY CODE</text>
+          <text class="node-figure__caption" x="320" y="118">IROH · DIRECT OR RELAYED</text>
+          <text class="node-figure__caption" x="481" y="246">PAIR BY CODE</text>
+        </svg>
+        <figcaption>Devices pair to a Node the way they pair to each other. Two Nodes keep each other current over Iroh. Phones stay full devices with or without one.</figcaption>
+      </figure>
+      <p><strong>Libraries.</strong> A Node holds libraries, one per person per product: your Rec library, your Work library, a housemate’s Work library. Each has its own store, its own files and its own key, so nothing is shared by accident. Several people can use one Node from day one.</p>
+      <p><strong>Running it.</strong> Unpack the archive and run <code>bin/recn_node service install</code>. It registers as a per-user service that starts at login and prints the status page URL. That page is served on the machine itself, on localhost, and shows the Node’s people, libraries, devices and storage.</p>
+      <p><strong>Pairing.</strong> The status page shows a pairing code per library. Scan it from Rec or Work on a phone or desktop and the two trust each other, the same way two of your own devices do. The code holds a key and a one-time token that expires in five minutes. One Node can also pair with another, so a home and a studio stay current with each other.</p>
+      <p><strong>LAN or relay.</strong> Syncing runs over Iroh. On the same network your devices reach the Node directly, with no internet. Away from home they try a direct line first and fall back to a relay that forwards sealed packets and keeps nothing.</p>
+      <p><strong>For agents.</strong> <code>recn-node mcp</code> starts an MCP server, so Claude Code, Codex and other harnesses can list projects and create notes and drawings in a library on the Node. They reach your devices through normal sync.</p>
 
       <h2>What isn’t there yet</h2>
       <ul>
         <li>Relays are n0’s public ones for now. RECN-run relays come before launch.</li>
         <li>There are no accounts. Pairing is device to device, which also means no web access, and no recovery if you lose every device you own.</li>
         <li>There is no cloud copy. RECN Node is the always-on device you run yourself, speaking the same protocol, not a separate cloud sync.</li>
-        <li>Phones sync while RECN is open. Background sync is not built.</li>
+        <li>Desktop apps still hold their own copy of a library. Over time they will lean on a local Node instead, installed and started by the app itself.</li>
+        <li>Phones sync while Rec or Work is open. Background sync is not built.</li>
       </ul>
       <p class="feature-next">
-        <a href={`${base}features/#sync`}>What sync looks like in the app →</a>
+        <a href={`${base}features/#sync`}>What sync looks like in Rec →</a>
         <a href={`${base}download/`}>Get RECN →</a>
       </p>
     </article>
   </main>
   <Footer />
 </Base>
+
+<style>
+  .node-figure { margin-top: 1.6em; }
+  .node-figure svg { display: block; width: 100%; height: auto; font: 600 10px/1 var(--mono); letter-spacing: .08em; }
+  .node-figure text { fill: var(--ink); text-anchor: middle; }
+  .node-figure__device rect { fill: var(--surface); stroke: var(--divider); }
+  .node-figure__node rect { fill: var(--ink); }
+  .node-figure__node text { fill: var(--background); }
+  .node-figure__sub { font-size: 8px; opacity: .7; }
+  .node-figure__link { fill: none; stroke: var(--tertiary); stroke-width: 1.5; }
+  .node-figure__link--iroh { stroke: var(--accent); stroke-dasharray: 5 5; }
+  .node-figure__caption { fill: var(--secondary); font-size: 8.5px; }
+  .node-figure figcaption { margin-top: 10px; color: var(--secondary); font-size: 0.8rem; }
+</style>
