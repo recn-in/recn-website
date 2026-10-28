@@ -126,7 +126,7 @@ const nodeArchives = [
 
     <section class="release-browser product-section" id="node" aria-labelledby="node-heading">
       <h2 class="product-head" id="node-heading"><RecnMark product="node" />{node.name}</h2>
-      <p>{node.line} One install per Mac, PC, Linux box or NAS. Your devices pair to it by code, and harnesses like Claude Code reach it over MCP. Rec and Work on a phone never need one.</p>
+      <p>{node.line} Devices pair to it by code; harnesses like Claude Code reach it over MCP. A phone never needs one.</p>
       <div class="download-grid">
         {nodeArchives.map((archive) => (
           <a href={releases} data-release-platform={archive.id} data-node-suffix={archive.suffix}>
@@ -215,7 +215,11 @@ const nodeArchives = [
           const tags = PRODUCT_TAGS.find((product) => product.id === id)!;
           return ready(tags.version, ...suffixes) ?? ready(tags.nightly, ...suffixes);
         };
-        const byName = (release: GitHubRelease | undefined, suffix: string) => release?.assets.find((asset) => asset.name.endsWith(suffix));
+        // A release carries each installer twice: a versioned name and a stable alias. Link the versioned one.
+        const byName = (release: GitHubRelease | undefined, suffix: string) => {
+          const named = release?.assets.filter((asset) => asset.name.endsWith(suffix)) ?? [];
+          return named.find((asset) => /\d+\.\d+\.\d+/.test(asset.name)) ?? named[0];
+        };
 
         const rec = latest('rec', '.dmg', '.exe');
         setAsset('macos', byName(rec, '.dmg'));
