@@ -13,7 +13,7 @@ const base = import.meta.env.BASE_URL;
 
 <img
   class:list={['recn-mark', className]}
-  src={product ? `${base}${product}-icon.svg` : `${base}recn-tape-reels.png`}
+  src={`${base}${product ? `${product}-icon` : 'recn-mark'}.svg`}
   width="1024"
   height="1024"
   alt={label}
