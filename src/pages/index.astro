@@ -136,10 +136,12 @@ const principles = [
   .hero__actions .button { gap: 10px; font: 650 0.64rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
   .hero__actions b { font-weight: 400; }
   .hero .fine { margin-top: 14px; }
-  .hero__icons { display: flex; justify-content: center; margin: 0; padding: 0; list-style: none; gap: clamp(18px, 3vw, 40px); }
+  /* Three tiles in the family mark's triangle: Rec on top, Work and RECN Node below. */
+  .hero__icons { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; margin: 0; padding: 0; list-style: none; gap: clamp(18px, 2.5vw, 28px) clamp(18px, 3vw, 36px); }
+  .hero__icons li:first-child { grid-column: 1 / -1; justify-self: center; }
   .hero__icons a { display: grid; justify-items: center; color: var(--secondary); font-size: 0.78rem; font-weight: 500; gap: 12px; transition: color 0.2s ease; }
   .hero__icons a:hover { color: var(--ink); }
-  .hero__icons :global(.recn-mark) { width: clamp(72px, 8vw, 104px); height: auto; border: 1px solid var(--divider); border-radius: 22%; box-shadow: 0 10px 30px color-mix(in srgb, #000 35%, transparent); transition: transform 0.25s ease; }
+  .hero__icons :global(.recn-mark) { width: clamp(104px, 11vw, 148px); transition: transform 0.25s ease; }
   .hero__icons a:hover :global(.recn-mark) { transform: translateY(-4px); }
 
   /* 02 */
@@ -148,7 +150,7 @@ const principles = [
   .card:last-child { border-right: 0; }
   .card__tag { display: flex; border-bottom: 1px solid var(--divider); align-items: center; justify-content: space-between; height: 44px; padding: 0 18px 0 0; color: var(--secondary); font: 600 0.56rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
   .card__tag b { display: grid; width: 48px; height: 100%; place-items: center; background: var(--product); color: #fff; font-weight: 700; }
-  :global(.card__icon) { width: 68px; height: 68px; margin: 28px 0 0 18px; border: 1px solid var(--divider); border-radius: 22%; box-shadow: 0 8px 24px color-mix(in srgb, #000 35%, transparent); }
+  :global(.card__icon) { width: 96px; margin: 28px 0 0 18px; }
   .card h2 { margin: 16px 18px 0; font-size: 1.55rem; font-weight: 640; letter-spacing: -0.03em; }
   .card > p { margin: 10px 18px 0; color: var(--secondary); font-size: 0.86rem; line-height: 1.6; }
   .pills { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -190,7 +192,9 @@ const principles = [
     .rule, .hero, .principles__lead, .start { padding-inline: 20px; }
     .rule span + span { display: none; }
     .hero { grid-template-columns: 1fr; gap: 48px; }
-    .hero__icons { order: -1; justify-content: flex-start; }
+    .hero__icons { order: -1; grid-template-columns: repeat(3, auto); justify-content: flex-start; gap: 18px; }
+    .hero__icons li:first-child { grid-column: auto; }
+    .hero__icons :global(.recn-mark) { width: clamp(80px, 25vw, 104px); }
     .lineup, .principles { grid-template-columns: 1fr; }
     .card, .principles article { border-right: 0 !important; border-bottom: 1px solid var(--divider) !important; }
     .card:last-child, .principles article:last-child { border-bottom: 0 !important; }

@@ -1,6 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-<rect width="1024" height="1024" fill="#161513"/>
-<circle cx="302" cy="512" r="90" fill="#E5494D"/>
-<circle cx="512" cy="512" r="90" fill="#E8942A"/>
-<circle cx="722" cy="512" r="90" fill="#1F9A62"/>
+<defs>
+<linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B2825"/><stop offset="1" stop-color="#121110"/></linearGradient>
+<radialGradient id="sheen" cx="0.5" cy="0" r="0.75"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.09"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<radialGradient id="red" cx="0.38" cy="0.32" r="0.8"><stop offset="0" stop-color="#F0666A"/><stop offset="1" stop-color="#D93A3F"/></radialGradient>
+<radialGradient id="orange" cx="0.38" cy="0.32" r="0.8"><stop offset="0" stop-color="#F5AE4E"/><stop offset="1" stop-color="#DE8A22"/></radialGradient>
+<radialGradient id="green" cx="0.38" cy="0.32" r="0.8"><stop offset="0" stop-color="#3DBF86"/><stop offset="1" stop-color="#178B55"/></radialGradient>
+</defs>
+<g id="field"><rect width="1024" height="1024" fill="url(#field)"/><rect width="1024" height="1024" fill="url(#sheen)"/></g>
+<g id="glyph">
+<circle cx="512" cy="372" r="118" fill="url(#red)"/>
+<circle cx="372" cy="640" r="118" fill="url(#orange)"/>
+<circle cx="652" cy="640" r="118" fill="url(#green)"/>
+</g>
 </svg>
