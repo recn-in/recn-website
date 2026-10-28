@@ -6,9 +6,9 @@
 <linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F4"/><stop offset="1" stop-color="#E9E5DC"/></linearGradient>
 </defs>
 <g id="field"><rect width="1024" height="1024" fill="url(#field)"/><rect width="1024" height="1024" fill="url(#sheen)"/></g>
-<g id="glyph"><g transform="translate(512 512) scale(1.0) translate(-512 -512)">
-<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="#000" stroke-opacity="0.28" stroke-width="104" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 14)"/>
-<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="url(#ivory)" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="glyph"><g transform="translate(512 512) scale(1.1) translate(-512 -512)">
+<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="#000" stroke-opacity="0.28" stroke-width="120" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 14)"/>
+<path d="M 596 236 H 364 a 128 128 0 0 0 -128 128 V 660 a 128 128 0 0 0 128 128 H 660 a 128 128 0 0 0 128 -128 V 428" fill="none" stroke="url(#ivory)" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="788" cy="250" r="96" fill="#000" fill-opacity="0.28"/>
 <circle cx="788" cy="236" r="96" fill="url(#dot)"/>
 </g></g>
