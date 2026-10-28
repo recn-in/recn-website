@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { changes } from './releases.ts';
+import { changes, MOBILE_TAG as t_MOBILE } from './releases.ts';
 
 test('keeps what a person would read, in order', () => {
   const body = [
@@ -88,5 +88,24 @@ test('history keeps Work and Node apart from Rec', async () => {
   ]);
   assert.deepEqual(days[0].entries.map((e) => [e.family, e.label]), [
     ['Desktop', 'Nightly 5'], ['Work desktop', 'Nightly 1'], ['Work mobile', 'Build 4'], ['Node', 'Nightly 2'],
+  ]);
+});
+
+test('versioned releases lead each product; nightlies and mobile builds sit under them', async () => {
+  const { byProduct, buildName } = await import('./releases.ts');
+  assert.equal(buildName('work-v0.0.2-beta-nightly.383'), '0.0.2 beta · nightly 383');
+  assert.equal(buildName('node-v0.1.0'), '0.1.0');
+  assert.ok(t_MOBILE.test('rec-mobile-0.1.0-12'));
+  const logs = byProduct([
+    release('v0.0.2-beta', '2026-10-28T12:00:00Z', ['Two']),
+    release('rec-mobile-0.0.2-301', '2026-10-28T11:00:00Z', ['Phone']),
+    release('node-v0.1.0', '2026-10-28T10:00:00Z', ['Service']),
+    release('v0.0.2-beta-nightly.383', '2026-10-28T09:00:00Z', ['Two', 'One']),
+    release('v0.0.1-beta-nightly.382', '2026-10-27T09:00:00Z', ['One']),
+  ]);
+  assert.deepEqual(logs.map((log) => [log.id, log.versions.map((v) => v.name), log.builds.map((d) => d.entries.map((e) => e.label))]), [
+    ['rec', ['0.0.2 beta'], [['Nightly 383', 'Build 301']]],
+    ['work', [], []],
+    ['node', ['0.1.0'], []],
   ]);
 });

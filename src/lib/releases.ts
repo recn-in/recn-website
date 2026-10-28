@@ -13,10 +13,22 @@ export const RELEASES_API = 'https://api.github.com/repos/recn-in/recn-releases/
 // One regex per product family, anchored on its own tag prefix, so Rec's
 // latest never picks a Work or Node release and the other way round.
 export const NIGHTLY_TAG = /^v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
-export const MOBILE_TAG = /^mobile-\d+\.\d+\.\d+-(\d+)$/;
+export const MOBILE_TAG = /^(?:rec-)?mobile-\d+\.\d+\.\d+-(\d+)$/;
 export const WORK_NIGHTLY_TAG = /^work-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const WORK_MOBILE_TAG = /^work-mobile-\d+\.\d+\.\d+-(\d+)$/;
 export const NODE_NIGHTLY_TAG = /^node-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
+
+// Versioned releases (`v0.0.2-beta`, `node-v0.1.0`) are the headline per
+// product; nightlies and mobile builds sit under them.
+export const PRODUCT_TAGS = [
+  { id: 'rec', version: /^v\d+\.\d+\.\d+(?:-beta)?$/, nightly: NIGHTLY_TAG, families: ['Desktop', 'Mobile'] },
+  { id: 'work', version: /^work-v\d+\.\d+\.\d+(?:-beta)?$/, nightly: WORK_NIGHTLY_TAG, families: ['Work desktop', 'Work mobile'] },
+  { id: 'node', version: /^node-v\d+\.\d+\.\d+(?:-beta)?$/, nightly: NODE_NIGHTLY_TAG, families: ['Node'] },
+] as const;
+
+/** `work-v0.0.2-beta-nightly.383` → `0.0.2 beta · nightly 383`. */
+export const buildName = (tag: string) => tag
+  .replace(/^(work-|node-)?v/, '').replace('-beta', ' beta').replace('-nightly.', ' · nightly ');
 
 // Release bodies carry one change per `- ` line, under `## What changed` when
 // the body has other sections. Older desktop bodies are raw commit subjects:
@@ -44,6 +56,8 @@ type Family = (typeof FAMILIES)[number]['family'];
 
 export interface DayEntry { family: Family; label: string; lines: string[] }
 export interface Day { date: string; entries: DayEntry[] }
+export interface Version { name: string; date: string; url: string; lines: string[] }
+export interface ProductLog { id: (typeof PRODUCT_TAGS)[number]['id']; versions: Version[]; builds: Day[] }
 
 const span = (word: string, builds: number[]) =>
   builds.length > 1 ? `${word} ${builds[0]}–${builds[builds.length - 1]}` : `${word} ${builds[0]}`;
@@ -87,4 +101,24 @@ export const history = (all: GitHubRelease[]): Day[] => {
         lines: day.get(f.family)!.lines,
       })),
     }));
+};
+
+/** Each product's versioned releases, newest first, with its nightly and mobile builds by day. */
+export const byProduct = (all: GitHubRelease[]): ProductLog[] => {
+  const days = history(all);
+  return PRODUCT_TAGS.map((product) => ({
+    id: product.id,
+    versions: all
+      .filter((release) => !release.draft && release.published_at && product.version.test(release.tag_name))
+      .sort((a, b) => b.published_at!.localeCompare(a.published_at!))
+      .map((release) => ({
+        name: buildName(release.tag_name),
+        date: release.published_at!.slice(0, 10),
+        url: release.html_url,
+        lines: changes(release.body),
+      })),
+    builds: days
+      .map((day) => ({ ...day, entries: day.entries.filter((entry) => (product.families as readonly string[]).includes(entry.family)) }))
+      .filter((day) => day.entries.length > 0),
+  }));
 };

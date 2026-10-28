@@ -2,237 +2,46 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { apple, android, windows } from '../lib/platformMarks';
+import RecnMark from '../components/RecnMark.astro';
+import { PRODUCTS } from '../lib/products';
 
-const releases = 'https://github.com/recn-in/recn-releases/releases';
-const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
-
-// Direct desktop downloads resolve to the newest nightly. The Store link
-// stays separate so release discovery cannot replace it.
-const platforms = [
-  { id: 'macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
-  { id: 'windows', name: 'Windows · direct download', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer · nightly builds', live: true },
-  { id: 'windows-store', name: 'Windows · Microsoft Store', mark: windows, href: 'https://apps.microsoft.com/detail/9MWNZ7BZN9Q8', action: 'View in Microsoft Store', arrow: '↗', note: 'Coming soon · use the .exe download for now', live: false },
-  { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/h2Xw8MpE', action: 'Join on TestFlight', arrow: '↗', note: 'Updates arrive through TestFlight', live: false },
-  { id: 'android', name: 'Android', mark: android, href: 'https://play.google.com/apps/testing/com.recn.rec', action: 'Join early access', arrow: '↗', note: 'Updates arrive through Google Play', live: false },
-];
-
-const work = [
-  { id: 'work-macos', name: 'macOS', mark: apple, href: releases, action: 'Download .dmg', arrow: '↓', note: 'Signed and notarized', live: true },
-  { id: 'work-windows', name: 'Windows', mark: windows, href: releases, action: 'Download .exe', arrow: '↓', note: 'Per-user installer · nightly builds', live: true },
-  { id: 'work-ios', name: 'iPhone · iPad', mark: apple, href: '', action: 'Coming to TestFlight', arrow: '', note: 'Not open yet', live: false },
-  { id: 'work-android', name: 'Android', mark: android, href: '', action: 'Coming to Google Play', arrow: '', note: 'Not open yet', live: false },
-];
-
-const nodeArchives = [
-  { id: 'node-linux-x64', name: 'Linux · x64', mark: '', suffix: 'linux-x64.tar.gz' },
-  { id: 'node-linux-arm64', name: 'Linux · arm64', mark: '', suffix: 'linux-arm64.tar.gz' },
-  { id: 'node-macos-arm64', name: 'macOS · Apple silicon', mark: apple, suffix: 'macos-arm64.tar.gz' },
-  { id: 'node-windows-x64', name: 'Windows · x64', mark: windows, suffix: 'windows-x64.zip' },
-];
+const base = import.meta.env.BASE_URL;
 ---
 
-<Base title="Get RECN" description="RECN Rec and RECN Work for macOS, Windows, iPhone, iPad and Android, and RECN Node for a NAS, Mac mini or desktop.">
+<Base title="Get RECN" description="Rec and Work for macOS, Windows, iPhone, iPad and Android, and RECN Node for a Mac, PC, Linux box or NAS.">
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
       <p class="label">DOWNLOAD</p>
       <h1>Get RECN</h1>
-      <p>One library on every device you own. Install it on two and they find each other.</p>
+      <p>Three products, one library. Pick one.</p>
     </header>
 
-    <section class="release-browser" aria-label="Downloads" data-release-browser>
-      <div class="download-grid">
-        {platforms.map((platform) => (
-          <a href={platform.href} data-release-platform={platform.id}>
-            <span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
-              {platform.name}
-            </span>
-            <strong>{platform.action} <b aria-hidden="true">{platform.arrow}</b></strong>
-            <small data-asset-meta={platform.live ? '' : undefined}>{platform.note}</small>
-          </a>
-        ))}
-      </div>
-      <div class="brew-command">
-        <span>Homebrew · macOS</span>
-        <div class="brew-command__box">
-          <pre><code class="brew-command__line">{brewCommand}</code></pre>
-          <button type="button" data-brew-copy={brewCommand} aria-label="Copy Homebrew command">
-            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>
-            <em aria-live="polite">Copy</em>
-          </button>
-        </div>
-        <p class="brew-command__hint">Taps and trusts <code>recn-in/recn</code>, then installs or updates the <code>recn-rec</code> cask. Run it again any time to update.</p>
-      </div>
-
-      <article class="release-card">
-        <header class="release-card__header">
-          <div>
-            <p class="release-card__eyebrow">Desktop · nightly</p>
-            <h2 data-release-name>Latest build</h2>
-          </div>
-          <time data-release-date></time>
-        </header>
-        <section class="release-notes" aria-labelledby="release-notes-heading">
-          <header>
-            <h3 id="release-notes-heading">What changed</h3>
-            <a href={`${import.meta.env.BASE_URL}releases/`}>All releases →</a>
-          </header>
-          <ul data-release-notes>
-            <li>The latest notes are on the releases page.</li>
-          </ul>
-        </section>
-      </article>
-    </section>
-
-    <section class="release-browser" aria-labelledby="work-heading">
-      <p class="label">RECN WORK</p>
-      <h2 id="work-heading">RECN Work</h2>
-      <div class="download-grid">
-        {work.map((platform) => (
-          platform.href === '' && !platform.live ? (
-            <div data-release-platform={platform.id}>
-              <span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
-                {platform.name}
-              </span>
-              <strong>{platform.action}</strong>
-              <small>{platform.note}</small>
-            </div>
-          ) : (
-            <a href={platform.href} data-release-platform={platform.id}>
-              <span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={platform.mark} /></svg>
-                {platform.name}
-              </span>
-              <strong>{platform.action} <b aria-hidden="true">{platform.arrow}</b></strong>
-              <small data-asset-meta>{platform.note}</small>
-            </a>
-          )
-        ))}
-      </div>
-    </section>
-
-    <section class="release-browser" aria-labelledby="node-heading">
-      <p class="label">RECN NODE</p>
-      <h2 id="node-heading">RECN Node</h2>
-      <p>A headless server for a NAS, a Mac mini or a desktop. It holds your libraries, pairs with your phones and desktops, and keeps them in sync. Rec and Work on your phone never need it.</p>
-      <div class="download-grid">
-        {nodeArchives.map((archive) => (
-          <a href={releases} data-release-platform={archive.id} data-node-suffix={archive.suffix}>
-            <span>
-              {archive.mark && <svg viewBox="0 0 24 24" aria-hidden="true"><path d={archive.mark} /></svg>}
-              {archive.name}
-            </span>
-            <strong>Download <b aria-hidden="true">↓</b></strong>
-            <small data-asset-meta>{archive.suffix.endsWith('.zip') ? '.zip' : '.tar.gz'} · nightly builds</small>
-          </a>
-        ))}
-      </div>
-      <div class="brew-command">
-        <span>Run it</span>
-        <div class="brew-command__box">
-          <pre><code class="brew-command__line">bin/recn-node --data-dir ~/recn-node</code></pre>
-        </div>
-        <p class="brew-command__hint">Unpack the archive, run this from inside it, then open the URL it prints. <a href={`${import.meta.env.BASE_URL}how-it-works/#node`}>How RECN Node works →</a></p>
-      </div>
-    </section>
-
-    <p class="build-caveat">Direct macOS and Windows downloads ship nightly and update themselves. Microsoft Store availability is coming soon; use the Windows .exe download for now. This is early software: expect rough edges, and keep copies of recordings that matter. Mobile betas are for ages 13 and over.</p>
+    <div class="choose" role="list">
+      {PRODUCTS.map((product) => (
+        <a role="listitem" href={`${base}${product.id}/`}>
+          <RecnMark product={product.id} />
+          <span>
+            <strong>{product.name}</strong>
+            <em>{product.line}</em>
+            <small>{product.platforms}</small>
+          </span>
+          <b aria-hidden="true">→</b>
+        </a>
+      ))}
+    </div>
   </main>
   <Footer />
 </Base>
 
-<script>
-  import { RELEASES_API, NIGHTLY_TAG, WORK_NIGHTLY_TAG, NODE_NIGHTLY_TAG, changes, type GitHubRelease, type ReleaseAsset } from '../lib/releases';
-
-  const root = document.querySelector<HTMLElement>('[data-release-browser]');
-
-  const copy = document.querySelector<HTMLButtonElement>('[data-brew-copy]');
-  const copyLabel = copy?.querySelector('em');
-  copy?.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(copy.dataset.brewCopy ?? '');
-      copyLabel!.textContent = 'Copied';
-    } catch {
-      // Clipboard blocked (insecure origin, denied permission): select it so ⌘C works.
-      getSelection()?.selectAllChildren(copy.previousElementSibling!);
-      copyLabel!.textContent = 'Press ⌘C';
-    }
-    copy.classList.add('is-done');
-    setTimeout(() => { copyLabel!.textContent = 'Copy'; copy.classList.remove('is-done'); }, 1600);
-  });
-
-  // The visitor's own platform leads the grid.
-  const ua = navigator.userAgent;
-  const mine = /Android/.test(ua) ? 'android'
-    : /iPhone|iPad/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios'
-    : /Mac/.test(ua) ? 'macos'
-    : /Windows/.test(ua) ? 'windows' : '';
-  root?.querySelector(`[data-release-platform="${mine}"]`)?.classList.add('is-mine');
-
-  const setAsset = (platform: string, asset: ReleaseAsset | undefined) => {
-    const link = document.querySelector<HTMLAnchorElement>(`[data-release-platform="${platform}"]`);
-    const meta = link?.querySelector<HTMLElement>('[data-asset-meta]');
-    if (!link || !asset) return;
-    link.href = asset.browser_download_url;
-    if (meta) meta.textContent = `${asset.name} · ${(asset.size / 1_000_000).toFixed(0)} MB`;
-  };
-
-  if (root) {
-    fetch(`${RELEASES_API}?per_page=30`, {
-      headers: { Accept: 'application/vnd.github+json' },
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error(`GitHub releases: ${response.status}`);
-        return response.json() as Promise<GitHubRelease[]>;
-      })
-      .then((all) => {
-        // Newest nightly whose installers have finished uploading.
-        const nightly = all.find((release) => !release.draft
-          && NIGHTLY_TAG.test(release.tag_name)
-          && release.assets.some((asset) => asset.name.endsWith('.dmg'))
-          && release.assets.some((asset) => asset.name.endsWith('.exe')));
-        setAsset('macos', nightly?.assets.find((asset) => asset.name.endsWith('.dmg')));
-        setAsset('windows', nightly?.assets.find((asset) => asset.name.endsWith('.exe')));
-
-        // Newest Work build with both installers, newest Node build with its archives.
-        const ready = (tag: RegExp, ...suffixes: string[]) => all.find((release) => !release.draft
-          && tag.test(release.tag_name)
-          && suffixes.every((suffix) => release.assets.some((asset) => asset.name.endsWith(suffix))));
-        const work = ready(WORK_NIGHTLY_TAG, '.dmg', '.exe');
-        if (work) {
-          setAsset('work-macos', work.assets.find((asset) => asset.name.endsWith('.dmg')));
-          setAsset('work-windows', work.assets.find((asset) => asset.name.endsWith('.exe')));
-        }
-        document.querySelectorAll<HTMLElement>('[data-node-suffix]').forEach((card) => {
-          const suffix = card.dataset.nodeSuffix!;
-          const node = ready(NODE_NIGHTLY_TAG, suffix);
-          setAsset(card.dataset.releasePlatform!, node?.assets.find((asset) => asset.name.endsWith(suffix)));
-        });
-
-        if (!nightly) return;
-
-        const name = root.querySelector<HTMLElement>('[data-release-name]');
-        const date = root.querySelector<HTMLTimeElement>('[data-release-date]');
-        const notes = root.querySelector<HTMLUListElement>('[data-release-notes]');
-        if (name) name.textContent = `Nightly ${nightly.tag_name.split('.').pop()}`;
-        if (date && nightly.published_at) {
-          date.dateTime = nightly.published_at;
-          date.textContent = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
-            .format(new Date(nightly.published_at));
-        }
-        const lines = changes(nightly.body).slice(0, 8);
-        if (notes && lines.length > 0) {
-          notes.replaceChildren(...lines.map((line) => {
-            const item = document.createElement('li');
-            item.textContent = line;
-            return item;
-          }));
-        }
-      })
-      // The static links already lead to the releases page; say why they stayed.
-      .catch((error) => console.warn('Live release details unavailable:', error));
-  }
-</script>
+<style>
+  .choose { max-width: 820px; margin-top: 48px; border-top: 1px solid var(--divider); }
+  .choose a { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; padding: 26px 0; border-bottom: 1px solid var(--divider); gap: 24px; }
+  .choose :global(.recn-mark) { width: 72px; height: 72px; border: 1px solid var(--divider); border-radius: 22%; }
+  .choose strong { display: block; font-size: 1.2rem; font-weight: 640; letter-spacing: -0.02em; }
+  .choose em { display: block; max-width: 520px; margin-top: 6px; color: var(--secondary); font-size: 0.86rem; font-style: normal; line-height: 1.6; }
+  .choose small { display: block; margin-top: 10px; color: var(--tertiary); font: 550 0.55rem/1.5 var(--mono); letter-spacing: 0.055em; text-transform: uppercase; }
+  .choose b { color: var(--tertiary); font-size: 1.2rem; font-weight: 400; transition: transform 0.2s ease, color 0.2s ease; }
+  .choose a:hover b { color: var(--accent); transform: translateX(4px); }
+  @media (max-width: 480px) { .choose a { grid-template-columns: 56px 1fr; } .choose :global(.recn-mark) { width: 56px; height: 56px; } .choose b { display: none; } }
+</style>

@@ -9,31 +9,31 @@ const base = import.meta.env.BASE_URL;
 // One chapter per act, in the order src/story/sync-story.ts lists its acts. Each is
 // a label, a headline, the words, and one line of specifics.
 const chapters = [
-  ['THE USUAL WAY', 'Your phone is three feet from your computer.', 'Most apps move a recording between them by sending it to a data centre on another continent and back. You make an account for the privilege, and someone else keeps a copy.', ''],
-  ['WHAT WE REMOVED', 'So we deleted the middle.', 'RECN has no backend. No server holds your library, so there is no account to create, no password to lose, and nothing for us to read, sell or switch off.', 'NO BACKEND · NO ACCOUNT · NO CLOUD LIBRARY'],
-  ['WHAT IS LEFT', 'Every device is the library.', 'Each device you pair holds the real thing, in two parts: the facts about your work in a database of its own, and the sound itself as files on its own disk. Nothing waits on a network to open, record or edit.', 'FACTS IN A LOCAL DATABASE · SOUND AS LOCAL FILES'],
-  ['IT STARTS WITH A RECORDING', 'Caught, drawn and saved at the same moment.', 'While you play, the audio is written into its file as it arrives. Nothing is held in memory waiting for you to press stop, so a three-hour rehearsal is as safe as a ten-second idea. What you end up with is two things: a small fact and a big file.', 'STREAMED TO DISK · ANY LENGTH'],
-  ['THE SMALL FACTS', 'Two edits. Two devices. Both survive.', 'A recording is not one blob of settings. Its name, its project, its tags are separate fields, and each one carries its own clock. Rename it on the phone while the Mac files it somewhere else, and neither edit overwrites the other.', 'MERGED FIELD BY FIELD'],
+  ['THE USUAL WAY', 'Your phone is three feet from your computer.', 'Most apps move a recording or a note between them by sending it to a data centre on another continent and back. You make an account for the privilege, and someone else keeps a copy.', ''],
+  ['WHAT WE REMOVED', 'So we deleted the middle.', 'RECN has no backend. No server of ours holds your library, so there is no account to create, no password to lose, and nothing for us to read, sell or switch off. The only server in the picture is a RECN Node you run yourself, and even that is optional.', 'NO BACKEND · NO ACCOUNT · NO CLOUD LIBRARY'],
+  ['WHAT IS LEFT', 'Every device is the library.', 'Each device you pair holds the real thing, in two parts: the facts about your work in a database of its own, and the sound and drawings as files on its own disk. Rec on a phone, Work on a Mac, a RECN Node on a NAS: each is a whole copy. Nothing waits on a network to open, record or edit.', 'FACTS IN A LOCAL DATABASE · SOUND AND DRAWINGS AS LOCAL FILES'],
+  ['IT STARTS WITH A RECORDING', 'Caught, drawn and saved at the same moment.', 'While you play in Rec, the audio is written into its file as it arrives. Nothing is held in memory waiting for you to press stop, so a three-hour rehearsal is as safe as a ten-second idea. A note or a drawing in Work is saved the same way, as you make it. What you end up with is two things: a small fact and, often, a big file.', 'STREAMED TO DISK · ANY LENGTH'],
+  ['THE SMALL FACTS', 'Two edits. Two devices. Both survive.', 'A recording or a note is not one blob of settings. Its name, its project, its tags are separate fields, and each one carries its own clock. Rename it on the phone while the Mac files it somewhere else, and neither edit overwrites the other.', 'MERGED FIELD BY FIELD'],
   ['WHO WINS', 'A clock that every device agrees on.', 'Every edit is stamped with the time, a counter and the device that made it. When a message arrives, the receiver moves its own clock forward. So if two devices do change the same field, there is exactly one later edit, and every device picks the same one without asking anybody.', 'HYBRID LOGICAL CLOCK · TIME, COUNTER, DEVICE'],
-  ['THE WORDS', 'Notes merge letter by letter.', 'A note is too rich for “latest edit wins”. Type on the phone while someone types in the same note on the Mac, and when the devices meet both sets of words are there, in the same order on each. Drawings merge the same way, shape by shape.', 'CRDT · NO LOCK, NO SHARED DRAFT'],
-  ['AFTER TIME APART', 'Only the gap travels.', 'A Mac that has been shut for a week does not download your library again. Each side says how far it has seen from every device. The other side works out exactly what is missing, announces how much is coming, and sends only that.', 'VERSION VECTORS · A MANIFEST, THEN THE DELTA'],
+  ['THE WORDS', 'Notes merge letter by letter.', 'A note is too rich for “latest edit wins”. Type in Work on the phone while someone types in the same note on the Mac, and when the devices meet both sets of words are there, in the same order on each. Drawings merge the same way, shape by shape, and the notes beside a take in Rec merge like any other note.', 'CRDT · NO LOCK, NO SHARED DRAFT'],
+  ['AFTER TIME APART', 'Only the gap travels.', 'A Mac that has been shut for a week does not download your library again. Each side says how far it has seen from every device. The other side works out exactly what is missing, announces how much is coming, and sends only that. A RECN Node is the device that was never shut, so there is always a peer to catch up from.', 'VERSION VECTORS · A MANIFEST, THEN THE DELTA'],
   ['THE BIG SOUND', 'Cut into pieces. Every piece fingerprinted.', 'Audio does not travel as one long hopeful stream. A recording is cut into 4 MiB pieces and each piece gets its own SHA-256 fingerprint, as does the whole file. A piece is checked the moment it lands, and a bad one is fetched again on its own.', '4 MIB PIECES · SHA-256 EACH'],
   ['WHEN IT GOES WRONG', 'A dropped connection costs nothing.', 'The pieces already verified are written in a journal on disk, so a transfer that dies at piece three comes back at piece four, even after the app restarts. If two of your devices hold the file, they split the rest between them. Only when the whole file’s fingerprint matches does it count as a copy.', 'RESUMABLE · SEVERAL SOURCES AT ONCE'],
   ['TWO LANES', 'The heartbeat never waits behind the audio.', 'Between every pair of devices run two lanes. One carries heartbeats, facts and acknowledgements. The other carries audio pieces and nothing else. A 2 GB session filling the pipe cannot make a healthy peer look dead.', 'CONTROL LANE · BULK LANE'],
   ['IN THE SAME ROOM', 'No internet required.', 'On one network, a device simply says it is here. The others hear it, check its key against the devices you have paired, and start syncing. A rehearsal room with no signal is enough. The announcement carries a device name and a key, never your name.', 'BONJOUR · WORKS OFFLINE'],
-  ['THE FIRST HELLO', 'Pairing is two devices agreeing. Nothing else.', 'Nearby, one device asks and the other confirms. Across networks, one shows a code and the other scans it. The code holds a key, a way to reach it and a one-time token that expires in five minutes. No account is consulted, because there is none.', 'QR OR CODE · ONE-TIME TOKEN · 5 MINUTES'],
+  ['THE FIRST HELLO', 'Pairing is two devices agreeing. Nothing else.', 'Nearby, one device asks and the other confirms. Across networks, one shows a code and the other scans it. A RECN Node shows its codes on a status page. The code holds a key, a way to reach it and a one-time token that expires in five minutes. No account is consulted, because there is none.', 'QR OR CODE · ONE-TIME TOKEN · 5 MINUTES'],
   ['TRUST', 'Pair once. The whole set syncs.', 'Trust is a graph your devices keep among themselves. Pair the phone with the Mac and the Mac with the iPad, and the phone and iPad sync too. Remove a device and the mark sits on that device alone, so taking one out never disconnects the others.', 'A TRUST GRAPH · PER-DEVICE REMOVAL'],
   ['ANYWHERE ELSE', 'A key is an address.', 'Apart, your devices cannot see each other, and both sit behind routers that refuse strangers. So a relay introduces them by key, both reach out at the same instant, each router lets its own device’s conversation through, and they are talking directly.', 'DIAL BY KEY · HOLE PUNCHING'],
   ['WHEN A WALL STAYS SHUT', 'A postman, not a cloud.', 'Some networks will not allow a direct line. Then the relay carries the packets itself. They are sealed between your two devices before they leave, so it forwards what it cannot open and keeps nothing. The Sync screen tells you which it is: Local, Direct or Relayed.', 'QUIC · TLS 1.3 · KEYS ONLY ON YOUR DEVICES'],
   ['THE POINT OF IT', 'Every copy is a whole copy.', 'A recording is amber until a verified copy sits on every device you have paired, and green after. There is no master and no thin client. Lose a phone and nothing is missing, because nothing lived only in the middle.', 'AMBER · NOT EVERYWHERE YET · GREEN · EVERYWHERE'],
   ['THE WHOLE WORLD', 'Home, the studio, a hotel room.', 'The same rules hold at any distance. Direct when the networks allow, relayed when they do not, and never through a server that holds your work. If you would rather nothing left the building, one switch keeps everything on the local network.', 'ONLY ON MY LOCAL NETWORK · OR ANYWHERE'],
-  ['THE IDEA', 'A lattice, not a cloud.', 'Add a device and the lattice grows by one. No device is in charge, and none of them is ours. Your work lives where you are.', ''],
+  ['THE IDEA', 'A lattice, not a cloud.', 'Add a device and the lattice grows by one: a phone with Rec, a laptop with Work, a Node on the shelf. No device is in charge, and none of them is ours. Your work lives where you are.', ''],
 ];
 ---
 
 <Base
   title="How RECN works"
-  description="No backend, no account, no cloud library. How RECN keeps every device current by letting them talk to each other."
+  description="No backend, no account, no cloud library. How Rec, Work and RECN Node keep every device current by letting them talk to each other."
 >
   <Header />
   <main id="main-content">
@@ -64,24 +64,66 @@ const chapters = [
       <p>If you would rather nothing left the building, choose <em>Only on my local network</em> in Sync settings. Relays go off and everything still works nearby.</p>
 
       <h2 id="node">RECN Node</h2>
-      <p>RECN Node is an optional server you run yourself, on a NAS, a Mac mini or any desktop that stays on. It is a library that is always awake: one library per product per person, held on its own disk, so a device that was off can catch up from it. It is not a cloud and not an account. Rec and Work on your phones work the same without it.</p>
-      <p><strong>Running it.</strong> Unpack the archive, run <code>bin/recn-node --data-dir ~/recn-node</code> and open the URL it prints. That status page is served on the machine itself, on localhost.</p>
-      <p><strong>Pairing.</strong> The status page shows a QR code. Scan it from Rec or Work on a phone or desktop and the two trust each other, the same way two of your own devices do. The code holds a key and a one-time token that expires in five minutes.</p>
-      <p><strong>LAN or relay.</strong> Syncing runs over Iroh. On the same network your devices reach the Node directly. Away from home they try a direct line first and fall back to a relay that forwards sealed packets and keeps nothing.</p>
-      <p><strong>For agents.</strong> <code>recn-node mcp</code> starts an MCP server, so Claude Code, Codex and other agents can create notes and drawings in a library on the Node. They reach your devices through normal sync.</p>
+      <p>RECN Node is the always-on server for a household or studio: one install per Mac, PC, Linux box or NAS. It is a library that is always awake, held on its own disk, so a device that was off can catch up from it and a library is reachable even when every laptop is shut. It is not a cloud and not an account. Rec and Work on a phone never need one.</p>
+      <figure class="node-figure">
+        <svg viewBox="0 0 640 260" role="img" aria-labelledby="node-figure-title">
+          <title id="node-figure-title">Phones and desktops pair to a RECN Node by code; two Nodes sync with each other over Iroh.</title>
+          <g class="node-figure__link">
+            <path d="M118 60 H200 V130" /><path d="M118 130 H200" /><path d="M118 200 H200 V130" />
+            <path d="M522 60 H440 V130" /><path d="M522 130 H440" /><path d="M522 200 H440 V130" />
+          </g>
+          <path class="node-figure__link node-figure__link--iroh" d="M268 130 H372" />
+          <g class="node-figure__device">
+            <rect x="24" y="40" width="94" height="40" rx="6" /><text x="71" y="65">PHONE</text>
+            <rect x="24" y="110" width="94" height="40" rx="6" /><text x="71" y="135">MAC</text>
+            <rect x="24" y="180" width="94" height="40" rx="6" /><text x="71" y="205">PC</text>
+            <rect x="522" y="40" width="94" height="40" rx="6" /><text x="569" y="65">PHONE</text>
+            <rect x="522" y="110" width="94" height="40" rx="6" /><text x="569" y="135">LINUX</text>
+            <rect x="522" y="180" width="94" height="40" rx="6" /><text x="569" y="205">IPAD</text>
+          </g>
+          <g class="node-figure__node">
+            <rect x="200" y="100" width="68" height="60" rx="8" /><text x="234" y="126">NODE</text><text x="234" y="144" class="node-figure__sub">HOME</text>
+            <rect x="372" y="100" width="68" height="60" rx="8" /><text x="406" y="126">NODE</text><text x="406" y="144" class="node-figure__sub">STUDIO</text>
+          </g>
+          <text class="node-figure__caption" x="159" y="246">PAIR BY CODE</text>
+          <text class="node-figure__caption" x="320" y="118">IROH · DIRECT OR RELAYED</text>
+          <text class="node-figure__caption" x="481" y="246">PAIR BY CODE</text>
+        </svg>
+        <figcaption>Devices pair to a Node the way they pair to each other. Two Nodes keep each other current over Iroh. Phones stay full devices with or without one.</figcaption>
+      </figure>
+      <p><strong>Libraries.</strong> A Node holds libraries, one per person per product: your Rec library, your Work library, a housemate’s Work library. Each has its own store, its own files and its own key, so nothing is shared by accident. Several people can use one Node from day one.</p>
+      <p><strong>Running it.</strong> Unpack the archive and run <code>bin/recn_node service install</code>. It registers as a per-user service that starts at login and prints the status page URL. That page is served on the machine itself, on localhost, and shows the Node’s people, libraries, devices and storage.</p>
+      <p><strong>Pairing.</strong> The status page shows a pairing code per library. Scan it from Rec or Work on a phone or desktop and the two trust each other, the same way two of your own devices do. The code holds a key and a one-time token that expires in five minutes. One Node can also pair with another, so a home and a studio stay current with each other.</p>
+      <p><strong>LAN or relay.</strong> Syncing runs over Iroh. On the same network your devices reach the Node directly, with no internet. Away from home they try a direct line first and fall back to a relay that forwards sealed packets and keeps nothing.</p>
+      <p><strong>For agents.</strong> <code>recn-node mcp</code> starts an MCP server, so Claude Code, Codex and other harnesses can list projects and create notes and drawings in a library on the Node. They reach your devices through normal sync.</p>
 
       <h2>What isn’t there yet</h2>
       <ul>
         <li>Relays are n0’s public ones for now. RECN-run relays come before launch.</li>
         <li>There are no accounts. Pairing is device to device, which also means no web access, and no recovery if you lose every device you own.</li>
         <li>There is no cloud copy. RECN Node is the always-on device you run yourself, speaking the same protocol, not a separate cloud sync.</li>
-        <li>Phones sync while RECN is open. Background sync is not built.</li>
+        <li>Desktop apps still hold their own copy of a library. Over time they will lean on a local Node instead, installed and started by the app itself.</li>
+        <li>Phones sync while Rec or Work is open. Background sync is not built.</li>
       </ul>
       <p class="feature-next">
-        <a href={`${base}features/#sync`}>What sync looks like in the app →</a>
+        <a href={`${base}features/#sync`}>What sync looks like in Rec →</a>
         <a href={`${base}download/`}>Get RECN →</a>
       </p>
     </article>
   </main>
   <Footer />
 </Base>
+
+<style>
+  .node-figure { margin-top: 1.6em; }
+  .node-figure svg { display: block; width: 100%; height: auto; font: 600 10px/1 var(--mono); letter-spacing: .08em; }
+  .node-figure text { fill: var(--ink); text-anchor: middle; }
+  .node-figure__device rect { fill: var(--surface); stroke: var(--divider); }
+  .node-figure__node rect { fill: var(--ink); }
+  .node-figure__node text { fill: var(--background); }
+  .node-figure__sub { font-size: 8px; opacity: .7; }
+  .node-figure__link { fill: none; stroke: var(--tertiary); stroke-width: 1.5; }
+  .node-figure__link--iroh { stroke: var(--accent); stroke-dasharray: 5 5; }
+  .node-figure__caption { fill: var(--secondary); font-size: 8.5px; }
+  .node-figure figcaption { margin-top: 10px; color: var(--secondary); font-size: 0.8rem; }
+</style>

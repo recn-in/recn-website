@@ -1,19 +1,24 @@
 ---
 import '../styles/global.css';
+import type { ProductId } from '../lib/products';
 
 interface Props {
   title: string;
   description?: string;
+  /** The product this page is about; its icon becomes the favicon and social image. Family pages leave it unset. */
+  product?: ProductId;
 }
 
 const {
   title,
-  description = 'Record audio, add notes, and find it later.',
+  description = 'Rec records, Work writes and draws, RECN Node keeps every device in sync. No account, no cloud library.',
+  product,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
-const socialImage = new URL(`${base}og-image.svg`, Astro.site ?? Astro.url.origin);
+const icon = product ? `${base}${product}-icon-1024.png` : `${base}favicon.png`;
+const socialImage = new URL(product ? icon : `${base}og-image.svg`, Astro.site ?? Astro.url.origin);
 ---
 
 <!doctype html>
@@ -27,7 +32,7 @@ const socialImage = new URL(`${base}og-image.svg`, Astro.site ?? Astro.url.origi
     <meta name="color-scheme" content="light dark" />
 
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/png" href={`${base}favicon.png`} />
+    <link rel="icon" type="image/png" href={icon} />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="RECN" />
