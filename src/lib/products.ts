@@ -19,7 +19,7 @@ export const PRODUCTS = [
   },
   {
     id: 'node', name: 'RECN Node', verb: 'For keeping it all in sync',
-    line: 'A small server you leave running at home or in the studio. It keeps a full copy, so nothing waits for your laptop to wake up.',
+    line: 'Your own server, at home or in the studio. Your data stays local and fully under your control, and every device stays up to date.',
     fits: 'Rec and Work already sync device to device. Node is just the one that never sleeps, so your laptop catches up the second you open it. You don\'t need one to use RECN.',
     platforms: 'macOS · Windows · Linux · NAS',
     features: [],
