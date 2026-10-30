@@ -9,21 +9,21 @@ const base = import.meta.env.BASE_URL;
 
 const steps = [
   ['Install', 'Put Rec or Work on two of your devices.'],
-  ['Pair', 'Same wifi is one tap. Otherwise, type in a code.'],
-  ['That\'s it', 'They stay in sync from here on. Nothing to sign up for, nothing to set up.'],
+  ['Pair', 'On the same wifi, tap the other device. Anywhere else, scan a code.'],
+  ['That\'s it', 'They stay in sync from here on. There is nothing to sign up for.'],
 ];
 ---
 
 <Base
-  title="RECN: record it, write it down, have it everywhere"
-  description="RECN is a suite of apps built on one idea: your work belongs on your own devices. No account, no cloud."
+  title="RECN"
+  description="A suite of apps built on one belief: what you make should live on hardware you own. No account, no cloud. Share directly with the people you work with."
 >
   <Header />
 
   <main class="home shell" id="main-content">
     <section class="hero" aria-labelledby="home-title">
-      <h1 id="home-title">Record it. Write it down. Have it on every device.</h1>
-      <p>RECN is a suite of apps built on one idea: your work belongs on your own devices. So they sync straight between them, with no account and no cloud. On the same wifi you don't even need internet.</p>
+      <h1 id="home-title">What you make should live on hardware you own.</h1>
+      <p>RECN is a suite of apps built on that one belief. There is no account and no cloud copy. Your phone and your laptop talk to each other directly. So do you and the people you work with. On the same wifi, none of it needs the internet.</p>
       <div class="actions">
         <a class="button button--primary" href={`${base}download/`}>Download</a>
         <a class="button button--secondary" href={`${base}how-it-works/`}>How it works</a>
@@ -49,27 +49,28 @@ const steps = [
     </section>
 
     <section class="fit" aria-labelledby="fit-title">
-      <h2 id="fit-title" class="label">How they fit</h2>
+      <h2 id="fit-title" class="label">How it hangs together</h2>
       <div class="fit__body">
-        <p><b>One library.</b> Rec and Work share it. Pair a device and it gets the whole thing.</p>
-        <p><b>Device to device.</b> Changes go straight from one device to the other, encrypted end to end. Nothing sits in a cloud.</p>
-        <p><b>Node puts you in charge.</b> It's your own server, at home or in the studio. Your data stays local, you have full control of everything you own, and anything that was off catches up from it. It's optional, and your phone never needs one.</p>
+        <p><b>Every device holds the whole library.</b> Pair a phone to a laptop and each has a full copy. Edit on one and the other catches up, field by field, so two devices changing different things never fight.</p>
+        <p><b>Sharing is a code, not an account.</b> Open a project, show a code, and someone joins it as a viewer or an editor. You see each other's cursors. Their copy is on their hardware, yours is on yours.</p>
+        <p><b>No server in the middle.</b> Devices connect to each other directly. When they can't, an encrypted relay passes the bytes along without being able to read them.</p>
+        <p><b>RECN Node is the device that never sleeps.</b> Run it on a Mac, a PC or a NAS and there is always one copy awake, backed up every day, under your control. You don't need one. It's there when you want it.</p>
       </div>
     </section>
 
     <section aria-labelledby="setup-title">
-      <h2 id="setup-title" class="label">Set up</h2>
+      <h2 id="setup-title" class="label">Setting up</h2>
       <ol class="steps">
         {steps.map(([title, words], n) => (
           <li><span>{n + 1}</span><b>{title}</b><p>{words}</p></li>
         ))}
       </ol>
-      <p class="aside">Want a Node? It's three commands on a Mac, PC, Linux box or NAS. Then scan its code from Rec or Work. <a href={`${base}node/`}>Set up a Node →</a></p>
+      <p class="aside">A Node is three commands on the machine you want it on. Then scan its code from Rec or Work. <a href={`${base}node/`}>Set one up →</a></p>
     </section>
 
     <section class="end">
-      <a class="button button--primary" href={`${base}download/`}>Download RECN</a>
-      <p>It's free while it's in beta. It's early, so keep a backup of anything important.</p>
+      <a class="button button--primary" href={`${base}download/`}>Download</a>
+      <p>Free while it's in beta. It's early. Keep a copy of anything you'd miss.</p>
     </section>
   </main>
 
@@ -81,7 +82,7 @@ const steps = [
   .home > section + section { margin-top: clamp(72px, 10vw, 112px); }
 
   .hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 600; letter-spacing: -0.045em; line-height: 1.04; }
-  .hero p { max-width: 560px; margin-top: 22px; color: var(--secondary); font-size: 1.05rem; line-height: 1.7; }
+  .hero p { max-width: 600px; margin-top: 22px; color: var(--secondary); font-size: 1.05rem; line-height: 1.7; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
 
   .products { margin: 18px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--divider); }

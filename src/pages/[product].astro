@@ -5,24 +5,12 @@ import Footer from '../components/Footer.astro';
 import RecnMark from '../components/RecnMark.astro';
 import { apple, android, windows } from '../lib/platformMarks';
 import { PRODUCTS, type ProductId } from '../lib/products';
-import { getCollection } from 'astro:content';
 
 export const getStaticPaths = () => PRODUCTS.map((product) => ({ params: { product: product.id }, props: { product } }));
 const { product } = Astro.props as { product: (typeof PRODUCTS)[number] };
 
 const base = import.meta.env.BASE_URL;
 
-const all = await getCollection('features');
-const nodePoints = [
-  { title: 'Always on', summary: 'It runs in the background and starts when you log in.' },
-  { title: 'A full copy', summary: 'Every recording, note and drawing sits on its own disk, so a device that was off can catch up.' },
-  { title: 'Pairs like a phone', summary: 'Open its status page and scan the code from Rec or Work.' },
-  { title: 'Runs on what you have', summary: 'Mac, Windows, Linux or a NAS. One install per machine.' },
-  { title: 'Works with agents', summary: 'It speaks MCP, so Claude Code and Codex can add notes and drawings for you.' },
-];
-const points = product.id === 'node'
-  ? nodePoints
-  : product.features.map((slug) => all.find((feature) => feature.slug === slug)!.data);
 const releases = 'https://github.com/recn-in/recn-releases/releases';
 const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
 // The installer script is Rec-only; Work is the same tap and its own cask.
@@ -57,12 +45,13 @@ const nodeInstall = ['tar -xzf recn-node-*.tar.gz && cd recn-node-*', 'bin/recn_
 const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>';
 ---
 
-<Base product={product.id} title={`${product.name}: ${product.verb.toLowerCase()}`} description={product.line}>
+<Base product={product.id} title={`${product.name}`} description={product.line}>
   <Header />
   <main class="simple-page shell" id="main-content" data-release-product={product.id}>
     <header class="simple-page__header product-hero">
       <RecnMark product={product.id} />
       <div>
+        <p class="label">{product.who}</p>
         <h1>{product.name}</h1>
         <p>{product.line}</p>
       </div>
@@ -71,13 +60,13 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
     <section class="product-points" aria-labelledby="points-title">
       <h2 id="points-title" class="label">What it does</h2>
       <ul>
-        {points.map((point) => <li><b>{point.title}</b><p>{point.summary}</p></li>)}
+        {product.points.map(([title, words]) => <li><b>{title}</b><p>{words}</p></li>)}
       </ul>
     </section>
 
     <section class="product-fit" aria-labelledby="fit-title">
-      <h2 id="fit-title" class="label">How it fits</h2>
-      <p>{product.fits} <a href={`${base}how-it-works/`}>How it works →</a></p>
+      <h2 id="fit-title" class="label">{product.id === 'node' ? 'Why it exists' : 'With other people'}</h2>
+      <p>{product.together} <a href={`${base}how-it-works/`}>How it works →</a></p>
     </section>
 
     <h2 class="label product-get">Get {product.name}</h2>
@@ -159,6 +148,7 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
 
 <style>
   .product-hero { display: grid; gap: 22px; }
+  .product-hero .label { margin-bottom: 10px; }
   .product-hero :global(.recn-mark) { width: 48px; }
   .product-hero p:last-child { margin-top: 14px; }
   .product-hero :global(.recn-mark) { box-shadow: none; }
