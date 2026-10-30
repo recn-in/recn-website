@@ -1,10 +1,29 @@
 // The family is RECN. The apps are Rec and Work (never "RECN Rec" in copy);
 // the server is RECN Node.
-// `accent` is the colour from each product's icon.
+// `verb` and `line` are what the product does; `fits` is how it joins the other two;
+// `features` are the slugs in src/content/features its page lists.
 export const PRODUCTS = [
-  { id: 'rec', name: 'Rec', accent: '#E5494D', kind: 'Audio · musicians', line: 'Takes, sessions, overdubs and loops, with notes beside the sound.', platforms: 'macOS · Windows · iPhone · iPad · Android' },
-  { id: 'work', name: 'Work', accent: '#E8942A', kind: 'Notes · drawings', line: 'Notes, drawings and projects.', platforms: 'macOS · Windows · iPhone · iPad · Android' },
-  { id: 'node', name: 'RECN Node', accent: '#1F9A62', kind: 'Server · always on', line: 'An always-on server that keeps every library in sync.', platforms: 'macOS · Windows · Linux · NAS' },
+  {
+    id: 'rec', name: 'Rec', verb: 'For recording',
+    line: 'Record takes, stack layers, loop the bit you\'re working on. It transcribes too, right on your device.',
+    fits: 'Whatever you record shows up next to your Work notes, on every device you\'ve paired.',
+    platforms: 'macOS · Windows · iPhone · iPad · Android',
+    features: ['recording', 'sessions', 'takes', 'loop-punch-markers', 'transcription', 'quick-record'],
+  },
+  {
+    id: 'work', name: 'Work', verb: 'For notes and drawings',
+    line: 'Write notes, sketch ideas, keep it all in projects. Same library as Rec.',
+    fits: 'Work and Rec use the same library, so your notes, drawings and recordings end up in the same projects, on every device.',
+    platforms: 'macOS · Windows · iPhone · iPad · Android',
+    features: ['notes', 'drawing', 'projects', 'search', 'library-views', 'ipad'],
+  },
+  {
+    id: 'node', name: 'RECN Node', verb: 'For keeping it all in sync',
+    line: 'A small server you leave running at home or in the studio. It keeps a full copy, so nothing waits for your laptop to wake up.',
+    fits: 'Rec and Work already sync device to device. Node is just the one that never sleeps, so your laptop catches up the second you open it. You don\'t need one to use RECN.',
+    platforms: 'macOS · Windows · Linux · NAS',
+    features: [],
+  },
 ] as const;
 
 export type ProductId = (typeof PRODUCTS)[number]['id'];
