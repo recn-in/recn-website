@@ -10,6 +10,7 @@ export const getStaticPaths = () => PRODUCTS.map((product) => ({ params: { produ
 const { product } = Astro.props as { product: (typeof PRODUCTS)[number] };
 
 const base = import.meta.env.BASE_URL;
+
 const releases = 'https://github.com/recn-in/recn-releases/releases';
 const brewCommand = 'curl -fsSL https://raw.githubusercontent.com/recn-in/recn-releases/main/install.sh | bash';
 // The installer script is Rec-only; Work is the same tap and its own cask.
@@ -44,18 +45,31 @@ const nodeInstall = ['tar -xzf recn-node-*.tar.gz && cd recn-node-*', 'bin/recn_
 const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>';
 ---
 
-<Base product={product.id} title={`Get ${product.name}`} description={product.line}>
+<Base product={product.id} title={`${product.name}`} description={product.line}>
   <Header />
   <main class="simple-page shell" id="main-content" data-release-product={product.id}>
     <header class="simple-page__header product-hero">
       <RecnMark product={product.id} />
       <div>
-        <p class="label">{product.kind.toUpperCase()}</p>
+        <p class="label">{product.who}</p>
         <h1>{product.name}</h1>
         <p>{product.line}</p>
       </div>
     </header>
 
+    <section class="product-points" aria-labelledby="points-title">
+      <h2 id="points-title" class="label">What it does</h2>
+      <ul>
+        {product.points.map(([title, words]) => <li><b>{title}</b><p>{words}</p></li>)}
+      </ul>
+    </section>
+
+    <section class="product-fit" aria-labelledby="fit-title">
+      <h2 id="fit-title" class="label">{product.id === 'node' ? 'Why it exists' : 'With other people'}</h2>
+      <p>{product.together} <a href={`${base}how-it-works/`}>How it works →</a></p>
+    </section>
+
+    <h2 class="label product-get">Get {product.name}</h2>
     <section class="release-browser" aria-label="Downloads">
       <div class="download-grid">
         {cards[product.id].map((card) => card.href ? (
@@ -133,11 +147,20 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
 </Base>
 
 <style>
-  .product-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 36px; }
-  .product-hero :global(.recn-mark) { width: clamp(160px, 18vw, 192px); }
-  .product-hero h1 { margin-top: 10px; }
+  .product-hero { display: grid; gap: 22px; }
+  .product-hero .label { margin-bottom: 10px; }
+  .product-hero :global(.recn-mark) { width: 48px; }
   .product-hero p:last-child { margin-top: 14px; }
-  @media (max-width: 480px) { .product-hero { grid-template-columns: 1fr; gap: 24px; } .product-hero :global(.recn-mark) { width: 128px; } }
+  .product-hero :global(.recn-mark) { box-shadow: none; }
+  .product-points, .product-fit { max-width: 760px; margin-top: 72px; }
+  .product-points ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; margin: 18px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--divider); }
+  .product-points li { padding: 20px 0; border-bottom: 1px solid var(--divider); }
+  .product-points b { font-size: 1rem; font-weight: 640; }
+  .product-points p { margin-top: 6px; color: var(--secondary); font-size: 0.88rem; line-height: 1.6; }
+  .product-fit p { margin-top: 18px; color: var(--secondary); font-size: 1rem; line-height: 1.7; }
+  .product-fit a { color: var(--ink); border-bottom: 1px solid var(--divider); white-space: nowrap; }
+  .product-get { margin: 72px 0 18px; }
+  @media (max-width: 640px) { .product-points ul { grid-template-columns: 1fr; } }
 </style>
 
 <script>
