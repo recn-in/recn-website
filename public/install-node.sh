@@ -47,6 +47,7 @@ case "$(uname -m)" in
   *) die "No RECN Node build for $(uname -m) yet." ;;
 esac
 target="$os-$arch"
+[ "$target" != macos-x64 ] || die "No RECN Node build for Intel Macs. Run the Docker image instead: docker run -d --restart unless-stopped -p 127.0.0.1:7326:7326 -v recn-node:/data ghcr.io/recn-in/recn-node"
 info "$target, installing for $(id -un) into $root"
 [ "$(id -u)" -ne 0 ] || info "Running as root works; a user of its own keeps the Node's data apart."
 
