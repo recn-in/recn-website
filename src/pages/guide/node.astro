@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+const base = import.meta.env.BASE_URL;
+const install = 'curl -fsSL https://recn.in/install-node.sh | bash';
+---
+
+<Base product="node" title="Running RECN Node" description="Install RECN Node on a Mac or a Linux box, including a headless cloud VM, sign in to it over SSH and pair your devices.">
+  <Header />
+  <main class="simple-page shell" id="main-content">
+    <header class="simple-page__header">
+      <p class="label">GUIDE</p>
+      <h1>Running RECN Node</h1>
+      <p>One command installs it on a Mac or a Linux machine. On a cloud VM with no screen, you sign in through an SSH tunnel and pair from the terminal.</p>
+    </header>
+
+    <article class="prose guide">
+      <h2 id="install">Install</h2>
+      <p>Run this as the user the Node should belong to, not with <code>sudo</code>:</p>
+      <pre><code>{install}</code></pre>
+      <p>It prints each step as it goes. It finds the newest build for your machine, checks its SHA-256, unpacks it to <code>~/Applications/RECN Node</code> on a Mac or <code>~/.local/opt/recn-node</code> on Linux, and puts <code>recn-node</code> in <code>~/.local/bin</code>. Then it installs the Node as a service for your user and starts it. On Linux it also turns on lingering, so the Node keeps running after you log out. That step may ask for your password.</p>
+      <p>Want to read it first? <a href={`${base}install-node.sh`}>install-node.sh</a> is short.</p>
+
+      <h2 id="updates">Updates</h2>
+      <p>The Node updates itself once a day, at 3 a.m. its time. It keeps the build before, so <code>recn-node update --rollback</code> puts it back. Run <code>recn-node update</code> to update now. Running the installer again doesn't reinstall anything: it only sets the service up again.</p>
+
+      <h2 id="vm">On a cloud VM</h2>
+      <p>Any small Linux VM with systemd works, x64 or arm64, with enough disk for your library. Give it a user of its own and run the installer as that user:</p>
+      <pre><code>sudo useradd --create-home --shell /bin/bash recn
+sudo loginctl enable-linger recn
+sudo -iu recn
+{install}</code></pre>
+      <p><strong>No ports to open.</strong> Your devices reach the Node through an encrypted relay, and connect directly when the network allows. Keep port 7326 closed: the dashboard only listens on the VM itself.</p>
+
+      <h3 id="sign-in">Sign in to the dashboard</h3>
+      <p>Forward the dashboard's port from your own computer and leave this running:</p>
+      <pre><code>ssh -N -L 7326:127.0.0.1:7326 you@your-vm</code></pre>
+      <p>Then, on the VM:</p>
+      <pre><code>recn-node open --no-browser</code></pre>
+      <p>Open the URL it prints in your computer's browser within 60 seconds. You stay signed in on that browser for a week after you last use it. If <code>recn-node status</code> shows a port other than 7326, use that one in both places.</p>
+
+      <h3 id="pair">Pair a phone or a laptop</h3>
+      <pre><code>recn-node invite</code></pre>
+      <p>The Node holds one library for Rec and one for Work, so the first time it lists them. Run it again with the one you want:</p>
+      <pre><code>recn-node invite --library &lt;id&gt;</code></pre>
+      <p>It prints a QR code in the terminal. In Rec or Work, choose <strong>Pair a device</strong>, then <strong>Scan a code</strong>. If the terminal's QR code won't scan, paste the line printed above it.</p>
+
+      <h3 id="everyday">Everyday commands</h3>
+      <dl class="guide-keys">
+        <div><dt><code>recn-node status</code></dt><dd>Is it running, its dashboard URL, why it last refused to start.</dd></div>
+        <div><dt><code>recn-node service status</code></dt><dd>Is the service installed, and where its log is.</dd></div>
+        <div><dt><code>journalctl --user -u recn-node -f</code></dt><dd>Follow the Node's log on Linux.</dd></div>
+        <div><dt><code>recn-node backup</code></dt><dd>Take a snapshot now. It takes one every night at 2 a.m. and keeps three.</dd></div>
+        <div><dt><code>recn-node backups</code></dt><dd>List the snapshots. <code>recn-node restore &lt;id&gt; --yes</code> brings one back.</dd></div>
+        <div><dt><code>recn-node reset uninstall --yes</code></dt><dd>Stop it and remove it, data and all.</dd></div>
+      </dl>
+      <p>Snapshots are on the same disk as the Node. Copy them off the VM too: they're in <code>~/.local/share/recn-node/backups</code> unless you moved them.</p>
+
+      <h2 id="other">Windows and Docker</h2>
+      <p>On Windows, unzip the build from the <a href={`${base}node/`}>Node page</a> and run <code>bin\recn_node.exe service install</code>. On a NAS or anywhere else you run containers, use <code>ghcr.io/recn-in/recn-node</code>. The image updates when you pull it.</p>
+
+      <p>Something not behaving like this? <a href={`${base}support/`}>Tell us</a>.</p>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .guide { max-width: 70ch; }
+  .guide pre { white-space: pre-wrap; word-break: break-all; }
+  .guide h3 { margin-top: 2em; }
+  .guide-keys { display: grid; gap: 14px; margin: 18px 0; }
+  .guide-keys div { display: grid; grid-template-columns: minmax(0, 15rem) 1fr; gap: 18px; align-items: baseline; }
+  .guide-keys dd { margin: 0; color: var(--secondary); }
+  @media (max-width: 560px) { .guide-keys div { grid-template-columns: 1fr; gap: 4px; } }
+</style>

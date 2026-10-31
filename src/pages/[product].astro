@@ -41,7 +41,7 @@ const cards: Record<ProductId, Card[]> = {
     { id: 'windows', name: 'Windows · x64', mark: windows, suffix: 'windows-x64.zip', href: releases, action: 'Download ↓', note: '.zip' },
   ],
 };
-const nodeInstall = ['tar -xzf recn-node-*.tar.gz && cd recn-node-*', 'bin/recn_node service install', 'bin/recn_node service status'];
+const nodeInstall = 'curl -fsSL https://recn.in/install-node.sh | bash';
 const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>';
 ---
 
@@ -111,12 +111,12 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
 
       {product.id === 'node' && (
         <div class="brew-command">
-          <span>Install · three lines</span>
+          <span>Install · macOS and Linux</span>
           <div class="brew-command__box">
-            <pre>{nodeInstall.map((line) => <code class="brew-command__line">{line}</code>)}</pre>
-            <button type="button" data-copy={nodeInstall.join('\n')} aria-label="Copy install commands"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
+            <pre><code class="brew-command__line">{nodeInstall}</code></pre>
+            <button type="button" data-copy={nodeInstall} aria-label="Copy install command"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
           </div>
-          <p class="brew-command__hint">Unpack, install it as a per-user service that starts at login, then open the status page URL it prints (<code>status</code> prints it again any time). Scan the pairing code there from Rec or Work. On Windows unzip and run <code>bin\recn_node.exe service install</code>. A phone never needs a Node. <a href={`${base}how-it-works/#node`}>How RECN Node works →</a></p>
+          <p class="brew-command__hint">Prints each step: the newest build for your machine, its checksum, a service that starts with the machine. It updates itself from then on. Then <code>recn-node open</code> for the dashboard and <code>recn-node invite</code> to pair. On a cloud VM with no screen, the <a href={`${base}guide/node/`}>guide</a> covers signing in over SSH. On Windows unzip and run <code>bin\recn_node.exe service install</code>. A phone never needs a Node.</p>
         </div>
       )}
 
