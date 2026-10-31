@@ -1,0 +1,39 @@
+name: Node installer
+
+# Runs public/install-node.sh for real on fresh runners: newest build,
+# checksum, service, a Node that answers. Twice, to cover the second run.
+on:
+  pull_request:
+    paths: [public/install-node.sh, .github/workflows/install-node.yml]
+  push:
+    branches: [main]
+    paths: [public/install-node.sh, .github/workflows/install-node.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm, macos-15]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck -s bash public/install-node.sh
+        if: runner.os == 'Linux'
+      - name: install
+        run: bash public/install-node.sh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: install again
+        run: bash public/install-node.sh
+      - name: the Node answers
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          recn-node service status
+          url=$(recn-node status | head -n 1)
+          curl -fsS -o /dev/null -w '%{http_code} %{url}\n' "$url"
