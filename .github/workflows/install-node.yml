@@ -36,4 +36,4 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           recn-node service status
           url=$(recn-node status | head -n 1)
-          curl -sS -o /dev/null -w '%{http_code} %{url}\n' "$url"
+          curl -fsS -o /dev/null -w '%{http_code} %{url}\n' "$url"

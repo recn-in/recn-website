@@ -20,6 +20,7 @@ const install = 'curl -fsSL https://recn.in/install-node.sh | bash';
       <p>Run this as the user the Node should belong to, not with <code>sudo</code>:</p>
       <pre><code>{install}</code></pre>
       <p>It prints each step as it goes. It finds the newest build for your machine, checks its SHA-256, unpacks it to <code>~/Applications/RECN Node</code> on a Mac or <code>~/.local/opt/recn-node</code> on Linux, and puts <code>recn-node</code> in <code>~/.local/bin</code>. Then it installs the Node as a service for your user and starts it. On Linux it also turns on lingering, so the Node keeps running after you log out. That step may ask for your password.</p>
+      <p>If <code>~/.local/bin</code> isn't on your <code>PATH</code> yet, the installer says so and prints the line that adds it for new shells. In the shell you installed from, run <code>export PATH="$HOME/.local/bin:$PATH"</code> before the commands below.</p>
       <p>Want to read it first? <a href={`${base}install-node.sh`}>install-node.sh</a> is short.</p>
 
       <h2 id="updates">Updates</h2>

@@ -24,6 +24,9 @@
 # cloud IPs.
 set -euo pipefail
 
+# Everything runs from main, called on the last line, so a download cut
+# short by `curl | bash` runs nothing.
+main() {
 FEED='https://api.github.com/repos/recn-in/recn-releases/releases?per_page=100'
 
 if [ -t 1 ]; then B=$'\e[1m'; D=$'\e[2m'; R=$'\e[31m'; G=$'\e[32m'; N=$'\e[0m'; else B='' D='' R='' G='' N=''; fi
@@ -57,7 +60,7 @@ exe="$current/bin/recn_node"
 if [ -x "$exe" ]; then
   step "RECN Node is already installed"
   info "$(cat "$current/build" 2>/dev/null || echo 'unknown build') in $current"
-  info "It updates itself. To update now: recn-node update"
+  info "It updates itself. To update now: $exe update"
 else
   step "Finding the newest RECN Node build"
   auth=()
@@ -101,18 +104,24 @@ else
 
   step "Unpacking to $current"
   tar -xzf "$tmp/$name" -C "$tmp"
+  staged="$tmp/${name%.tar.gz}"
+  "$staged/bin/recn_node" --version >/dev/null 2>&1 || die "$name does not run on this machine; nothing installed."
   mkdir -p "$root"
-  rm -rf "$root/staging"
-  mv "$tmp/${name%.tar.gz}" "$current"
-  "$exe" --version >/dev/null 2>&1 || die "$exe does not run on this machine."
+  # A current/ with no working executable is an earlier install cut short.
+  rm -rf "$current" "$root/staging"
+  mv "$staged" "$current"
 fi
 
 step "Linking recn-node into ~/.local/bin"
 mkdir -p "$HOME/.local/bin"
 ln -sf "$exe" "$HOME/.local/bin/recn-node"
 case ":$PATH:" in
-  *":$HOME/.local/bin:"*) info "recn-node is on your PATH" ;;
-  *) info "Add it to your PATH: echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.$(basename "${SHELL:-bash}")rc" ;;
+  *":$HOME/.local/bin:"*) cmd=recn-node; info "recn-node is on your PATH" ;;
+  *)
+    cmd="$HOME/.local/bin/recn-node"
+    info "$HOME/.local/bin is not on your PATH, so the commands below use the full path. For new shells:"
+    info "echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.$(basename "${SHELL:-bash}")rc"
+    ;;
 esac
 
 if [ "$os" = linux ]; then
@@ -144,16 +153,19 @@ if [ -n "${SSH_CONNECTION:-}" ] && [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; th
     The dashboard only listens on this machine. From your own computer:
       ssh -N -L $port:127.0.0.1:$port $(id -un)@<this machine>
     then here:
-      recn-node open --no-browser
+      $cmd open --no-browser
     and open the URL it prints on your computer within 60 seconds.
 
-    Pair a phone from this terminal:   recn-node invite
+    Pair a phone from this terminal:   $cmd invite
     Guide: https://recn.in/guide/node/
 EOF
 else
   cat <<EOF
-    Open the dashboard:   recn-node open
-    Pair a phone:         recn-node invite
+    Open the dashboard:   $cmd open
+    Pair a phone:         $cmd invite
     Guide: https://recn.in/guide/node/
 EOF
 fi
+}
+
+main "$@"
