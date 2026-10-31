@@ -116,7 +116,7 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
             <pre><code class="brew-command__line">{nodeInstall}</code></pre>
             <button type="button" data-copy={nodeInstall} aria-label="Copy install command"><Fragment set:html={copyIcon} /><em aria-live="polite">Copy</em></button>
           </div>
-          <p class="brew-command__hint">Prints each step: the newest build for your machine, its checksum, a service that starts with the machine. It updates itself from then on. Then <code>recn-node open</code> for the dashboard and <code>recn-node invite</code> to pair. On a cloud VM with no screen, the <a href={`${base}guide/node/`}>guide</a> covers signing in over SSH. On Windows unzip and run <code>bin\recn_node.exe service install</code>. A phone never needs a Node.</p>
+          <p class="brew-command__hint">Prints each step: the newest build for your machine, its checksum, a service that starts with the machine. It updates itself from then on. Then <code>recn-node node add Personal --rec</code> makes your first node, <code>recn-node invite Personal</code> pairs a phone to it, and <code>recn-node open</code> opens the dashboard. On a cloud VM with no screen, the <a href={`${base}guide/node/`}>guide</a> covers signing in over SSH. On Windows unzip and run <code>bin\recn_node.exe service install</code>. A phone never needs a Node.</p>
         </div>
       )}
 

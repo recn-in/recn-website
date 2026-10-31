@@ -156,13 +156,17 @@ if [ -n "${SSH_CONNECTION:-}" ] && [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; th
       $cmd open --no-browser
     and open the URL it prints on your computer within 60 seconds.
 
-    Pair a phone from this terminal:   $cmd invite
+    A new Node holds no nodes yet. Make one here, or in the dashboard:
+      $cmd node add Personal --rec
+    Pair a phone to it from this terminal:
+      $cmd invite Personal
     Guide: https://recn.in/guide/node/
 EOF
 else
   cat <<EOF
-    Open the dashboard:   $cmd open
-    Pair a phone:         $cmd invite
+    Open the dashboard and make your first node:   $cmd open
+    Or from here:                                   $cmd node add Personal --rec
+    Then pair a phone to it:                        $cmd invite Personal
     Guide: https://recn.in/guide/node/
 EOF
 fi

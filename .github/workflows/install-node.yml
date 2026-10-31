@@ -37,3 +37,5 @@ jobs:
           recn-node service status
           url=$(recn-node status | head -n 1)
           curl -fsS -o /dev/null -w '%{http_code} %{url}\n' "$url"
+          recn-node node add CI --rec
+          recn-node node list

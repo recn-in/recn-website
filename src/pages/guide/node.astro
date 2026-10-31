@@ -41,11 +41,14 @@ sudo -iu recn
       <pre><code>recn-node open --no-browser</code></pre>
       <p>Open the URL it prints in your computer's browser within 60 seconds. You stay signed in on that browser for a week after you last use it. If <code>recn-node status</code> shows a port other than 7326, use that one in both places.</p>
 
+      <h3 id="nodes">Make a node</h3>
+      <p>One install can hold several nodes: Personal, Studio, a client. Each has its own name, its own products and its own devices, and nothing crosses between them. A new install holds none, so make the first:</p>
+      <pre><code>recn-node node add Personal --rec</code></pre>
+      <p>Add <code>--work</code> for a node that holds Work too. <code>recn-node node list</code> shows them. Your phone shows the node's name, so Studio reads as “Studio” there.</p>
+
       <h3 id="pair">Pair a phone or a laptop</h3>
-      <pre><code>recn-node invite</code></pre>
-      <p>The Node holds one library for Rec and one for Work, so the first time it lists them. Run it again with the one you want:</p>
-      <pre><code>recn-node invite --library &lt;id&gt;</code></pre>
-      <p>It prints a QR code in the terminal. In Rec or Work, choose <strong>Pair a device</strong>, then <strong>Scan a code</strong>. If the terminal's QR code won't scan, paste the line printed above it.</p>
+      <pre><code>recn-node invite Personal</code></pre>
+      <p>For a node with more than one product, say which: <code>recn-node invite Personal --work</code>. It prints a QR code in the terminal. In Rec or Work, choose <strong>Pair a device</strong>, then <strong>Scan a code</strong>. If the terminal's QR code won't scan, paste the line printed above it.</p>
 
       <h3 id="everyday">Everyday commands</h3>
       <dl class="guide-keys">
