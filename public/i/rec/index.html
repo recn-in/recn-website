@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4SZB0jJfSG5EybeU8f0yB6fzg7L/ld/DCtMQOCf4g9U='; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex">
+<title>Open in RECN Rec</title>
+<link rel="icon" href="/rec-icon-1024.png">
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --ink: #2d2926; --secondary: #888b8d; --line: #e4e3e1; }
+@media (prefers-color-scheme: dark) { :root { --bg: #141414; --ink: #f2f0ed; --line: #282828; } }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink); font: 17px/1.5 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+main { max-width: 26rem; padding: 2rem 1.25rem; text-align: center; }
+img { width: 72px; height: 72px; border-radius: 16px; }
+h1 { font-size: 1.5rem; margin: 1rem 0 0.5rem; }
+p { color: var(--secondary); margin: 0.5rem 0; }
+button { margin-top: 0.75rem; padding: 0.6rem 1.4rem; font: inherit; color: var(--bg); background: var(--ink); border: 0; border-radius: 999px; cursor: pointer; }
+a { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+<img src="/rec-icon-1024.png" alt="">
+<h1>Open in RECN Rec</h1>
+<p>Someone invited you to a project in RECN Rec.</p>
+<section id="fallback" hidden>
+<p>If RECN did not open, copy this link and paste it into the app.</p>
+<button id="copy" type="button">Copy</button>
+<p id="status" role="status"></p>
+</section>
+<p>Don't have it yet? <a href="/rec/">Get RECN Rec</a></p>
+</main>
+<script>
+// Copies the address to the clipboard and does nothing else with it:
+// the invite's secret is in the fragment, never the page or a request.
+document.getElementById('fallback').hidden = false;
+document.getElementById('copy').addEventListener('click', function () {
+  var status = document.getElementById('status');
+  navigator.clipboard.writeText(location.href).then(function () {
+    status.textContent = 'Copied. Paste it into RECN Rec.';
+  }, function () {
+    status.textContent = 'Copy the address from the address bar instead.';
+  });
+});
+</script>
+</body>
+</html>
