@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["98478ZA6GS.com.recn.rec", "TEAMID.com.recn.recnRecDesktop"],
+        "components": [{ "/": "/i/rec/*", "comment": "Invite links for RECN Rec; the payload stays in the fragment." }]
+      },
+      {
+        "appIDs": ["98478ZA6GS.in.recn.work", "TEAMID.in.recn.work"],
+        "components": [{ "/": "/i/work/*", "comment": "Invite links for RECN Work; the payload stays in the fragment." }]
+      }
+    ]
+  }
+}
