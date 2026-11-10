@@ -4,46 +4,161 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4SZB0jJfSG5EybeU8f0yB6fzg7L/ld/DCtMQOCf4g9U='; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VoNKROmoqw1qC0OWmnYTSiGEkPaweIB9OCkgi/JDln4='; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
 <title>Open in RECN Rec</title>
 <link rel="icon" href="/rec-icon-1024.png">
 <style>
-:root { color-scheme: light dark; --bg: #ffffff; --ink: #2d2926; --secondary: #888b8d; --line: #e4e3e1; }
-@media (prefers-color-scheme: dark) { :root { --bg: #141414; --ink: #f2f0ed; --line: #282828; } }
-body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink); font: 17px/1.5 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; }
-main { max-width: 26rem; padding: 2rem 1.25rem; text-align: center; }
-img { width: 72px; height: 72px; border-radius: 16px; }
-h1 { font-size: 1.5rem; margin: 1rem 0 0.5rem; }
-p { color: var(--secondary); margin: 0.5rem 0; }
-button { margin-top: 0.75rem; padding: 0.6rem 1.4rem; font: inherit; color: var(--bg); background: var(--ink); border: 0; border-radius: 999px; cursor: pointer; }
-a { color: var(--ink); }
+*, *::before, *::after { box-sizing: border-box; }
+:root { color-scheme: light dark; --background: #ffffff; --surface: #f7f6f4; --ink: #2d2926; --secondary: #888b8d; --divider: #e4e3e1; --single: #d4a017; --mono: "SFMono-Regular", "SF Mono", "Cascadia Code", monospace; }
+@media (prefers-color-scheme: dark) { :root { --background: #141414; --surface: #1e1e1e; --ink: #f2f0ed; --divider: #333333; --single: #e6c26e; } }
+html, body, h1, h2, p, dl, dd, ul { margin: 0; }
+body { min-height: 100vh; background: var(--background); color: var(--ink); font: 15px/1.6 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+main { width: min(100%, 30rem); margin-inline: auto; padding: clamp(32px, 9vh, 88px) 22px 48px; }
+a { color: inherit; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 44px; height: 44px; border-radius: 10px; }
+.label { color: var(--secondary); font: 600 0.67rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+h1 { margin-top: 28px; font-size: clamp(1.6rem, 6vw, 2rem); line-height: 1.15; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.lede { margin-top: 12px; color: var(--secondary); font-size: 1rem; overflow-wrap: anywhere; }
+dl { margin-top: 26px; border-top: 1px solid var(--divider); }
+dl div { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--divider); }
+dt { color: var(--secondary); }
+dd { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+.is-expired #expires { color: var(--single); }
+.note { margin-top: 14px; color: var(--secondary); font-size: 0.82rem; }
+.open { margin-top: 32px; }
+.steps { margin-top: 14px; padding: 0; list-style: none; color: var(--secondary); font-size: 0.9rem; }
+.steps li + li { margin-top: 8px; }
+.steps b { color: var(--ink); font-weight: 600; }
+.button { display: inline-flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; padding: 0 18px; border: 1px solid var(--ink); border-radius: 0; background: var(--ink); color: var(--background); font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer; }
+.button:hover { opacity: 0.85; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.is-expired .button { background: transparent; color: var(--ink); }
+.action { margin-top: 18px; }
+#status { min-height: 1.6em; margin-top: 10px; font-size: 0.85rem; }
+.get { margin-top: 36px; }
+.get ul { margin-top: 14px; padding: 0; list-style: none; border-top: 1px solid var(--divider); }
+.get li { border-bottom: 1px solid var(--divider); }
+.get a, .get span { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; text-decoration: none; }
+.get a:hover strong { text-decoration: underline; }
+.get strong { font-weight: 600; }
+.get small { color: var(--secondary); font-size: 0.82rem; }
 </style>
 </head>
 <body>
-<main>
-<img src="/rec-icon-1024.png" alt="">
-<h1>Open in RECN Rec</h1>
-<p>Someone invited you to a project in RECN Rec.</p>
-<section id="fallback" hidden>
-<p>If RECN did not open, copy this link and paste it into the app.</p>
-<button id="copy" type="button">Copy</button>
+<main id="invite">
+<div class="brand"><img src="/rec-icon-1024.png" alt=""><span class="label" id="eyebrow">RECN Rec · Invite</span></div>
+<h1 id="title">Open in RECN Rec</h1>
+<p class="lede" id="lede">Someone invited you to a project in RECN Rec.</p>
+<dl id="details" hidden>
+<div><dt>Project</dt><dd id="project"></dd></div>
+<div><dt>From</dt><dd id="from"></dd></div>
+<div><dt>Access</dt><dd id="role"></dd></div>
+<div><dt>Expires</dt><dd id="expires"></dd></div>
+</dl>
+<p class="note" id="note" hidden>These details are what the link says. This page can't check them; RECN Rec checks the invite when you open it there. The link works once: whoever opens it first joins.</p>
+<section class="open" aria-labelledby="open-title">
+<h2 class="label" id="open-title">Open in RECN Rec</h2>
+<ul class="steps">
+<li><b>Have RECN Rec on this phone?</b> Go back and tap the invite link again. It opens in the app.</li>
+<li><b>Anywhere else,</b> copy the link and paste it into RECN Rec.</li>
+</ul>
+<p class="action"><button class="button" id="copy" type="button">Copy invite link</button></p>
 <p id="status" role="status"></p>
 </section>
-<p>Don't have it yet? <a href="/rec/">Get RECN Rec</a></p>
+<section class="get" aria-labelledby="get-title">
+<h2 class="label" id="get-title">Don't have RECN Rec yet?</h2>
+<ul>
+<li><a href="https://testflight.apple.com/join/h2Xw8MpE" rel="noreferrer"><strong>iPhone · iPad</strong><small>Join on TestFlight ↗</small></a></li>
+<li><a href="https://play.google.com/apps/testing/com.recn.rec" rel="noreferrer"><strong>Android</strong><small>Join early access ↗</small></a></li>
+<li><a href="/rec/" rel="noreferrer"><strong>Mac · Windows</strong><small>Download →</small></a></li>
+</ul>
+<p class="note">After installing, tap the invite link again.</p>
+</section>
 </main>
 <script>
-// Copies the address to the clipboard and does nothing else with it:
-// the invite's secret is in the fragment, never the page or a request.
-document.getElementById('fallback').hidden = false;
-document.getElementById('copy').addEventListener('click', function () {
-  var status = document.getElementById('status');
-  navigator.clipboard.writeText(location.href).then(function () {
-    status.textContent = 'Copied. Paste it into RECN Rec.';
-  }, function () {
-    status.textContent = 'Copy the address from the address bar instead.';
+// Says what the invite is for and copies the address when asked. The
+// fragment never leaves this script: no request, no storage. Only the
+// project and inviter names, the role and the expiry reach the page, as
+// text; the secret, keys and ids are skipped, never read.
+(function () {
+  var apps = { rec: 'RECN Rec', work: 'RECN Work' };
+  var roles = ['Can view', 'Can edit'];
+  var here = location.pathname.split('/')[2];
+  var fragment = location.hash.slice(1);
+  var invite = read(fragment);
+  var $ = function (id) { return document.getElementById(id); };
+  var say = function (id, text) { $(id).textContent = text; };
+
+  $('copy').addEventListener('click', function () {
+    navigator.clipboard.writeText(location.href).then(function () {
+      say('status', 'Copied. Paste it into ' + apps[here] + '.');
+    }, function () {
+      say('status', 'Copy the address from the address bar instead.');
+    });
   });
-});
+
+  if (invite && invite.product !== here) {
+    say('title', 'This link is damaged');
+    say('lede', 'It names ' + apps[invite.product] + ' but opened the ' + apps[here] + ' page. Ask for a new link.');
+  } else if (invite) {
+    var who = invite.inviter || 'Someone';
+    var expired = invite.expiresAt <= Date.now();
+    var date = new Date(invite.expiresAt);
+    var when = isNaN(date.getTime()) ? 'Unknown' : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+    say('title', invite.project || 'A shared project');
+    say('lede', expired
+      ? 'This invite from ' + who + ' has expired. Ask them for a new link.'
+      : who + ' invited you to this project in ' + apps[here] + '.');
+    say('project', invite.project || 'Untitled');
+    say('from', who);
+    say('role', roles[invite.role]);
+    say('expires', expired ? 'Expired ' + when : when);
+    $('details').hidden = false;
+    $('note').hidden = false;
+    if (expired) $('invite').classList.add('is-expired');
+  } else if (fragment) {
+    say('lede', 'This page could not read the invite in this link. It may be cut short or from an older version of RECN. If ' + apps[here] + ' does not open it either, ask for a new link.');
+  }
+
+  // The layout is in the RECN repo's invite_link.dart library doc.
+  function read(text) {
+    try {
+      var raw = atob(text.replace(/-/g, '+').replace(/_/g, '/'));
+      var b = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) b[i] = raw.charCodeAt(i);
+      var at = 0;
+      var byte = function () { skip(1); return b[at - 1]; };
+      var skip = function (n) { if (n > b.length - at) throw new Error('short'); at += n; };
+      var uint = function () {
+        for (var value = 0, scale = 1, k = 0; k < 8; k++, scale *= 128) {
+          var x = byte();
+          value += (x % 128) * scale;
+          if (x < 128) return value;
+        }
+        throw new Error('long');
+      };
+      var id = function () { var tag = byte(); if (tag === 0) skip(16); else if (tag === 1 || tag === 2) skip(uint()); else throw new Error('id'); };
+      var words = function () {
+        var n = uint();
+        skip(n);
+        return new TextDecoder('utf-8', { fatal: true }).decode(b.subarray(at - n, at));
+      };
+      if (byte() !== 2) return null;
+      var product = ['rec', 'work'][byte()];
+      var role = byte();
+      if (!product || role > 1) return null;
+      id(); id(); skip(32);
+      var expiresAt = uint();
+      id(); id();
+      for (var r = uint(); r > 0; r--) { id(); var relay = uint(); if (relay) skip(relay - 1); }
+      return { product: product, role: role, expiresAt: expiresAt, project: words(), inviter: words() };
+    } catch (e) {
+      return null;
+    }
+  }
+})();
 </script>
 </body>
 </html>
