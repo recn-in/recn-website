@@ -6,7 +6,7 @@ const base = import.meta.env.BASE_URL;
 const install = 'curl -fsSL https://recn.in/install-node.sh | bash';
 ---
 
-<Base product="node" title="Running RECN Node" description="Install RECN Node on a Mac or a Linux box, including a headless cloud VM, sign in to it over SSH and pair your devices.">
+<Base product="node" title="Running RECN Node" description="Install RECN Node on a Mac or a Linux box, including a headless cloud VM, sign in to it over SSH, add it from your phone or computer, and remove or reset it.">
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
@@ -47,8 +47,20 @@ sudo -iu recn
       <p>Add <code>--work</code> for a node that holds Work too. <code>recn-node node list</code> shows them. Your phone shows the node's name, so Studio reads as “Studio” there.</p>
 
       <h3 id="pair">Pair a phone or a laptop</h3>
-      <pre><code>recn-node invite Personal</code></pre>
-      <p>For a node with more than one product, say which: <code>recn-node invite Personal --work</code>. It prints a QR code in the terminal. In Rec or Work, choose <strong>Pair a device</strong>, then <strong>Scan a code</strong>. If the terminal's QR code won't scan, paste the line printed above it.</p>
+      <p>The code comes from your phone or computer, not from the Node. In Rec or Work, open <strong>Settings › Devices › Add a device</strong>. It shows a code. Then, on the Node:</p>
+      <pre><code>recn-node pair Personal &lt;code&gt;</code></pre>
+      <p>For a node with more than one product, say which: <code>recn-node pair Personal &lt;code&gt; --work</code>. It prints who it paired with. In the dashboard, <strong>Add a device</strong> on the node's page takes the same code.</p>
+      <p>Two Nodes never pair with each other. To have a Node at home and one at the studio, add each from the same phone or computer. They then sync as your devices, through the relay when they aren't on the same network.</p>
+
+      <h3 id="remove">Remove a device or a node</h3>
+      <p>A Node can't remove anyone, itself included. Remove a device from <strong>Settings › Devices</strong> on a phone or computer. <code>recn-node node remove Personal --yes</code> deletes a node, after a snapshot, but its entry stays in Settings › Devices until you remove it there.</p>
+
+      <h3 id="reset">Reset a node</h3>
+      <pre><code>recn-node reset node Personal --yes</code></pre>
+      <p>This gives the node's libraries a new identity. It takes a snapshot first, unless you add <code>--no-backup</code>. Remove the old entry from Settings › Devices, then pair again. Without <code>--yes</code> it only prints what it would do. <code>recn-node reset factory --yes</code> wipes the whole Node instead.</p>
+
+      <h3 id="kept">What stays on the machine</h3>
+      <p>The Node keeps a full copy of every library it holds, and the secret that is each library's key. Whoever holds the machine can read them, so treat it like a phone you're signed in on. Snapshots stay after a node is reset or removed: <code>recn-node backups</code> lists them. A factory reset keeps the snapshots and the log too.</p>
 
       <h3 id="everyday">Everyday commands</h3>
       <dl class="guide-keys">
@@ -57,7 +69,7 @@ sudo -iu recn
         <div><dt><code>journalctl --user -u recn-node -f</code></dt><dd>Follow the Node's log on Linux.</dd></div>
         <div><dt><code>recn-node backup</code></dt><dd>Take a snapshot now. It takes one every night at 2 a.m. and keeps three.</dd></div>
         <div><dt><code>recn-node backups</code></dt><dd>List the snapshots. <code>recn-node restore &lt;id&gt; --yes</code> brings one back.</dd></div>
-        <div><dt><code>recn-node reset uninstall --yes</code></dt><dd>Stop it and remove it, data and all.</dd></div>
+        <div><dt><code>recn-node reset uninstall --yes</code></dt><dd>Stop it and remove it, data and all. The snapshots stay.</dd></div>
       </dl>
       <p>Snapshots are on the same disk as the Node. Copy them off the VM too: they're in <code>~/.local/share/recn-node/backups</code> unless you moved them.</p>
 

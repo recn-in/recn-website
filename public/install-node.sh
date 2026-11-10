@@ -158,15 +158,17 @@ if [ -n "${SSH_CONNECTION:-}" ] && [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; th
 
     A new Node holds no nodes yet. Make one here, or in the dashboard:
       $cmd node add Personal --rec
-    Pair a phone to it from this terminal:
-      $cmd invite Personal
+    Then on your phone or computer open Settings > Devices > Add a device
+    and give its code to the node:
+      $cmd pair Personal <code>
     Guide: https://recn.in/guide/node/
 EOF
 else
   cat <<EOF
     Open the dashboard and make your first node:   $cmd open
     Or from here:                                   $cmd node add Personal --rec
-    Then pair a phone to it:                        $cmd invite Personal
+    Then on your phone open Settings > Devices > Add a device, and here:
+                                                    $cmd pair Personal <code>
     Guide: https://recn.in/guide/node/
 EOF
 fi
