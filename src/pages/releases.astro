@@ -39,7 +39,7 @@ const earlier = [
 ];
 ---
 
-<Base title="RECN releases" description="What changed in Rec, Work and RECN Node, release by release.">
+<Base title="RECN releases" description="What changed in Rec, Work, Stash and RECN Node, release by release.">
   <Header />
   <main class="simple-page shell" id="main-content">
     <header class="simple-page__header">
@@ -62,7 +62,7 @@ const earlier = [
             </section>
           ))}
           {versions.length === 0 && (
-            <section><h3>No versioned release yet</h3><div><article><ul><li>The builds below are what there is.</li></ul></article></div></section>
+            <section><h3>No versioned release yet</h3><div><article><ul><li>{builds.length > 0 ? 'The builds below are what there is.' : 'No build has been published yet.'}</li></ul></article></div></section>
           )}
           {id === 'rec' && (
             <section aria-labelledby="earlier">

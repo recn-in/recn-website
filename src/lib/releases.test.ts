@@ -69,9 +69,9 @@ test('Rec, Work and Node tags never match each other', async () => {
   const t = await import('./releases.ts');
   const tags = {
     rec: 'v0.1.0-beta-nightly.3', mobile: 'mobile-0.1.0-12', work: 'work-v0.1.0-beta-nightly.3',
-    workMobile: 'work-mobile-0.1.0-12', node: 'node-v0.1.0-beta-nightly.2',
+    workMobile: 'work-mobile-0.1.0-12', stash: 'drive-v0.1.0-beta-nightly.3', node: 'node-v0.1.0-beta-nightly.2',
   };
-  const re = { rec: t.NIGHTLY_TAG, mobile: t.MOBILE_TAG, work: t.WORK_NIGHTLY_TAG, workMobile: t.WORK_MOBILE_TAG, node: t.NODE_NIGHTLY_TAG };
+  const re = { rec: t.NIGHTLY_TAG, mobile: t.MOBILE_TAG, work: t.WORK_NIGHTLY_TAG, workMobile: t.WORK_MOBILE_TAG, stash: t.STASH_NIGHTLY_TAG, node: t.NODE_NIGHTLY_TAG };
   for (const [family, tag] of Object.entries(tags)) {
     for (const [name, regex] of Object.entries(re)) assert.equal(regex.test(tag), name === family, `${name} vs ${tag}`);
   }
@@ -100,12 +100,14 @@ test('versioned releases lead each product; nightlies and mobile builds sit unde
     release('v0.0.2-beta', '2026-10-28T12:00:00Z', ['Two']),
     release('rec-mobile-0.0.2-301', '2026-10-28T11:00:00Z', ['Phone']),
     release('node-v0.1.0', '2026-10-28T10:00:00Z', ['Service']),
+    release('drive-v0.0.1-beta-nightly.7', '2026-10-28T09:30:00Z', ['Plays a film']),
     release('v0.0.2-beta-nightly.383', '2026-10-28T09:00:00Z', ['Two', 'One']),
     release('v0.0.1-beta-nightly.382', '2026-10-27T09:00:00Z', ['One']),
   ]);
   assert.deepEqual(logs.map((log) => [log.id, log.versions.map((v) => v.name), log.builds.map((d) => d.entries.map((e) => e.label))]), [
     ['rec', ['0.0.2 beta'], [['Nightly 383', 'Build 301']]],
     ['work', [], []],
+    ['stash', [], [['Nightly 7']]],
     ['node', ['0.1.0'], []],
   ]);
 });
