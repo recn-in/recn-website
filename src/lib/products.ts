@@ -33,7 +33,7 @@ export const PRODUCTS = [
   // Stash is `drive` in the monorepo and in its release tags.
   {
     id: 'stash', name: 'Stash', who: 'For your files and films',
-    line: 'Add a folder on one computer, then browse, download and play what is in it from another. In development: there is no download yet.',
+    line: 'Add a folder on one computer, then browse, download and play what is in it from another. A first beta for the Mac and Windows.',
     points: [
       ['Add a folder', 'Pick a folder on a computer. Stash lists what is in it for your other computers. The files stay where they are and nothing is copied.'],
       ['Browse', 'Your other computers see the folder and everything in it without holding any of the files.'],
@@ -42,8 +42,8 @@ export const PRODUCTS = [
       ['Nearest path first', 'On the same wifi the bytes go straight across. Away from home, computers connect directly over the internet, or through an encrypted relay that can\'t read anything.'],
       ['Read-only for now', 'Stash never writes into your folder. Two-way sync and phones come later.'],
     ],
-    together: 'Stash is not out yet. The first build is for macOS and Windows, and it has only been through our own tests. The computer that has the folder has to be on for the others to reach it. Like Rec and Work, there is no account and no cloud copy.',
-    platforms: 'macOS · Windows · not out yet',
+    together: 'This is the first beta, for macOS and Windows. It has passed our tests and has not yet been used on many machines, so expect rough edges. The computer that has the folder has to be on for the others to reach it. Like Rec and Work, there is no account and no cloud copy.',
+    platforms: 'macOS · Windows · first beta',
   },
   {
     id: 'node', name: 'RECN Node', who: 'Your own server',

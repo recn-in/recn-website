@@ -34,11 +34,9 @@ const cards: Record<ProductId, Card[]> = {
     { id: 'ios', name: 'iPhone · iPad', mark: apple, href: 'https://testflight.apple.com/join/NNtW63uv', action: 'Join on TestFlight ↗', note: 'Updates arrive through TestFlight' },
     { id: 'android', name: 'Android', mark: android, action: 'Coming to Google Play', note: 'Coming soon' },
   ],
-  // No build is published yet. When the first `drive-v` release lands, give
-  // these `suffix: '.dmg'` / `'.exe'` and `href: releases` like Work's.
   stash: [
-    { id: 'macos', name: 'macOS', mark: apple, action: 'Not out yet', note: 'First build is being made' },
-    { id: 'windows', name: 'Windows', mark: windows, action: 'Not out yet', note: 'First build is being made' },
+    { id: 'macos', name: 'macOS', mark: apple, suffix: '.dmg', href: releases, action: 'Download .dmg ↓', note: 'Signed and notarized' },
+    { id: 'windows', name: 'Windows', mark: windows, suffix: '.exe', href: releases, action: 'Download .exe ↓', note: 'Per-user installer' },
     { id: 'phones', name: 'iPhone · Android', mark: '', action: 'Later', note: 'After the computers' },
   ],
   node: [
@@ -48,7 +46,6 @@ const cards: Record<ProductId, Card[]> = {
     { id: 'windows', name: 'Windows · x64', mark: windows, suffix: 'windows-x64.zip', href: releases, action: 'Download ↓', note: '.zip' },
   ],
 };
-const published = cards[product.id].some((card) => card.href);
 const fitTitle = { rec: 'With other people', work: 'With other people', stash: 'Where it stands', node: 'Why it exists' }[product.id];
 const nodeInstall = 'curl -fsSL https://recn.in/install-node.sh | bash';
 const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" /></svg>';
@@ -129,7 +126,7 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
         </div>
       )}
 
-      {published && <article class="release-card">
+      <article class="release-card">
         <header class="release-card__header">
           <div>
             <p class="release-card__eyebrow">{product.name} · latest</p>
@@ -144,13 +141,11 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
           </header>
           <ul data-release-notes><li>The latest notes are on the releases page.</li></ul>
         </section>
-      </article>}
+      </article>
     </section>
 
     <p class="build-caveat">{product.id === 'node'
-      ? 'Early software: keep the data dir backed up like any other library.'
-      : !published ? 'Nothing to install yet. This page gets its download buttons when the first build is published.'
-      : 'Direct macOS and Windows downloads update themselves. This is early software: expect rough edges, and keep copies of work that matters. Mobile betas are for ages 13 and over.'}</p>
+      ? 'Early software: keep the data dir backed up like any other library.'      : 'Direct macOS and Windows downloads update themselves. This is early software: expect rough edges, and keep copies of work that matters. Mobile betas are for ages 13 and over.'}</p>
     <p class="small-links">{PRODUCTS.filter((other) => other.id !== product.id).map((other) => <a href={`${base}${other.id}/`}>Get {other.name} →</a>)}</p>
   </main>
   <Footer />
@@ -215,7 +210,7 @@ const copyIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5
       const ready = (tag: RegExp) => all.find((release) => !release.draft && tag.test(release.tag_name)
         && suffixes.every((suffix) => release.assets.some((asset) => asset.name.endsWith(suffix))));
       const latest = ready(tags.version) ?? ready(tags.nightly);
-      if (!latest || cards.length === 0) return;
+      if (!latest) return;
 
       for (const card of cards) {
         // A release carries each installer twice: a versioned name and a stable alias. Link the versioned one.
