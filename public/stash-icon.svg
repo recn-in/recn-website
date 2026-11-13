@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B2825"/><stop offset="1" stop-color="#121110"/></linearGradient>
+<radialGradient id="sheen" cx="0.5" cy="0" r="0.75"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.09"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<radialGradient id="dot" cx="0.38" cy="0.32" r="0.8"><stop offset="0" stop-color="#B79CF7"/><stop offset="1" stop-color="#8160E0"/></radialGradient>
+<linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F4"/><stop offset="1" stop-color="#E9E5DC"/></linearGradient>
+</defs>
+<g id="field"><rect width="1024" height="1024" fill="url(#field)"/><rect width="1024" height="1024" fill="url(#sheen)"/></g>
+<g id="glyph"><g transform="translate(512 512) scale(1.1) translate(-512 -512)">
+<path d="M 300 380 H 724 M 300 640 H 560" fill="none" stroke="#000" stroke-opacity="0.28" stroke-width="120" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 14)"/>
+<path d="M 300 380 H 724 M 300 640 H 560" fill="none" stroke="url(#ivory)" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="760" cy="654" r="96" fill="#000" fill-opacity="0.28"/>
+<circle cx="760" cy="640" r="96" fill="url(#dot)"/>
+</g></g>
+</svg>

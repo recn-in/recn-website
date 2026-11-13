@@ -1,4 +1,4 @@
-// The family is RECN. The apps are Rec and Work (never "RECN Rec" in copy);
+// The family is RECN. The apps are Rec, Work and Stash (never "RECN Rec" in copy);
 // the server is RECN Node. Every claim here is on main today; what isn't
 // finished says so in the copy.
 export const PRODUCTS = [
@@ -29,6 +29,21 @@ export const PRODUCTS = [
     ],
     together: 'Work and Rec are separate apps with separate libraries, built on the same engine. Same sync, same sharing, same rule: your data is on your hardware.',
     platforms: 'macOS · Windows · iPhone and Android soon',
+  },
+  // Stash is `drive` in the monorepo and in its release tags.
+  {
+    id: 'stash', name: 'Stash', who: 'For your files and films',
+    line: 'Add a folder on one computer, then browse, download and play what is in it from another. In development: there is no download yet.',
+    points: [
+      ['Add a folder', 'Pick a folder on a computer. Stash lists what is in it for your other computers. The files stay where they are and nothing is copied.'],
+      ['Browse', 'Your other computers see the folder and everything in it without holding any of the files.'],
+      ['Download', 'Keep a copy of one file when you want it. Nothing comes down until you ask.'],
+      ['Play', 'Play a film that is on another computer without downloading it first. It plays the file as it is, so nothing is converted.'],
+      ['Nearest path first', 'On the same wifi the bytes go straight across. Away from home, computers connect directly over the internet, or through an encrypted relay that can\'t read anything.'],
+      ['Read-only for now', 'Stash never writes into your folder. Two-way sync and phones come later.'],
+    ],
+    together: 'Stash is not out yet. The first build is for macOS and Windows, and it has only been through our own tests. The computer that has the folder has to be on for the others to reach it. Like Rec and Work, there is no account and no cloud copy.',
+    platforms: 'macOS · Windows · not out yet',
   },
   {
     id: 'node', name: 'RECN Node', who: 'Your own server',

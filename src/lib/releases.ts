@@ -16,6 +16,7 @@ export const NIGHTLY_TAG = /^v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const MOBILE_TAG = /^(?:rec-)?mobile-\d+\.\d+\.\d+-(\d+)$/;
 export const WORK_NIGHTLY_TAG = /^work-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const WORK_MOBILE_TAG = /^work-mobile-\d+\.\d+\.\d+-(\d+)$/;
+export const STASH_NIGHTLY_TAG = /^drive-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const NODE_NIGHTLY_TAG = /^node-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 
 // Versioned releases (`v0.0.2-beta`, `node-v0.1.0`) are the headline per
@@ -23,12 +24,13 @@ export const NODE_NIGHTLY_TAG = /^node-v\d+\.\d+\.\d+-beta-nightly\.(\d+)$/;
 export const PRODUCT_TAGS = [
   { id: 'rec', version: /^v\d+\.\d+\.\d+(?:-beta)?$/, nightly: NIGHTLY_TAG, families: ['Desktop', 'Mobile'] },
   { id: 'work', version: /^work-v\d+\.\d+\.\d+(?:-beta)?$/, nightly: WORK_NIGHTLY_TAG, families: ['Work desktop', 'Work mobile'] },
+  { id: 'stash', version: /^drive-v\d+\.\d+\.\d+(?:-beta)?$/, nightly: STASH_NIGHTLY_TAG, families: ['Stash desktop'] },
   { id: 'node', version: /^node-v\d+\.\d+\.\d+(?:-beta)?$/, nightly: NODE_NIGHTLY_TAG, families: ['Node'] },
 ] as const;
 
 /** `work-v0.0.2-beta-nightly.383` → `0.0.2 beta · nightly 383`. */
 export const buildName = (tag: string) => tag
-  .replace(/^(work-|node-)?v/, '').replace('-beta', ' beta').replace('-nightly.', ' · nightly ');
+  .replace(/^(work-|drive-|node-)?v/, '').replace('-beta', ' beta').replace('-nightly.', ' · nightly ');
 
 // Release bodies carry one change per `- ` line, under `## What changed` when
 // the body has other sections. Older desktop bodies are raw commit subjects:
@@ -50,6 +52,7 @@ const FAMILIES = [
   { family: 'Mobile', tag: MOBILE_TAG, word: 'Build' },
   { family: 'Work desktop', tag: WORK_NIGHTLY_TAG, word: 'Nightly' },
   { family: 'Work mobile', tag: WORK_MOBILE_TAG, word: 'Build' },
+  { family: 'Stash desktop', tag: STASH_NIGHTLY_TAG, word: 'Nightly' },
   { family: 'Node', tag: NODE_NIGHTLY_TAG, word: 'Nightly' },
 ] as const;
 type Family = (typeof FAMILIES)[number]['family'];
